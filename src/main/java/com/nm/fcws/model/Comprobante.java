@@ -33,6 +33,7 @@ public class Comprobante {
     
     private String sucursal;
     
+    private Moneda operacionMoneda;
     
     //datos cliente
     /*
@@ -53,7 +54,6 @@ public class Comprobante {
     private String clienteTipoPersona;
     private int tipoTransaccion;
     private int tipoImpuesto;
-    private int operacionMoneda;
     
     
     private Date fecha;
@@ -70,7 +70,7 @@ public class Comprobante {
     
     /*
         1= Contado
-        2= Crédito
+        2= Crï¿½dito
     */
     private int condicionOperacion;
     private ArrayList<FormaPago> formasPagos = new ArrayList<FormaPago>() ;
@@ -188,14 +188,6 @@ public class Comprobante {
         this.tipoImpuesto = tipoImpuesto;
     }
 
-    public int getOperacionMoneda() {
-        return operacionMoneda;
-    }
-
-    public void setOperacionMoneda(int operacionMoneda) {
-        this.operacionMoneda = operacionMoneda;
-    }
-
     public int getCondicionOperacion() {
         return condicionOperacion;
     }
@@ -236,5 +228,14 @@ public class Comprobante {
     public void setClienteTipoPersona(String clienteTipoPersona) {
         this.clienteTipoPersona = clienteTipoPersona;
     }
+
+    public Moneda getOperacionMoneda() {
+        return operacionMoneda;
+    }
+
+    public void setOperacionMoneda(Moneda operacionMoneda) {
+        this.operacionMoneda = operacionMoneda;
+    }
+    
     
 }

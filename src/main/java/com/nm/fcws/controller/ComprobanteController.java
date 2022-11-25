@@ -111,9 +111,19 @@ public class ComprobanteController {
         gDatGralOpe.setdFeEmiDE(de.getdFecFirma());
         
         TgOpeCom gOpeCom = new TgOpeCom();
-        gOpeCom.setiTipTra(TTipTra.MIXTO); //discutir
-        gOpeCom.setiTImp(TTImp.IVA); //discutir
-        gOpeCom.setcMoneOpe(CMondT.PYG); //discutir
+        gOpeCom.setiTipTra(TTipTra.getByVal(new Short(String.valueOf(contribuyente.getTipoTransaccion().getCodigoSifen())))); //discutir parametrizar en tabla contribuyente
+        gOpeCom.setiTImp(TTImp.getByVal(new Short(String.valueOf(contribuyente.getTipoImpuesto().getCodigoSifen())))); //discutir parametrizar en contribuyente
+        
+        if (comprobante.getOperacionMoneda() == null){
+            gOpeCom.setcMoneOpe(CMondT.PYG); //discutir
+        }else{
+        
+            gOpeCom.setcMoneOpe(CMondT.getByName(comprobante.getOperacionMoneda().getMoneda())); //discutir
+            
+        }
+        
+        
+        //estandarizar a guaranies
         gDatGralOpe.setgOpeCom(gOpeCom); 
         
        
@@ -171,6 +181,7 @@ public class ComprobanteController {
         TgActEco gActEco = new TgActEco(); 
         gActEco.setcActEco("46634"); //discutir
         gActEco.setdDesActEco("Comercio al por mayor de vidrio"); //discutir
+        //esta info pasa el contribuyente si es mas de uno
         gActEcoList.add(gActEco); //discutir
         gEmis.setgActEcoList(gActEcoList); 
         
@@ -179,9 +190,9 @@ public class ComprobanteController {
         TgDatRec gDatRec = new TgDatRec();
         gDatRec.setiNatRec(TiNatRec.CONTRIBUYENTE); //discutir
         gDatRec.setiTiOpe(TiTiOpe.B2B); // discutir
-        gDatRec.setcPaisRec(PaisType.PRY);
+        gDatRec.setcPaisRec(PaisType.PRY); // en caso de b2f cambiaria el pais
         
-        if (comprobante.getClienteTipoPersona().compareTo("FISICA") == 0){
+        if (comprobante.getClienteTipoPersona().compareTo("FISICA") == 0){ // automatizar deacuerdo al ruc
         
             gDatRec.setiTiContRec(TiTipCont.PERSONA_FISICA);
         }
@@ -205,7 +216,7 @@ public class ComprobanteController {
         TgDtipDE gDtipDE = new TgDtipDE();
         
         TgCamFE gCamFE = new TgCamFE();
-        gCamFE.setiIndPres(TiIndPres.OPERACION_ELECTRONICA); //discutir
+        gCamFE.setiIndPres(TiIndPres.OPERACION_ELECTRONICA); //default operacion electronica
         gDtipDE.setgCamFE(gCamFE);
         
         TgCamCond gCamCond = new TgCamCond();
@@ -215,9 +226,10 @@ public class ComprobanteController {
        
         List<TgPaConEIni> gPaConEIniList = new ArrayList<TgPaConEIni>();
         TgPaConEIni gPaConEIni = new TgPaConEIni();
-        gPaConEIni.setiTiPago(TiTiPago.EFECTIVO);
-        gPaConEIni.setdMonTiPag(new BigDecimal(120000.00));
-        gPaConEIni.setcMoneTiPag(CMondT.PYG);
+        gPaConEIni.setiTiPago(TiTiPago.EFECTIVO); 
+        gPaConEIni.setdMonTiPag(new BigDecimal(120000.00)); // si viene solo el monto es efectivo por defecto
+        //en caso que se multiple se tiene que definier efectivo tarjeta etc
+        gPaConEIni.setcMoneTiPag(CMondT.PYG); // si no pasa nada es guaranies
         gPaConEIniList.add(gPaConEIni);
         gCamCond.setgPaConEIniList(gPaConEIniList);
         gDtipDE.setgCamCond(gCamCond);
@@ -229,7 +241,7 @@ public class ComprobanteController {
             TgCamItem gCamItem = new TgCamItem();
             gCamItem.setdCodInt(x.getItemCodigo());
             gCamItem.setdDesProSer(x.getItemDescripcion());
-            gCamItem.setcUniMed(TcUniMed.UNI); //discutir
+            gCamItem.setcUniMed(TcUniMed.getByVal(new Short("2"))); //discutir va a pasar el cliente proveer la tabla del sifen
             gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()));
             TgValorItem gValorItem = new TgValorItem();
             gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()));

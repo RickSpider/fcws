@@ -43,8 +43,18 @@ public class Contribuyente implements Serializable {
     private Distrito distrito;
     
     private String telefono;
+
+    
     private String email;
     private String sucursal;
+    
+    @ManyToOne
+    @JoinColumn(name = "tipoTransaccionid")
+    private TipoTransaccion tipoTransaccion;
+    
+    @ManyToOne
+    @JoinColumn(name = "tipoImpuestoid")
+    private TipoImpuesto tipoImpuesto;
     
     private String pass;
     
@@ -169,6 +179,21 @@ public class Contribuyente implements Serializable {
         this.sucursal = sucursal;
     }
     
-    
+    public TipoTransaccion getTipoTransaccion() {
+        return tipoTransaccion;
+    }
 
+    public void setTipoTransaccion(TipoTransaccion tipoTransaccion) {
+        this.tipoTransaccion = tipoTransaccion;
+    }
+
+    public TipoImpuesto getTipoImpuesto() {
+        return tipoImpuesto;
+    }
+
+    public void setTipoImpuesto(TipoImpuesto tipoImpuesto) {
+        this.tipoImpuesto = tipoImpuesto;
+    }
+
+    
 }
