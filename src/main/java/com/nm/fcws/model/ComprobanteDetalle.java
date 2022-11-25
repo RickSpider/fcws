@@ -13,17 +13,16 @@ public class ComprobanteDetalle {
  
     private String itemCodigo;
     private String itemDescripcion;
-    private String itemUndMedida;
+    private Long itemUndMedida;
+    
     private int cantidad;
     private double precioUnitario;
     
     /*
-        1= “Gravado IVA”
-        2= “Exonerado (Art. 83- Ley
-        125/91)”
-        3= “Exento”
-        4= “Gravado parcial (Grav-
-        Exento)”
+        1= Gravado IVA
+        2= Exonerado (Art. 83- Ley 125/91)
+        3= Exento
+        4= Gravado parcial (Grav-Exento)
     
     */
     private int afectacionTributaria;
@@ -52,14 +51,6 @@ public class ComprobanteDetalle {
 
     public void setItemDescripcion(String itemDescripcion) {
         this.itemDescripcion = itemDescripcion;
-    }
-
-    public String getItemUndMedida() {
-        return itemUndMedida;
-    }
-
-    public void setItemUndMedida(String itemUndMedida) {
-        this.itemUndMedida = itemUndMedida;
     }
 
     public int getCantidad() {
@@ -94,6 +85,13 @@ public class ComprobanteDetalle {
         this.tasaIVA = tasaIVA;
     }
 
-   
-    
+    public Long getItemUndMedida() {
+        return itemUndMedida;
+    }
+
+    public void setItemUndMedida(Long itemUndMedida) {
+        this.itemUndMedida = itemUndMedida;
+    }
+
+     
 }

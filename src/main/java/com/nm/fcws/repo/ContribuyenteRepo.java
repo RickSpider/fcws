@@ -5,7 +5,7 @@
  */
 package com.nm.fcws.repo;
 
-import com.nm.fcws.model.Contribuyente;
+import com.nm.fcws.modeldb.Contribuyente;
 import org.springframework.data.repository.CrudRepository;
 
 /**

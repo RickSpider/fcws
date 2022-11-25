@@ -5,7 +5,7 @@
  */
 package com.nm.fcws.repo;
 
-import com.nm.fcws.model.Distrito;
+import com.nm.fcws.modeldb.Distrito;
 import org.springframework.data.repository.CrudRepository;
 
 /**

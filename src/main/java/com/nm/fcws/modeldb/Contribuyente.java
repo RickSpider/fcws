@@ -3,14 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nm.fcws.model;
+package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -57,8 +63,6 @@ public class Contribuyente implements Serializable {
     private TipoImpuesto tipoImpuesto;
     
     private String pass;
-    
-   
 
     /*
     PROD = produccion
@@ -66,6 +70,13 @@ public class Contribuyente implements Serializable {
      */
     
     private String ambiente;
+    
+    @ManyToMany(cascade = CascadeType.ALL)
+   @JoinTable(
+        name = "contribuyentesactividades", 
+        joinColumns = @JoinColumn(name = "actividadeconomicaid"), 
+        inverseJoinColumns = @JoinColumn(name = "contribuyenteid")) 
+    private Set<ActividadEconomica> actividades;
     
     public void setAmbiente(String ambiente) {
         this.ambiente = ambiente;
@@ -194,6 +205,16 @@ public class Contribuyente implements Serializable {
     public void setTipoImpuesto(TipoImpuesto tipoImpuesto) {
         this.tipoImpuesto = tipoImpuesto;
     }
+
+    public Set<ActividadEconomica> getActividades() {
+        return actividades;
+    }
+
+    public void setActividades(Set<ActividadEconomica> actividades) {
+        this.actividades = actividades;
+    }
+    
+    
 
     
 }

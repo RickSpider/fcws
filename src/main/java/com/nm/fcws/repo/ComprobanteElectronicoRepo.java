@@ -5,7 +5,7 @@
  */
 package com.nm.fcws.repo;
 
-import com.nm.fcws.model.ComprobanteElectronico;
+import com.nm.fcws.modeldb.ComprobanteElectronico;
 import org.springframework.data.repository.CrudRepository;
 
 /**

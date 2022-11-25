@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nm.fcws.model;
+package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -23,10 +23,9 @@ public class Departamento implements Serializable {
     
     
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long departamentoid;
     private String departamento;
-       private Long codigoSifen;
+    private Long codigoSifen;
 
     public Long getDepartamentoid() {
         return departamentoid;

@@ -5,6 +5,7 @@
  */
 package com.nm.fcws.model;
 
+import com.nm.fcws.modeldb.Contribuyente;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -33,7 +34,9 @@ public class Comprobante {
     
     private String sucursal;
     
-    private Moneda operacionMoneda;
+    
+    //conforme a la moneda en sifen
+    private String operacionMoneda;
     
     //datos cliente
     /*
@@ -73,7 +76,7 @@ public class Comprobante {
         2= Cr�dito
     */
     private int condicionOperacion;
-    private ArrayList<FormaPago> formasPagos = new ArrayList<FormaPago>() ;
+    private ArrayList<TipoPago> tiposPagos = new ArrayList<TipoPago>() ;
     private ArrayList<ComprobanteDetalle> detalles = new ArrayList<ComprobanteDetalle>();
 
     public Long getComprobanteid() {
@@ -196,14 +199,6 @@ public class Comprobante {
         this.condicionOperacion = condicionOperacion;
     }
 
-    public ArrayList<FormaPago> getFormasPagos() {
-        return formasPagos;
-    }
-
-    public void setFormasPagos(ArrayList<FormaPago> formasPagos) {
-        this.formasPagos = formasPagos;
-    }
-
     public ArrayList<ComprobanteDetalle> getDetalles() {
         return detalles;
     }
@@ -229,13 +224,23 @@ public class Comprobante {
         this.clienteTipoPersona = clienteTipoPersona;
     }
 
-    public Moneda getOperacionMoneda() {
+    public String getOperacionMoneda() {
         return operacionMoneda;
     }
 
-    public void setOperacionMoneda(Moneda operacionMoneda) {
+    public void setOperacionMoneda(String operacionMoneda) {
         this.operacionMoneda = operacionMoneda;
     }
+
+    public ArrayList<TipoPago> getTiposPagos() {
+        return tiposPagos;
+    }
+
+    public void setTiposPagos(ArrayList<TipoPago> tiposPagos) {
+        this.tiposPagos = tiposPagos;
+    }
+
     
+   
     
 }

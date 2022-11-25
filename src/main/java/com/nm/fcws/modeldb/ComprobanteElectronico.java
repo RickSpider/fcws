@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nm.fcws.model;
+package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,7 +20,7 @@ import javax.persistence.Table;
  * @author BlackSpider
  */
 @Entity
-@Table(name="ComprobanteElectronico")
+@Table(name="comprobanteselectronicos")
 public class ComprobanteElectronico implements Serializable {
     
     @Id

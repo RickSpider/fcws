@@ -9,20 +9,20 @@ package com.nm.fcws.model;
  *
  * @author BlackSpider
  */
-public class FormaPago {
+public class TipoPago {
     
-    private int tipoPago;
+    private Long tipoPagoCodigo;
     private double monto;
-    private int moneda;
-
-    public int getTipoPago() {
-        return tipoPago;
+    private String modeda;
+ 
+    public Long getTipoPagoCodigo() {
+        return tipoPagoCodigo;
     }
 
-    public void setTipoPago(int tipoPago) {
-        this.tipoPago = tipoPago;
+    public void setTipoPagoCodigo(Long tipoPagoCodigo) {
+        this.tipoPagoCodigo = tipoPagoCodigo;
     }
-
+    
     public double getMonto() {
         return monto;
     }
@@ -31,13 +31,15 @@ public class FormaPago {
         this.monto = monto;
     }
 
-    public int getMoneda() {
-        return moneda;
+    public String getModeda() {
+        return modeda;
     }
 
-    public void setMoneda(int moneda) {
-        this.moneda = moneda;
+    public void setModeda(String modeda) {
+        this.modeda = modeda;
     }
+
+ 
     
     
     

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nm.fcws.model;
+package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -24,7 +24,6 @@ import javax.persistence.Table;
 public class Localidad implements Serializable {
     
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)    
     private Long localidadid;
     private String localidad;
     private Long codigoSifen;

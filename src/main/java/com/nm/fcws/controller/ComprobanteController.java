@@ -7,7 +7,8 @@ package com.nm.fcws.controller;
 
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.ComprobanteDetalle;
-import com.nm.fcws.model.Contribuyente;
+import com.nm.fcws.modeldb.Contribuyente;
+import com.nm.fcws.model.TipoPago;
 import com.nm.fcws.repo.ContribuyenteRepo;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
 import com.roshka.sifen.core.fields.request.de.TdDatGralOpe;
@@ -118,7 +119,7 @@ public class ComprobanteController {
             gOpeCom.setcMoneOpe(CMondT.PYG); //discutir
         }else{
         
-            gOpeCom.setcMoneOpe(CMondT.getByName(comprobante.getOperacionMoneda().getMoneda())); //discutir
+            gOpeCom.setcMoneOpe(CMondT.getByName(comprobante.getOperacionMoneda())); //discutir
             
         }
         
@@ -225,12 +226,37 @@ public class ComprobanteController {
         gCamCond.setiCondOpe(TiCondOpe.getByVal(new Short(String.valueOf(comprobante.getCondicionOperacion()))));
        
         List<TgPaConEIni> gPaConEIniList = new ArrayList<TgPaConEIni>();
-        TgPaConEIni gPaConEIni = new TgPaConEIni();
-        gPaConEIni.setiTiPago(TiTiPago.EFECTIVO); 
-        gPaConEIni.setdMonTiPag(new BigDecimal(120000.00)); // si viene solo el monto es efectivo por defecto
-        //en caso que se multiple se tiene que definier efectivo tarjeta etc
-        gPaConEIni.setcMoneTiPag(CMondT.PYG); // si no pasa nada es guaranies
-        gPaConEIniList.add(gPaConEIni);
+        
+        for (TipoPago fp : comprobante.getTiposPagos()){
+            
+            TgPaConEIni gPaConEIni = new TgPaConEIni();
+            
+            if (fp.getTipoPagoCodigo() == null){
+                
+                gPaConEIni.setiTiPago(TiTiPago.EFECTIVO); 
+                
+            }else{
+            
+                gPaConEIni.setiTiPago(TiTiPago.getByVal(new Short(String.valueOf(fp.getTipoPagoCodigo())))); 
+            
+            }
+
+            gPaConEIni.setdMonTiPag(new BigDecimal(120000.00)); // si viene solo el monto es efectivo por defecto
+            //en caso que se multiple se tiene que definier efectivo tarjeta etc
+            
+            if (fp.getModeda() == null){
+            
+                gPaConEIni.setcMoneTiPag(CMondT.PYG); // si no pasa nada es guaranies
+                
+            }else{
+                gPaConEIni.setcMoneTiPag(CMondT.getByName(fp.getModeda())); // si no pasa nada es guaranies
+            }
+            
+           
+            gPaConEIniList.add(gPaConEIni); 
+        
+        }
+       
         gCamCond.setgPaConEIniList(gPaConEIniList);
         gDtipDE.setgCamCond(gCamCond);
         
@@ -241,7 +267,18 @@ public class ComprobanteController {
             TgCamItem gCamItem = new TgCamItem();
             gCamItem.setdCodInt(x.getItemCodigo());
             gCamItem.setdDesProSer(x.getItemDescripcion());
-            gCamItem.setcUniMed(TcUniMed.getByVal(new Short("2"))); //discutir va a pasar el cliente proveer la tabla del sifen
+            
+            if (x.getItemUndMedida() == null){
+            
+                gCamItem.setcUniMed(TcUniMed.UNI);
+                
+            }else {
+            
+                gCamItem.setcUniMed(TcUniMed.getByVal(new Short(String.valueOf(x.getItemUndMedida()))));
+                
+            }
+            
+             //discutir va a pasar el cliente proveer la tabla del sifen
             gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()));
             TgValorItem gValorItem = new TgValorItem();
             gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()));
