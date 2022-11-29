@@ -25,17 +25,9 @@ public class ComprobanteDetalle {
         4= Gravado parcial (Grav-Exento)
     
     */
-    private int afectacionTributaria;
+    private Long afectacionTributaria;
     private int proporcionIVA;
     private int tasaIVA;
-
-    public int getAfectacionTributaria() {
-        return afectacionTributaria;
-    }
-
-    public void setAfectacionTributaria(int afectacionTributaria) {
-        this.afectacionTributaria = afectacionTributaria;
-    }
 
     public String getItemCodigo() {
         return itemCodigo;
@@ -91,6 +83,14 @@ public class ComprobanteDetalle {
 
     public void setItemUndMedida(Long itemUndMedida) {
         this.itemUndMedida = itemUndMedida;
+    }
+
+    public Long getAfectacionTributaria() {
+        return afectacionTributaria;
+    }
+
+    public void setAfectacionTributaria(Long afectacionTributaria) {
+        this.afectacionTributaria = afectacionTributaria;
     }
 
      

@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 /**
@@ -17,7 +18,11 @@ import javax.persistence.Table;
  * @author BlackSpider
  */
 @Entity
-@Table(name="actividadeseconomicas")
+@Table(name="actividadeseconomicas"
+        ,indexes = {
+            @Index(name="codigo_index", columnList="codigo", unique=true)
+        }
+)
 public class ActividadEconomica implements Serializable {
     
     @Id

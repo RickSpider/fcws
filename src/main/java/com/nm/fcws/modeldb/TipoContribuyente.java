@@ -5,7 +5,6 @@
  */
 package com.nm.fcws.modeldb;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,25 +13,18 @@ import javax.persistence.Table;
 
 /**
  *
- * @author blackspider
+ * @author BlackSpider
  */
+
 @Entity
-@Table(name="tipostransacciones")
-public class TipoTransaccion implements Serializable{
+@Table(name="tiposcontribuyentes")
+public class TipoContribuyente {
     
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)    
-    private Long tipotransaccionid;
+    private Long tipocontribuyenteid;
+    private String tipoContribuyente;
     private Long codigoSifen;
-    private String descripcion;
-
-    public Long getTipotransaccionid() {
-        return tipotransaccionid;
-    }
-
-    public void setTipotransaccionid(Long tipotransaccionid) {
-        this.tipotransaccionid = tipotransaccionid;
-    }
 
     public Long getCodigoSifen() {
         return codigoSifen;
@@ -42,14 +34,27 @@ public class TipoTransaccion implements Serializable{
         this.codigoSifen = codigoSifen;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+   
+
+    
+
+   
+    public Long getTipocontribuyenteid() {
+        return tipocontribuyenteid;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setTipocontribuyenteid(Long tipocontribuyenteid) {
+        this.tipocontribuyenteid = tipocontribuyenteid;
     }
-    
-    
+
+    public String getTipoContribuyente() {
+        return tipoContribuyente;
+    }
+
+    public void setTipoContribuyente(String tipoContribuyente) {
+        this.tipoContribuyente = tipoContribuyente;
+    }
+
+  
     
 }

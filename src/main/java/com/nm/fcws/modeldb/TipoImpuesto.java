@@ -7,6 +7,8 @@ package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -20,17 +22,20 @@ import javax.persistence.Table;
 public class TipoImpuesto implements Serializable{
  
     @Id
-    private Long tipoImpuestoid;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long tipoimpuestoid;
     private Long codigoSifen;
     private String descripcion;
 
-    public Long getTipoImpuestoid() {
-        return tipoImpuestoid;
+    public Long getTipoimpuestoid() {
+        return tipoimpuestoid;
     }
 
-    public void setTipoImpuestoid(Long tipoImpuestoid) {
-        this.tipoImpuestoid = tipoImpuestoid;
+    public void setTipoimpuestoid(Long tipoimpuestoid) {
+        this.tipoimpuestoid = tipoimpuestoid;
     }
+
+   
 
     public Long getCodigoSifen() {
         return codigoSifen;

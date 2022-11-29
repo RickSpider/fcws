@@ -18,14 +18,13 @@ import java.util.Date;
 
 public class Comprobante {
     
-    private Long comprobanteid;
+   // private Long comprobanteid;
     
     
     //datos contribuyente
     private Contribuyente contribuyente;
     
     private String timbrado;
-    private String timbradoNum;
     private String establecimiento;
     private String puntoExpedicion;
     private String documentoNum;
@@ -38,12 +37,12 @@ public class Comprobante {
     //conforme a la moneda en sifen
     private String operacionMoneda;
     
-    //datos cliente
+    //datos receptor
     /*
-        1= Contribuyente
+        1= Contribuyente1
         2= No Contribuyente
     */
-    private String clienteNaturaleza;
+    private int receptorNaturaleza;
     
     /*
         1= B2B
@@ -51,41 +50,34 @@ public class Comprobante {
         3= B2G
         4= B2F 
     */
-    private int clienteTipoOperacion;
-    private String clienteRuc;
-    private String clienteDV;
-    private String clienteTipoPersona;
-    private int tipoTransaccion;
-    private int tipoImpuesto;
+    private int receptorTipoOperacion;
+    private String receptorRuc;
+    private String receptorDV;
+    //private String receptorTipoPersona;
+   // private int tipoTransaccion;
+    //private int tipoImpuesto;
     
     
     private Date fecha;
 
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-    
+   
     //detalles de pago
     
     /*
         1= Contado
-        2= Cr�dito
+        2= credito
     */
-    private int condicionOperacion;
+    private Long condicionOperacion;
     private ArrayList<TipoPago> tiposPagos = new ArrayList<TipoPago>() ;
     private ArrayList<ComprobanteDetalle> detalles = new ArrayList<ComprobanteDetalle>();
 
-    public Long getComprobanteid() {
+ /*   public Long getComprobanteid() {
         return comprobanteid;
     }
 
     public void setComprobanteid(Long comprobanteid) {
         this.comprobanteid = comprobanteid;
-    }
+    }*/
 
     public Contribuyente getContribuyente() {
         return contribuyente;
@@ -102,15 +94,6 @@ public class Comprobante {
     public void setTimbrado(String timbrado) {
         this.timbrado = timbrado;
     }
-
-    public String getTimbradoNum() {
-        return timbradoNum;
-    }
-
-    public void setTimbradoNum(String timbradoNum) {
-        this.timbradoNum = timbradoNum;
-    }
-
     public String getEstablecimiento() {
         return establecimiento;
     }
@@ -143,61 +126,47 @@ public class Comprobante {
         this.timbradoFecIni = timbradoFecIni;
     }
 
-    public String getClienteNaturaleza() {
-        return clienteNaturaleza;
+    public int getReceptorNaturaleza() {
+        return receptorNaturaleza;
     }
 
-    public void setClienteNaturaleza(String clienteNaturaleza) {
-        this.clienteNaturaleza = clienteNaturaleza;
+    public void setReceptorNaturaleza(int receptorNaturaleza) {
+        this.receptorNaturaleza = receptorNaturaleza;
     }
 
-    public int getClienteTipoOperacion() {
-        return clienteTipoOperacion;
+    public int getReceptorTipoOperacion() {
+        return receptorTipoOperacion;
     }
 
-    public void setClienteTipoOperacion(int clienteTipoOperacion) {
-        this.clienteTipoOperacion = clienteTipoOperacion;
+    public void setReceptorTipoOperacion(int receptorTipoOperacion) {
+        this.receptorTipoOperacion = receptorTipoOperacion;
     }
 
-    public String getClienteRuc() {
-        return clienteRuc;
+    public String getReceptorRuc() {
+        return receptorRuc;
     }
 
-    public void setClienteRuc(String clienteRuc) {
-        this.clienteRuc = clienteRuc;
+    public void setReceptorRuc(String receptorRuc) {
+        this.receptorRuc = receptorRuc;
     }
 
-    public String getClienteDV() {
-        return clienteDV;
+    public String getReceptorDV() {
+        return receptorDV;
     }
 
-    public void setClienteDV(String clienteDV) {
-        this.clienteDV = clienteDV;
+    public void setReceptorDV(String receptorDV) {
+        this.receptorDV = receptorDV;
     }
 
-    public int getTipoTransaccion() {
-        return tipoTransaccion;
-    }
-
-    public void setTipoTransaccion(int tipoTransaccion) {
-        this.tipoTransaccion = tipoTransaccion;
-    }
-
-    public int getTipoImpuesto() {
-        return tipoImpuesto;
-    }
-
-    public void setTipoImpuesto(int tipoImpuesto) {
-        this.tipoImpuesto = tipoImpuesto;
-    }
-
-    public int getCondicionOperacion() {
+    public Long getCondicionOperacion() {
         return condicionOperacion;
     }
 
-    public void setCondicionOperacion(int condicionOperacion) {
+    public void setCondicionOperacion(Long condicionOperacion) {
         this.condicionOperacion = condicionOperacion;
     }
+
+   
 
     public ArrayList<ComprobanteDetalle> getDetalles() {
         return detalles;
@@ -214,14 +183,6 @@ public class Comprobante {
 
     public void setSucursal(String sucursal) {
         this.sucursal = sucursal;
-    }
-    
-     public String getClienteTipoPersona() {
-        return clienteTipoPersona;
-    }
-
-    public void setClienteTipoPersona(String clienteTipoPersona) {
-        this.clienteTipoPersona = clienteTipoPersona;
     }
 
     public String getOperacionMoneda() {
@@ -240,7 +201,13 @@ public class Comprobante {
         this.tiposPagos = tiposPagos;
     }
 
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
     
-   
     
 }

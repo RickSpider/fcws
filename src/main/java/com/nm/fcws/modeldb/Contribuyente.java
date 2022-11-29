@@ -30,54 +30,55 @@ public class Contribuyente implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Contribuyenteid;
+    private Long contribuyenteid;
     private String ruc;
     private String dv;
-    
+
     /*
         FISICA
         JURIDICA
-    */
-    private String tipoContribuyente;
+     */
+    
+    @ManyToOne
+    @JoinColumn(name = "tipocontribuyenteid")
+    private TipoContribuyente tipoContribuyente;
     private String nombre; //razon social
     private String nombreFantacia;
     private String direccion;
     private String numCasa;
-    
+
     @ManyToOne
     @JoinColumn(name = "distritoid")
     private Distrito distrito;
-    
+
     private String telefono;
 
-    
     private String email;
     private String sucursal;
-    
+
     @ManyToOne
-    @JoinColumn(name = "tipoTransaccionid")
+    @JoinColumn(name = "tipotransaccionid")
     private TipoTransaccion tipoTransaccion;
-    
+
     @ManyToOne
-    @JoinColumn(name = "tipoImpuestoid")
+    @JoinColumn(name = "tipoimpuestoid")
     private TipoImpuesto tipoImpuesto;
-    
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "contribuyentesactividades",
+            joinColumns = @JoinColumn(name = "contribuyenteid"),
+            inverseJoinColumns = @JoinColumn(name = "actividadeconomicaid"))
+    private Set<ActividadEconomica> actividades;
+
     private String pass;
 
     /*
     PROD = produccion
     DEV = desarrollo
      */
-    
     private String ambiente;
-    
-    @ManyToMany(cascade = CascadeType.ALL)
-   @JoinTable(
-        name = "contribuyentesactividades", 
-        joinColumns = @JoinColumn(name = "actividadeconomicaid"), 
-        inverseJoinColumns = @JoinColumn(name = "contribuyenteid")) 
-    private Set<ActividadEconomica> actividades;
-    
+
     public void setAmbiente(String ambiente) {
         this.ambiente = ambiente;
     }
@@ -119,11 +120,11 @@ public class Contribuyente implements Serializable {
     }
 
     public Long getContribuyenteid() {
-        return Contribuyenteid;
+        return contribuyenteid;
     }
 
-    public void setContribuyenteid(Long Contribuyenteid) {
-        this.Contribuyenteid = Contribuyenteid;
+    public void setContribuyenteid(Long contribuyenteid) {
+        this.contribuyenteid = contribuyenteid;
     }
 
     public String getRuc() {
@@ -142,13 +143,14 @@ public class Contribuyente implements Serializable {
         this.dv = dv;
     }
 
-    public String getTipoContribuyente() {
+    public TipoContribuyente getTipoContribuyente() {
         return tipoContribuyente;
     }
 
-    public void setTipoContribuyente(String tipoContribuyente) {
+    public void setTipoContribuyente(TipoContribuyente tipoContribuyente) {
         this.tipoContribuyente = tipoContribuyente;
     }
+
 
     public String getNombre() {
         return nombre;
@@ -189,7 +191,7 @@ public class Contribuyente implements Serializable {
     public void setSucursal(String sucursal) {
         this.sucursal = sucursal;
     }
-    
+
     public TipoTransaccion getTipoTransaccion() {
         return tipoTransaccion;
     }
@@ -213,8 +215,5 @@ public class Contribuyente implements Serializable {
     public void setActividades(Set<ActividadEconomica> actividades) {
         this.actividades = actividades;
     }
-    
-    
 
-    
 }
