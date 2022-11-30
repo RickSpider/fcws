@@ -75,9 +75,21 @@ public class ComprobanteController {
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody String comprobante(@RequestBody Comprobante factura) throws SifenException{
         
-        System.out.println("llego la info: "+factura.getTimbrado());
+       
+        
+        DocumentoElectronico de = procesar(factura);
+        //RespuestaRecepcionDE rrde = Sifen.recepcionDE(de,config);
         
         
+        
+        return de.generarXml(getSifenConfig());
+        //return de ;
+    }
+    
+    private SifenConfig getSifenConfig(){
+    
+        
+         
         SifenConfig config = new SifenConfig(
                 SifenConfig.TipoAmbiente.DEV,
                 "0001",
@@ -87,10 +99,7 @@ public class ComprobanteController {
                 "127xqnCWu2KYHSHn"
         );
         
-        DocumentoElectronico de = procesar(factura);
-        //RespuestaRecepcionDE rrde = Sifen.recepcionDE(de,config);
-        return de.generarXml(config);
-        //return de ;
+        return config;
     }
     
        
