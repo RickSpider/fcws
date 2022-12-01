@@ -1,0 +1,37 @@
+{
+
+    "contribuyente": {
+        "contribuyenteid": 1,
+        "pass": ""
+    },
+    "timbrado": "12558948",
+    "establecimiento": "001",
+    "puntoExpedicion": "001",
+    "documentoNum": "0000016",
+    "timbradoFecIni": "2021-08-25T00:00:00-04:00",
+
+    "sucursal": "Central",
+
+    "receptorRuc": "4912021",
+    "receptorDV": "2",
+
+    "fecha": "2022-12-01T00:00:00-04:00",
+
+    "condicionOperacion": 1,
+    "tiposPagos": [
+        {
+            "monto": 200000
+        }
+    ],
+    "detalles": [
+        {
+            "itemCodigo": "001",
+            "itemDescripcion": "producto001",
+            "cantidad": 1,
+            "precioUnitario": 200000,
+            "afectacionTributaria": 1,
+            "proporcionIVA": 100,
+            "tasaIVA": 10
+        }
+    ]
+}
