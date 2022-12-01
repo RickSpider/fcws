@@ -7,6 +7,7 @@ package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +15,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.hibernate.annotations.CreationTimestamp;
 
 /**
  *
@@ -25,15 +29,31 @@ public class ComprobanteElectronico implements Serializable {
     
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public String id;
+    private String id;
     
     @ManyToOne
     @JoinColumn(name = "departamentoid")
-    public Contribuyente contribuyente;
+    private Contribuyente contribuyente;
     
-    public String xml;
-    public Date fechaCarga;
-    public String totalFactura;
+    @Column(columnDefinition="text")
+    private String xml;
+    
+    @CreationTimestamp 
+    @Column(updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaCarga;
+    
+    private double totalFactura;
+    private String respuestaBruta;
+
+    
+    public String getRespuestaBruta() {
+        return respuestaBruta;
+    }
+
+    public void setRespuestaBruta(String respuestaBruta) {
+        this.respuestaBruta = respuestaBruta;
+    }
 
     public String getId() {
         return id;
@@ -67,12 +87,12 @@ public class ComprobanteElectronico implements Serializable {
         this.fechaCarga = fechaCarga;
     }
 
-    public String getTotalFactura() {
+    public double getTotalFactura() {
         return totalFactura;
     }
 
-    public void setTotalFactura(String totalFactura) {
+    public void setTotalFactura(double totalFactura) {
         this.totalFactura = totalFactura;
     }
- 
+
 }
