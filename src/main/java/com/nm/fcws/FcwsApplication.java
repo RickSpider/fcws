@@ -11,9 +11,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class FcwsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FcwsApplication.class, args);
-	}
-        
-
+    public static void main(String[] args) {
+        SpringApplication.run(FcwsApplication.class, args);
+    }
+    
 }
