@@ -29,6 +29,7 @@ public class Ruc implements Serializable {
     @Column(nullable=false)
     private String ruc;
     private String dv;
+    @Column(columnDefinition="varchar(500)")
     private String RazonSocial;
 
     public Long getRucid() {
