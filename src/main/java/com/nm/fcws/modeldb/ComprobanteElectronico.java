@@ -32,7 +32,7 @@ public class ComprobanteElectronico implements Serializable {
     private String id;
     
     @ManyToOne
-    @JoinColumn(name = "departamentoid")
+    @JoinColumn(name = "contribuyenteid")
     private Contribuyente contribuyente;
     
     @Column(columnDefinition="text")
