@@ -43,6 +43,8 @@ public class ComprobanteElectronico implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCarga;
     
+    private String cdc;
+    
     private double totalFactura;
     @Column(columnDefinition="text")
     private String respuestaBruta;
@@ -95,4 +97,11 @@ public class ComprobanteElectronico implements Serializable {
         this.totalFactura = totalFactura;
     }
 
+     public String getCdc() {
+        return cdc;
+    }
+
+    public void setCdc(String cdc) {
+        this.cdc = cdc;
+    }
 }

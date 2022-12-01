@@ -50,13 +50,21 @@ import com.roshka.sifen.core.types.TiNatRec;
 import com.roshka.sifen.core.types.TiTiOpe;
 import com.roshka.sifen.core.types.TiTiPago;
 import com.roshka.sifen.core.types.TiTipCont;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -75,7 +83,7 @@ public class ComprobanteServicio {
     private RucRepo rucRepo;
     
     @Async
-    public void procesar(Comprobante comprobante) throws SifenException{
+    public void procesar(Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException{
 
        Contribuyente contribuyente = contribuyenteRepo.findById(comprobante.getContribuyente().getContribuyenteid()).get();
     
@@ -254,9 +262,16 @@ public class ComprobanteServicio {
        String respuesta  = rrde.getRespuestaBruta();
        ce.setRespuestaBruta(respuesta);
        
+      
+       
+       
+       
+       
        this.comprobanteElectronicoRepo.save(ce);
     
     }
+    
+    
     
     private TgEmis procesarEmisor(Comprobante comprobante, Contribuyente contribuyente){
 
@@ -416,7 +431,7 @@ public class ComprobanteServicio {
                 "0001",
                 "ABCD0000000000000000000000000000",
                 SifenConfig.TipoCertificadoCliente.PFX,
-                "C:\\Users\\BlackSpider\\Desktop\\facturacionElectronica\\datos\\firma.pfx",
+                "/Users/blackspider/Desktop/datos/firma.pfx",
                 "127xqnCWu2KYHSHn"
         );
         
