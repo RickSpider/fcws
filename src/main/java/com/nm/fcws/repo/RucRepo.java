@@ -7,6 +7,9 @@ package com.nm.fcws.repo;
 
 import com.nm.fcws.modeldb.Distrito;
 import com.nm.fcws.modeldb.Ruc;
+import javax.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -14,5 +17,12 @@ import org.springframework.data.repository.CrudRepository;
  * @author blackspider
  */
 public interface RucRepo extends CrudRepository<Ruc,Long> {
+   
+    @Modifying
+    @Transactional
+    @Query( value ="DELETE FROM rucs", nativeQuery=true)
+    void deleteAllNative();
+    
+    Ruc findByRuc(String ruc);
     
 }
