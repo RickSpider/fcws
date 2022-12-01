@@ -44,9 +44,9 @@ public class ComprobanteElectronico implements Serializable {
     private Date fechaCarga;
     
     private double totalFactura;
+    @Column(columnDefinition="text")
     private String respuestaBruta;
 
-    
     public String getRespuestaBruta() {
         return respuestaBruta;
     }

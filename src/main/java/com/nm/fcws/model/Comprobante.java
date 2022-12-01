@@ -7,6 +7,7 @@ package com.nm.fcws.model;
 
 import com.nm.fcws.modeldb.Contribuyente;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -28,7 +29,7 @@ public class Comprobante {
     private String establecimiento;
     private String puntoExpedicion;
     private String documentoNum;
-    private Date timbradoFecIni;
+    private Calendar timbradoFecIni;
     
     
     private String sucursal;
@@ -118,14 +119,15 @@ public class Comprobante {
         this.documentoNum = documentoNum;
     }
 
-    public Date getTimbradoFecIni() {
+    public Calendar getTimbradoFecIni() {
         return timbradoFecIni;
     }
 
-    public void setTimbradoFecIni(Date timbradoFecIni) {
+    public void setTimbradoFecIni(Calendar timbradoFecIni) {
         this.timbradoFecIni = timbradoFecIni;
     }
 
+   
     public int getReceptorNaturaleza() {
         return receptorNaturaleza;
     }
