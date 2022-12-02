@@ -33,11 +33,6 @@ public class TipoContribuyente {
     public void setCodigoSifen(Long codigoSifen) {
         this.codigoSifen = codigoSifen;
     }
-
-   
-
-    
-
    
     public Long getTipocontribuyenteid() {
         return tipocontribuyenteid;

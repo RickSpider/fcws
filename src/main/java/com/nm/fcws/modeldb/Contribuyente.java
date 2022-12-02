@@ -79,7 +79,16 @@ public class Contribuyente implements Serializable {
     DEV = desarrollo
      */
     private String ambiente;
+    
+    
     private String pathkey;
+    private String passKey;
+    
+    private String monedaD;
+    
+    @ManyToOne
+    @JoinColumn(name = "unidadmedidaid")
+    private UnidadMedida unidadMedidaD;
 
     public void setAmbiente(String ambiente) {
         this.ambiente = ambiente;
@@ -224,6 +233,30 @@ public class Contribuyente implements Serializable {
 
     public void setPathkey(String pathkey) {
         this.pathkey = pathkey;
+    }
+
+    public String getPassKey() {
+        return passKey;
+    }
+
+    public void setPassKey(String passKey) {
+        this.passKey = passKey;
+    }
+
+    public String getMonedaD() {
+        return monedaD;
+    }
+
+    public void setMonedaD(String monedaD) {
+        this.monedaD = monedaD;
+    }
+
+    public UnidadMedida getUnidadMedidaD() {
+        return unidadMedidaD;
+    }
+
+    public void setUnidadMedidaD(UnidadMedida unidadMedidaD) {
+        this.unidadMedidaD = unidadMedidaD;
     }
 
     

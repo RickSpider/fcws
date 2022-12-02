@@ -56,7 +56,6 @@ import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,14 +91,10 @@ public class ComprobanteServicio {
 
         DocumentoElectronico de = new DocumentoElectronico();
 
-        //System.out.println(de.getdDVId());
-        // fecha de la factura
-        // Date date = new Date();
         de.setdFecFirma(comprobante.getFecha().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime());
 
-        // Integer dSisFact = 1;
         de.setdSisFact(new Long(1).shortValue());
 
         //gOpeDE
@@ -108,25 +103,16 @@ public class ComprobanteServicio {
         de.setgOpeDE(gOpeDe);
 
         //timbrado
-        TgTimb gTimb = new TgTimb();
-
-        gTimb.setiTiDE(TTiDE.FACTURA_ELECTRONICA);
-        gTimb.setdNumTim(Integer.parseInt(comprobante.getTimbrado()));
-        gTimb.setdEst(comprobante.getEstablecimiento());
-        gTimb.setdPunExp(comprobante.getPuntoExpedicion());
-        gTimb.setdNumDoc(comprobante.getDocumentoNum());
-        gTimb.setdFeIniT(comprobante.getTimbradoFecIni().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate());
-        de.setgTimb(gTimb);
+        
+        de.setgTimb(this.procesarTimbrado(comprobante));
 
         //datos generales de operacion
         TdDatGralOpe gDatGralOpe = new TdDatGralOpe();
         gDatGralOpe.setdFeEmiDE(de.getdFecFirma());
 
         TgOpeCom gOpeCom = new TgOpeCom();
-        gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue())); //discutir parametrizar en tabla contribuyente
-        gOpeCom.setiTImp(TTImp.getByVal(contribuyente.getTipoImpuesto().getCodigoSifen().shortValue())); //discutir parametrizar en contribuyente
+        gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue())); 
+        gOpeCom.setiTImp(TTImp.getByVal(contribuyente.getTipoImpuesto().getCodigoSifen().shortValue())); 
 
         if (comprobante.getOperacionMoneda() == null) {
 
@@ -157,81 +143,9 @@ public class ComprobanteServicio {
         gCamFE.setiIndPres(TiIndPres.OPERACION_ELECTRONICA); //default operacion electronica
         gDtipDE.setgCamFE(gCamFE);
 
-        TgCamCond gCamCond = new TgCamCond();
+        gDtipDE.setgCamCond(this.procesarMetodoPago(comprobante));
 
-        System.out.println("Condiciones de operacion");
-        System.out.println("operacion contado " + TiCondOpe.CONTADO.getVal());
-        System.out.println("operacion credito " + TiCondOpe.CREDITO.getVal());
-        gCamCond.setiCondOpe(TiCondOpe.getByVal(comprobante.getCondicionOperacion().shortValue()));
-
-        List<TgPaConEIni> gPaConEIniList = new ArrayList<TgPaConEIni>();
-
-        for (TipoPago fp : comprobante.getTiposPagos()) {
-
-            TgPaConEIni gPaConEIni = new TgPaConEIni();
-
-            if (fp.getTipoPagoCodigo() == null) {
-
-                gPaConEIni.setiTiPago(TiTiPago.EFECTIVO);
-
-            } else {
-
-                gPaConEIni.setiTiPago(TiTiPago.getByVal(fp.getTipoPagoCodigo().shortValue()));
-
-            }
-
-            gPaConEIni.setdMonTiPag(new BigDecimal(120000.00)); // si viene solo el monto es efectivo por defecto
-            //en caso que se multiple se tiene que definier efectivo tarjeta etc
-
-            if (fp.getModeda() == null) {
-
-                gPaConEIni.setcMoneTiPag(CMondT.PYG); // si no pasa nada es guaranies
-
-            } else {
-                gPaConEIni.setcMoneTiPag(CMondT.getByName(fp.getModeda())); // si no pasa nada es guaranies
-            }
-
-            gPaConEIniList.add(gPaConEIni);
-
-        }
-
-        gCamCond.setgPaConEIniList(gPaConEIniList);
-        gDtipDE.setgCamCond(gCamCond);
-
-        List<TgCamItem> gCamItemList = new ArrayList<TgCamItem>();
-        for (ComprobanteDetalle x : comprobante.getDetalles()) {
-
-            TgCamItem gCamItem = new TgCamItem();
-            gCamItem.setdCodInt(x.getItemCodigo());
-            gCamItem.setdDesProSer(x.getItemDescripcion());
-
-            if (x.getItemUndMedida() == null) {
-
-                gCamItem.setcUniMed(TcUniMed.UNI);
-
-            } else {
-
-                gCamItem.setcUniMed(TcUniMed.getByVal(x.getItemUndMedida().shortValue()));
-
-            }
-
-            //discutir va a pasar el cliente proveer la tabla del sifen
-            gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()));
-            TgValorItem gValorItem = new TgValorItem();
-            gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()));
-            TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
-            gValorItem.setgValorRestaItem(gValorRestaItem);
-            gCamItem.setgValorItem(gValorItem);
-            TgCamIVA gCamIVA = new TgCamIVA();
-            gCamIVA.setiAfecIVA(TiAfecIVA.getByVal(x.getAfectacionTributaria().shortValue()));
-            gCamIVA.setdPropIVA(new BigDecimal(x.getProporcionIVA()));
-            gCamIVA.setdTasaIVA(new BigDecimal(x.getTasaIVA()));
-            gCamItem.setgCamIVA(gCamIVA);
-            gCamItemList.add(gCamItem);
-
-        }
-
-        gDtipDE.setgCamItemList(gCamItemList);
+        gDtipDE.setgCamItemList(this.procesarDetalle(comprobante));
 
         de.setgDtipDE(gDtipDE);
 
@@ -239,13 +153,15 @@ public class ComprobanteServicio {
         de.setgTotSub(gTotSub);
 
         ComprobanteElectronico ce = new ComprobanteElectronico();
+        
+        SifenConfig config =getSifenConfig(contribuyente);
 
         ce.setContribuyente(contribuyente);
         ce.setNumero(comprobante.getEstablecimiento()+"-"+comprobante.getPuntoExpedicion()+"-"+comprobante.getDocumentoNum());
-        ce.setXml(de.generarXml(getSifenConfig()));
+        ce.setXml(de.generarXml(config));
         ce.setTotal(de.getgTotSub().getdTotalGs().doubleValue());
 
-        RespuestaRecepcionDE rrde = Sifen.recepcionDE(de, this.getSifenConfig());
+        RespuestaRecepcionDE rrde = Sifen.recepcionDE(de, config);
         String respuesta = rrde.getRespuestaBruta();
         ce.setRespuesta(respuesta);
 
@@ -271,6 +187,68 @@ public class ComprobanteServicio {
 
         this.comprobanteElectronicoRepo.save(ce);
 
+    }
+    
+    private TgCamCond procesarMetodoPago(Comprobante comprobante){
+    
+        
+        TgCamCond gCamCond = new TgCamCond();
+
+        //System.out.println("Condiciones de operacion");
+        //System.out.println("operacion contado " + TiCondOpe.CONTADO.getVal());
+        //System.out.println("operacion credito " + TiCondOpe.CREDITO.getVal());
+        gCamCond.setiCondOpe(TiCondOpe.getByVal(comprobante.getCondicionOperacion().shortValue()));
+
+        List<TgPaConEIni> gPaConEIniList = new ArrayList<TgPaConEIni>();
+
+        for (TipoPago fp : comprobante.getTiposPagos()) {
+
+            TgPaConEIni gPaConEIni = new TgPaConEIni();
+
+            if (fp.getTipoPagoCodigo() == null) {
+
+                gPaConEIni.setiTiPago(TiTiPago.EFECTIVO);
+
+            } else {
+
+                gPaConEIni.setiTiPago(TiTiPago.getByVal(fp.getTipoPagoCodigo().shortValue()));
+
+            }
+
+            gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto())); // si viene solo el monto es efectivo por defecto
+            //en caso que se multiple se tiene que definier efectivo tarjeta etc
+
+            if (fp.getModeda() == null) {
+
+                gPaConEIni.setcMoneTiPag(CMondT.PYG); // si no pasa nada es guaranies
+
+            } else {
+                gPaConEIni.setcMoneTiPag(CMondT.getByName(fp.getModeda())); // si no pasa nada es guaranies
+            }
+
+            gPaConEIniList.add(gPaConEIni);
+
+        }
+
+        gCamCond.setgPaConEIniList(gPaConEIniList);
+        
+        return gCamCond;
+    }
+    
+    private TgTimb procesarTimbrado(Comprobante comprobante){
+    
+        TgTimb gTimb = new TgTimb();
+
+        gTimb.setiTiDE(TTiDE.FACTURA_ELECTRONICA);
+        gTimb.setdNumTim(Integer.parseInt(comprobante.getTimbrado()));
+        gTimb.setdEst(comprobante.getEstablecimiento());
+        gTimb.setdPunExp(comprobante.getPuntoExpedicion());
+        gTimb.setdNumDoc(comprobante.getDocumentoNum());
+        gTimb.setdFeIniT(comprobante.getTimbradoFecIni().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+    
+        return gTimb;
     }
 
     private TgEmis procesarEmisor(Comprobante comprobante, Contribuyente contribuyente) {
@@ -400,16 +378,55 @@ public class ComprobanteServicio {
 
         // Fin receptor
     }
+    
+    private List<TgCamItem> procesarDetalle(Comprobante comprobante){
+    
+         List<TgCamItem> gCamItemList = new ArrayList<TgCamItem>();
+        for (ComprobanteDetalle x : comprobante.getDetalles()) {
 
-    private SifenConfig getSifenConfig() {
+            TgCamItem gCamItem = new TgCamItem();
+            gCamItem.setdCodInt(x.getItemCodigo());
+            gCamItem.setdDesProSer(x.getItemDescripcion());
+
+            if (x.getItemUndMedida() == null) {
+
+                gCamItem.setcUniMed(TcUniMed.UNI);
+
+            } else {
+
+                gCamItem.setcUniMed(TcUniMed.getByVal(x.getItemUndMedida().shortValue()));
+
+            }
+
+            //discutir va a pasar el cliente proveer la tabla del sifen
+            gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()));
+            TgValorItem gValorItem = new TgValorItem();
+            gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()));
+            TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
+            gValorItem.setgValorRestaItem(gValorRestaItem);
+            gCamItem.setgValorItem(gValorItem);
+            TgCamIVA gCamIVA = new TgCamIVA();
+            gCamIVA.setiAfecIVA(TiAfecIVA.getByVal(x.getAfectacionTributaria().shortValue()));
+            gCamIVA.setdPropIVA(new BigDecimal(x.getProporcionIVA()));
+            gCamIVA.setdTasaIVA(new BigDecimal(x.getTasaIVA()));
+            gCamItem.setgCamIVA(gCamIVA);
+            gCamItemList.add(gCamItem);
+
+        }
+    
+        return gCamItemList;
+    }
+
+    private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
         SifenConfig config = new SifenConfig(
                 SifenConfig.TipoAmbiente.DEV,
                 "0001",
                 "ABCD0000000000000000000000000000",
                 SifenConfig.TipoCertificadoCliente.PFX,
-                "C:\\Users\\BlackSpider\\Desktop\\facturacionElectronica\\datos\\firma.pfx",
-                "127xqnCWu2KYHSHn"
+                contribuyente.getPathkey(),
+                contribuyente.getPassKey()
+                //"127xqnCWu2KYHSHn"
         );
 
         return config;
