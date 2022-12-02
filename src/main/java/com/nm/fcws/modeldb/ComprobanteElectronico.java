@@ -41,21 +41,17 @@ public class ComprobanteElectronico implements Serializable {
     @CreationTimestamp 
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaCarga;
+    private Date creado;
     
     private String cdc;
+
+    private String numero;
+    private double total;
     
-    private double totalFactura;
     @Column(columnDefinition="text")
-    private String respuestaBruta;
-
-    public String getRespuestaBruta() {
-        return respuestaBruta;
-    }
-
-    public void setRespuestaBruta(String respuestaBruta) {
-        this.respuestaBruta = respuestaBruta;
-    }
+    private String respuesta;
+    
+    private String estado;
 
     public String getId() {
         return id;
@@ -81,27 +77,51 @@ public class ComprobanteElectronico implements Serializable {
         this.xml = xml;
     }
 
-    public Date getFechaCarga() {
-        return fechaCarga;
+    public String getEstado() {
+        return estado;
     }
 
-    public void setFechaCarga(Date fechaCarga) {
-        this.fechaCarga = fechaCarga;
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
-    public double getTotalFactura() {
-        return totalFactura;
+     public Date getCreado() {
+        return creado;
     }
 
-    public void setTotalFactura(double totalFactura) {
-        this.totalFactura = totalFactura;
+    public void setCreado(Date creado) {
+        this.creado = creado;
     }
 
-     public String getCdc() {
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public String getRespuesta() {
+        return respuesta;
+    }
+
+    public void setRespuesta(String respuesta) {
+        this.respuesta = respuesta;
+    }
+
+    public String getCdc() {
         return cdc;
     }
-
-    public void setCdc(String cdc) {
+    
+      public void setCdc(String cdc) {
         this.cdc = cdc;
     }
 }
