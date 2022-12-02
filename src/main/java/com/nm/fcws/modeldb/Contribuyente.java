@@ -79,6 +79,7 @@ public class Contribuyente implements Serializable {
     DEV = desarrollo
      */
     private String ambiente;
+    private String pathkey;
 
     public void setAmbiente(String ambiente) {
         this.ambiente = ambiente;
@@ -217,4 +218,13 @@ public class Contribuyente implements Serializable {
         this.actividades = actividades;
     }
 
+    public String getPathkey() {
+        return pathkey;
+    }
+
+    public void setPathkey(String pathkey) {
+        this.pathkey = pathkey;
+    }
+
+    
 }
