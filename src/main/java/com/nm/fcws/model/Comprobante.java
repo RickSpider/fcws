@@ -54,6 +54,17 @@ public class Comprobante {
     private int receptorTipoOperacion;
     private String receptorRuc;
     private String receptorDV;
+    
+    //estos campos se debe agregar si el receptor no tiene ruc
+    private Long receptorTipoDocumento;
+    private String receptorDI;
+    private String receptorDireccion;
+    private Integer receptorNumCasa;
+    private Long receptorDepartamento;
+    private Long receptorDistrito;
+    private Long receptorCiudad;
+
+    
     //private String receptorTipoPersona;
    // private int tipoTransaccion;
     //private int tipoImpuesto;
@@ -210,6 +221,63 @@ public class Comprobante {
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
-    
+
+    public Long getReceptorTipoDocumento() {
+        return receptorTipoDocumento;
+    }
+
+    public void setReceptorTipoDocumento(Long receptorTipoDocumento) {
+        this.receptorTipoDocumento = receptorTipoDocumento;
+    }
+
+    public String getReceptorDI() {
+        return receptorDI;
+    }
+
+    public void setReceptorDI(String receptorDI) {
+        this.receptorDI = receptorDI;
+    }
+
+    public String getReceptorDireccion() {
+        return receptorDireccion;
+    }
+
+    public void setReceptorDireccion(String receptorDireccion) {
+        this.receptorDireccion = receptorDireccion;
+    }
+
+    public Integer getReceptorNumCasa() {
+        return receptorNumCasa;
+    }
+
+    public void setReceptorNumCasa(Integer receptorNumCasa) {
+        this.receptorNumCasa = receptorNumCasa;
+    }
+
+    public Long getReceptorDepartamento() {
+        return receptorDepartamento;
+    }
+
+    public void setReceptorDepartamento(Long receptorDepartamento) {
+        this.receptorDepartamento = receptorDepartamento;
+    }
+
+    public Long getReceptorDistrito() {
+        return receptorDistrito;
+    }
+
+    public void setReceptorDistrito(Long receptorDistrito) {
+        this.receptorDistrito = receptorDistrito;
+    }
+
+    public Long getReceptorCiudad() {
+        return receptorCiudad;
+    }
+
+    public void setReceptorCiudad(Long receptorCiudad) {
+        this.receptorCiudad = receptorCiudad;
+    }
+
+  
     
 }
