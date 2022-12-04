@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -80,15 +81,15 @@ public class Contribuyente implements Serializable {
      */
     private String ambiente;
     
-    
     private String pathkey;
-    private String passKey;
+    private String passkey;
     
+    @Column(name="monedad")
     private String monedaD;
     
     @ManyToOne
     @JoinColumn(name = "unidadmedidaid")
-    private UnidadMedida unidadMedidaD;
+    private UnidadMedida unidadMedida;
 
     public void setAmbiente(String ambiente) {
         this.ambiente = ambiente;
@@ -235,14 +236,6 @@ public class Contribuyente implements Serializable {
         this.pathkey = pathkey;
     }
 
-    public String getPassKey() {
-        return passKey;
-    }
-
-    public void setPassKey(String passKey) {
-        this.passKey = passKey;
-    }
-
     public String getMonedaD() {
         return monedaD;
     }
@@ -251,13 +244,22 @@ public class Contribuyente implements Serializable {
         this.monedaD = monedaD;
     }
 
-    public UnidadMedida getUnidadMedidaD() {
-        return unidadMedidaD;
+    public String getPasskey() {
+        return passkey;
     }
 
-    public void setUnidadMedidaD(UnidadMedida unidadMedidaD) {
-        this.unidadMedidaD = unidadMedidaD;
+    public void setPasskey(String passkey) {
+        this.passkey = passkey;
     }
 
+    public UnidadMedida getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(UnidadMedida unidadMedida) {
+        this.unidadMedida = unidadMedida;
+    }
+
+    
     
 }
