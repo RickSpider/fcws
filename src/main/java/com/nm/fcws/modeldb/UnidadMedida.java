@@ -17,7 +17,7 @@ import javax.persistence.Table;
  * @author blackspider
  */
 @Entity
-@Table(name="UnidadesMedidas")
+@Table(name="unidadesmedidas")
 public class UnidadMedida implements Serializable{
     
     @Id
