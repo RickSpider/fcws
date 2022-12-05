@@ -5,6 +5,7 @@
  */
 package com.nm.fcws.services;
 
+import com.nm.fcws.controller.hello;
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.ComprobanteDetalle;
 import com.nm.fcws.model.TipoPago;
@@ -50,6 +51,7 @@ import com.roshka.sifen.core.types.TiNatRec;
 import com.roshka.sifen.core.types.TiTiOpe;
 import com.roshka.sifen.core.types.TiTiPago;
 import com.roshka.sifen.core.types.TiTipCont;
+import com.roshka.sifen.core.types.TiTipDocRec;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -58,6 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -74,6 +78,8 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class ComprobanteServicio {
+    
+    private static Logger log = LoggerFactory.getLogger(ComprobanteServicio.class);
 
     @Autowired
     private ContribuyenteRepo contribuyenteRepo;
@@ -83,11 +89,34 @@ public class ComprobanteServicio {
 
     @Autowired
     private RucRepo rucRepo;
+    
+    private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
-    @Async
-    public void procesar(Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
+        /*SifenConfig config = new SifenConfig(
+                SifenConfig.TipoAmbiente.DEV,
+                "0001",
+                "ABCD0000000000000000000000000000",
+                SifenConfig.TipoCertificadoCliente.PFX,
+                "C:\\Users\\BlackSpider\\Desktop\\facturacionElectronica\\datos\\firma.pfx",
+                //contribuyente.getPasskey()
+                "127xqnCWu2KYHSHn"
+        );*/
+        SifenConfig config = new SifenConfig(
+                SifenConfig.TipoAmbiente.DEV,
+                "0001",
+                "ABCD0000000000000000000000000000",
+                SifenConfig.TipoCertificadoCliente.PFX,
+                contribuyente.getPathkey(),
+                contribuyente.getPasskey()
+        );
 
-        Contribuyente contribuyente = contribuyenteRepo.findById(comprobante.getContribuyente().getContribuyenteid()).get();
+        return config;
+    }
+
+    
+    public DocumentoElectronico procesar(Comprobante comprobante, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        //Contribuyente contribuyente = contribuyenteRepo.findById(comprobante.getContribuyente().getContribuyenteid()).get();
 
         DocumentoElectronico de = new DocumentoElectronico();
 
@@ -95,6 +124,7 @@ public class ComprobanteServicio {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime());
 
+        // Sistema de facturacion del contribuyente siempre debe de ser 1
         de.setdSisFact(new Long(1).shortValue());
 
         //gOpeDE
@@ -103,7 +133,6 @@ public class ComprobanteServicio {
         de.setgOpeDE(gOpeDe);
 
         //timbrado
-        
         de.setgTimb(this.procesarTimbrado(comprobante));
 
         //datos generales de operacion
@@ -111,8 +140,8 @@ public class ComprobanteServicio {
         gDatGralOpe.setdFeEmiDE(de.getdFecFirma());
 
         TgOpeCom gOpeCom = new TgOpeCom();
-        gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue())); 
-        gOpeCom.setiTImp(TTImp.getByVal(contribuyente.getTipoImpuesto().getCodigoSifen().shortValue())); 
+        gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue()));
+        gOpeCom.setiTImp(TTImp.getByVal(contribuyente.getTipoImpuesto().getCodigoSifen().shortValue()));
 
         if (comprobante.getOperacionMoneda() == null) {
 
@@ -152,19 +181,39 @@ public class ComprobanteServicio {
         TgTotSub gTotSub = new TgTotSub();
         de.setgTotSub(gTotSub);
 
+        //seccion de serializacion en base de datos
         ComprobanteElectronico ce = new ComprobanteElectronico();
-        
-        SifenConfig config =getSifenConfig(contribuyente);
+
+        SifenConfig config = getSifenConfig(contribuyente);
 
         ce.setContribuyente(contribuyente);
-        ce.setNumero(comprobante.getEstablecimiento()+"-"+comprobante.getPuntoExpedicion()+"-"+comprobante.getDocumentoNum());
+        ce.setNumero(comprobante.getEstablecimiento() + "-" + comprobante.getPuntoExpedicion() + "-" + comprobante.getDocumentoNum());
         ce.setXml(de.generarXml(config));
-        ce.setTotal(de.getgTotSub().getdTotalGs().doubleValue());
+        ce.setCdc(de.obtenerCDC());
 
+       
+        
+        ce.setTotal(de.getgTotSub().getdTotalGs().doubleValue());
+       // log.info(de.getEnlaceQR());
+
+        this.comprobanteElectronicoRepo.save(ce);
+
+        return de;
+    }
+    
+    @Async
+    public void enviarDE(DocumentoElectronico de, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException{
+
+        SifenConfig config = getSifenConfig(contribuyente);
+        
         RespuestaRecepcionDE rrde = Sifen.recepcionDE(de, config);
         String respuesta = rrde.getRespuestaBruta();
+        
+        ComprobanteElectronico ce = comprobanteElectronicoRepo.findByCdc(cdc);
         ce.setRespuesta(respuesta);
 
+        log.info(respuesta);
+    
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(respuesta));
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
@@ -174,24 +223,36 @@ public class ComprobanteServicio {
         for (int i = 0; i < nl.getLength(); i++) {
 
             Node n = nl.item(i);
-            //log.info(n.getChildNodes().item(0).getNodeName());
-            Element e = (Element) n;
-            
-            ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
-            ce.setEstado((e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent()));
 
-           // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
-           // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
 
+                Element e = (Element) n;
+
+               // ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+                ce.setEstado((e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent()));
+                if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0260") == 0){
+                
+                    ce.setEnviado(true);
+                    
+                }
+
+               // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+               // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+               // log.info(e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
+            }
+
+            // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+            // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
         }
-
+        
         this.comprobanteElectronicoRepo.save(ce);
-
+        
     }
     
-    private TgCamCond procesarMetodoPago(Comprobante comprobante){
     
-        
+
+    private TgCamCond procesarMetodoPago(Comprobante comprobante) {
+
         TgCamCond gCamCond = new TgCamCond();
 
         //System.out.println("Condiciones de operacion");
@@ -231,12 +292,12 @@ public class ComprobanteServicio {
         }
 
         gCamCond.setgPaConEIniList(gPaConEIniList);
-        
+
         return gCamCond;
     }
-    
-    private TgTimb procesarTimbrado(Comprobante comprobante){
-    
+
+    private TgTimb procesarTimbrado(Comprobante comprobante) {
+
         TgTimb gTimb = new TgTimb();
 
         gTimb.setiTiDE(TTiDE.FACTURA_ELECTRONICA);
@@ -247,7 +308,7 @@ public class ComprobanteServicio {
         gTimb.setdFeIniT(comprobante.getTimbradoFecIni().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
-    
+
         return gTimb;
     }
 
@@ -355,15 +416,6 @@ public class ComprobanteServicio {
 
             }
 
-            /*if (comprobante.getClienteTipoPersona().compareTo("FISICA") == 0){ // automatizar deacuerdo al ruc
-        
-                gDatRec.setiTiContRec(TiTipCont.PERSONA_FISICA);
-            }
-
-            if (comprobante.getClienteTipoPersona().compareTo("JURIDICA") == 0){
-
-                gDatRec.setiTiContRec(TiTipCont.PERSONA_JURIDICA);
-            }*/
             gDatRec.setdRucRec(comprobante.getReceptorRuc());
             gDatRec.setdNomRec(rucRepo.findByRuc(comprobante.getReceptorRuc()).getRazonSocial());
             gDatRec.setdDVRec(new Short(comprobante.getReceptorDV()));
@@ -372,16 +424,23 @@ public class ComprobanteServicio {
 
         if (naturaleza == 2 && gDatRec.getiTiOpe().getVal() != TiTiOpe.B2F.getVal()) {
 
+            gDatRec.setiTipIDRec(TiTipDocRec.getByVal(new Short(String.valueOf(comprobante.getReceptorTipoDocumento()))));
+            gDatRec.setdNumIDRec(comprobante.getReceptorDI());
+            gDatRec.setdDirRec(comprobante.getReceptorDireccion());
+            gDatRec.setdNumCasRec(comprobante.getReceptorNumCasa());
+            gDatRec.setcDepRec(TDepartamento.getByVal(new Short(String.valueOf(comprobante.getReceptorDepartamento()))));
+            gDatRec.setcDisRec(new Short(String.valueOf(comprobante.getReceptorCiudad())));
+            gDatRec.setcCiuRec(new Short(String.valueOf(comprobante.getReceptorCiudad())));
         }
 
         return gDatRec;
 
         // Fin receptor
     }
-    
-    private List<TgCamItem> procesarDetalle(Comprobante comprobante){
-    
-         List<TgCamItem> gCamItemList = new ArrayList<TgCamItem>();
+
+    private List<TgCamItem> procesarDetalle(Comprobante comprobante) {
+
+        List<TgCamItem> gCamItemList = new ArrayList<TgCamItem>();
         for (ComprobanteDetalle x : comprobante.getDetalles()) {
 
             TgCamItem gCamItem = new TgCamItem();
@@ -413,23 +472,10 @@ public class ComprobanteServicio {
             gCamItemList.add(gCamItem);
 
         }
-    
+
         return gCamItemList;
     }
 
-    private SifenConfig getSifenConfig(Contribuyente contribuyente) {
-
-        SifenConfig config = new SifenConfig(
-                SifenConfig.TipoAmbiente.DEV,
-                "0001",
-                "ABCD0000000000000000000000000000",
-                SifenConfig.TipoCertificadoCliente.PFX,
-                contribuyente.getPathkey(),
-                contribuyente.getPassKey()
-                //"127xqnCWu2KYHSHn"
-        );
-
-        return config;
-    }
+    
 
 }

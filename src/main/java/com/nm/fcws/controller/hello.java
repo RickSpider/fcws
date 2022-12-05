@@ -5,6 +5,8 @@
  */
 package com.nm.fcws.controller;
 
+import com.nm.fcws.modeldb.ComprobanteElectronico;
+import com.nm.fcws.repo.ComprobanteElectronicoRepo;
 import java.io.IOException;
 import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;
@@ -12,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
@@ -31,10 +34,24 @@ public class hello {
     
     private static Logger log = LoggerFactory.getLogger(hello.class);
     
+    @Autowired
+    private ComprobanteElectronicoRepo cer;
+    
     @GetMapping(value = "/hello",produces ="application/json")
     public String sayHello(){
         
         return "hello lo perro";
+        
+    }
+    
+    @GetMapping(value = "/comprobante")
+    public ComprobanteElectronico getComprobanteByCdc(){
+    
+        ComprobanteElectronico ce =  cer.findByCdc("01800025245001001000005022022120518663267863");
+        
+        ce.setEstado("El estado");
+        
+        return ce;
         
     }
     
@@ -59,10 +76,16 @@ public class hello {
            
            Node n = nl.item(i);
            log.info(n.getChildNodes().item(0).getNodeName());
+           
+           if (n.getNodeType() == Node.ELEMENT_NODE){
+           
            Element e = (Element) n;
            
            log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
            log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+           log.info(e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
+           }
+           
        
        }
        

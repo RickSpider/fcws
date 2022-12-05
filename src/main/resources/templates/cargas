@@ -1,0 +1,48 @@
+INSERT INTO public.tiposcontribuyentes(
+	codigo_sifen, tipo_contribuyente)
+	VALUES (1, 'FISICO' );
+	
+INSERT INTO public.tiposcontribuyentes(
+	codigo_sifen, tipo_contribuyente)
+	VALUES (2, 'JURIDICO' );
+
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('1',' Venta de mercadería');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('2',' Prestación de servicios');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('3',' Mixto (Venta de mercadería y servicios)');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('4',' Venta de activo fijo');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('5',' Venta de divisas');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('6',' Compra de divisas');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('7',' Promoción o entrega de muestras');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('8',' Donación');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('9',' Anticipo');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('10',' Compra de productos');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('11',' Compra de servicios');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('12',' Venta de crédito fiscal');
+INSERT INTO public.tipostransacciones(codigo_sifen, descripcion) VALUES ('13','Muestras médicas (Art. 3 RG24/2014)');
+
+INSERT INTO public.tiposimpuestos(codigo_sifen, descripcion) VALUES ('1',' IVA');
+INSERT INTO public.tiposimpuestos(codigo_sifen, descripcion) VALUES ('2',' ISC');
+INSERT INTO public.tiposimpuestos(codigo_sifen, descripcion) VALUES ('3','Renta');
+INSERT INTO public.tiposimpuestos(codigo_sifen, descripcion) VALUES ('4','Ninguno');
+INSERT INTO public.tiposimpuestos(codigo_sifen, descripcion) VALUES ('5','IVA - Rent');
+
+
+INSERT INTO public.contribuyentes(
+	ambiente, direccion, dv, email, nombre, num_casa, pass, ruc, sucursal, telefono, tipocontribuyenteid, distritoid, tipoimpuestoid, tipotransaccionid)
+	VALUES ('DEV','Avda. Médicos del Chaco' , '5', 'administracion@vidrioluz.com.py', 'VIDRIO LUZ S.R.L.
+', '2713', '123', '80002524', 'Central', '021554998', 2, 1, 5, 3);
+
+INSERT INTO public.actividadeseconomicas(codigo, descripcion) VALUES ('46634','COMERCIO AL POR MAYOR DE VIDRIO');
+INSERT INTO public.actividadeseconomicas(codigo, descripcion) VALUES ('46520','COMERCIO AL POR MAYOR DE COMPONENTES ELECTRÓNICOS Y EQUIPOS DE COMUNICACIONES');
+INSERT INTO public.actividadeseconomicas(codigo, descripcion) VALUES ('47529','COMERCIO AL POR MENOR DE OTROS ARTÍCULOS N.C.P.');
+INSERT INTO public.actividadeseconomicas(codigo, descripcion) VALUES ('46699','COMERCIO AL POR MAYOR DE OTROS PRODUCTOS N.C.P.');
+
+insert into contribuyentesactividades (contribuyenteid, actividadeconomicaid) values (1,1);
+insert into contribuyentesactividades (contribuyenteid, actividadeconomicaid) values (1,2);
+insert into contribuyentesactividades (contribuyenteid, actividadeconomicaid) values (1,3);
+insert into contribuyentesactividades (contribuyenteid, actividadeconomicaid) values (1,4);
+
+
+--update contribuyentes
+--set pathkey = '', passkey=''
+--where contribuyenteid = 1;

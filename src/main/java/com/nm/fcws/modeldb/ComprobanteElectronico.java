@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -24,12 +25,16 @@ import org.hibernate.annotations.CreationTimestamp;
  * @author BlackSpider
  */
 @Entity
-@Table(name="comprobanteselectronicos")
+@Table(name="comprobanteselectronicos"
+        ,indexes = {
+            @Index(name="cdc_index", columnList="cdc", unique=true)
+        }
+)
 public class ComprobanteElectronico implements Serializable {
     
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private String id;
+    private Long id;
     
     @ManyToOne
     @JoinColumn(name = "contribuyenteid")
@@ -52,15 +57,18 @@ public class ComprobanteElectronico implements Serializable {
     private String respuesta;
     
     private String estado;
+    
+    @Column(columnDefinition = "boolean default false")
+    private boolean enviado = false;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
-
+   
     public Contribuyente getContribuyente() {
         return contribuyente;
     }
@@ -123,5 +131,13 @@ public class ComprobanteElectronico implements Serializable {
     
       public void setCdc(String cdc) {
         this.cdc = cdc;
+    }
+
+    public boolean isEnviado() {
+        return enviado;
+    }
+
+    public void setEnviado(boolean enviado) {
+        this.enviado = enviado;
     }
 }

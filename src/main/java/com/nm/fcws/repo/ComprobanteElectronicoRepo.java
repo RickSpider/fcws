@@ -14,4 +14,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ComprobanteElectronicoRepo extends CrudRepository<ComprobanteElectronico, Long>{
     
+    ComprobanteElectronico findByCdc(String cdc);
+    
 }

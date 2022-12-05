@@ -6,9 +6,12 @@
 package com.nm.fcws.controller;
 
 import com.nm.fcws.model.Comprobante;
+import com.nm.fcws.model.Kude;
+import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.RucRepo;
 import com.nm.fcws.services.ComprobanteServicio;
+import com.roshka.sifen.core.beans.DocumentoElectronico;
 import com.roshka.sifen.core.exceptions.SifenException;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,9 +63,16 @@ public class ComprobanteController {
             
         }
         
-        comprobanteServicio.procesar(factura);
+        Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
+        
+        DocumentoElectronico de = comprobanteServicio.procesar(factura, contribuyente);
+        String cdc = de.obtenerCDC();
+        log.info(cdc);
+        Kude kude = new Kude(de.getEnlaceQR(), cdc);
+        
+        comprobanteServicio.enviarDE(de, contribuyente,cdc);
  
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity(kude,HttpStatus.CREATED);
     }
 
     private String chequearCampos(Comprobante comprobante){
