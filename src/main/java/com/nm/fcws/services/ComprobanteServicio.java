@@ -406,7 +406,7 @@ public class ComprobanteServicio {
 
         if (naturaleza == 1) {
 
-            if (Integer.parseInt(comprobante.getReceptorRuc()) >= 80000000) {
+            if (Integer.parseInt(comprobante.getReceptorDocNum()) >= 80000000) {
 
                 gDatRec.setiTiContRec(TiTipCont.PERSONA_JURIDICA);
 
@@ -416,8 +416,8 @@ public class ComprobanteServicio {
 
             }
 
-            gDatRec.setdRucRec(comprobante.getReceptorRuc());
-            gDatRec.setdNomRec(rucRepo.findByRuc(comprobante.getReceptorRuc()).getRazonSocial());
+            gDatRec.setdRucRec(comprobante.getReceptorDocNum());
+            gDatRec.setdNomRec(rucRepo.findByRuc(comprobante.getReceptorDocNum()).getRazonSocial());
             gDatRec.setdDVRec(new Short(comprobante.getReceptorDV()));
 
         }
@@ -425,7 +425,7 @@ public class ComprobanteServicio {
         if (naturaleza == 2 && gDatRec.getiTiOpe().getVal() != TiTiOpe.B2F.getVal()) {
 
             gDatRec.setiTipIDRec(TiTipDocRec.getByVal(new Short(String.valueOf(comprobante.getReceptorTipoDocumento()))));
-            gDatRec.setdNumIDRec(comprobante.getReceptorDI());
+            gDatRec.setdNumIDRec(comprobante.getReceptorDocNum());
             gDatRec.setdDirRec(comprobante.getReceptorDireccion());
             gDatRec.setdNumCasRec(comprobante.getReceptorNumCasa());
             gDatRec.setcDepRec(TDepartamento.getByVal(new Short(String.valueOf(comprobante.getReceptorDepartamento()))));
