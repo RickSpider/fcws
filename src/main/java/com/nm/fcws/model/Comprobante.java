@@ -52,12 +52,11 @@ public class Comprobante {
         4= B2F 
     */
     private int receptorTipoOperacion;
-    private String receptorRuc;
+    private String receptorDocNum;
     private String receptorDV;
     
     //estos campos se debe agregar si el receptor no tiene ruc
     private Long receptorTipoDocumento;
-    private String receptorDI;
     private String receptorDireccion;
     private Integer receptorNumCasa;
     private Long receptorDepartamento;
@@ -155,12 +154,12 @@ public class Comprobante {
         this.receptorTipoOperacion = receptorTipoOperacion;
     }
 
-    public String getReceptorRuc() {
-        return receptorRuc;
+    public String getReceptorDocNum() {
+        return receptorDocNum;
     }
 
-    public void setReceptorRuc(String receptorRuc) {
-        this.receptorRuc = receptorRuc;
+    public void setReceptorDocNum(String receptorDocNum) {
+        this.receptorDocNum = receptorDocNum;
     }
 
     public String getReceptorDV() {
@@ -228,14 +227,6 @@ public class Comprobante {
 
     public void setReceptorTipoDocumento(Long receptorTipoDocumento) {
         this.receptorTipoDocumento = receptorTipoDocumento;
-    }
-
-    public String getReceptorDI() {
-        return receptorDI;
-    }
-
-    public void setReceptorDI(String receptorDI) {
-        this.receptorDI = receptorDI;
     }
 
     public String getReceptorDireccion() {
