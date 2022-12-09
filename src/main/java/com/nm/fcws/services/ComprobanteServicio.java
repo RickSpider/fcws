@@ -9,6 +9,7 @@ import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.ComprobanteDetalle;
 import com.nm.fcws.model.CondicionOperacion;
 import com.nm.fcws.model.Cuota;
+import com.nm.fcws.model.Receptor;
 import com.nm.fcws.model.Timbrado;
 import com.nm.fcws.model.TipoPago;
 import com.nm.fcws.modeldb.ActividadEconomica;
@@ -94,15 +95,6 @@ public class ComprobanteServicio {
 
     private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
-        /*SifenConfig config = new SifenConfig(
-                SifenConfig.TipoAmbiente.DEV,
-                "0001",
-                "ABCD0000000000000000000000000000",
-                SifenConfig.TipoCertificadoCliente.PFX,
-                "C:\\Users\\BlackSpider\\Desktop\\facturacionElectronica\\datos\\firma.pfx",
-                //contribuyente.getPasskey()
-                "127xqnCWu2KYHSHn"
-        );*/
         SifenConfig config = new SifenConfig(
                 SifenConfig.TipoAmbiente.DEV,
                 "0001",
@@ -125,7 +117,7 @@ public class ComprobanteServicio {
                 .toLocalDateTime());
 
         // Sistema de facturacion del contribuyente siempre debe de ser 1
-        de.setdSisFact(new Long(1).shortValue());
+        de.setdSisFact(Long.valueOf(1).shortValue());
 
         //gOpeDE
         TgOpeDE gOpeDe = new TgOpeDE();
@@ -157,10 +149,10 @@ public class ComprobanteServicio {
         gDatGralOpe.setgOpeCom(gOpeCom);
 
         //Inicio Emisor de Documento Electronico
-        gDatGralOpe.setgEmis(procesarEmisor(comprobante, contribuyente));
+        gDatGralOpe.setgEmis(procesarEmisor(comprobante.getSucursal(), contribuyente));
 
         //procesar Receptor 
-        gDatGralOpe.setgDatRec(procesarReceptor(comprobante));
+        gDatGralOpe.setgDatRec(procesarReceptor(comprobante.getReceptor()));
 
         de.setgDatGralOpe(gDatGralOpe);
 
@@ -174,7 +166,7 @@ public class ComprobanteServicio {
 
         gDtipDE.setgCamCond(this.procesarMetodoPago(comprobante.getCondicionOperacion()));
 
-        gDtipDE.setgCamItemList(this.procesarDetalle(comprobante));
+        gDtipDE.setgCamItemList(this.procesarDetalle(comprobante.getDetalles()));
 
         de.setgDtipDE(gDtipDE);
 
@@ -197,54 +189,6 @@ public class ComprobanteServicio {
         this.comprobanteElectronicoRepo.save(ce);
 
         return de;
-    }
-
-    @Async
-    public void enviarDE(DocumentoElectronico de, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException {
-
-        SifenConfig config = getSifenConfig(contribuyente);
-
-        RespuestaRecepcionDE rrde = Sifen.recepcionDE(de, config);
-        String respuesta = rrde.getRespuestaBruta();
-
-        ComprobanteElectronico ce = comprobanteElectronicoRepo.findByCdc(cdc);
-        ce.setRespuesta(respuesta);
-
-        log.info(respuesta);
-
-        InputSource is = new InputSource();
-        is.setCharacterStream(new StringReader(respuesta));
-        Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
-        d.getDocumentElement().normalize();
-        NodeList nl = d.getElementsByTagName("ns2:rProtDe");
-
-        for (int i = 0; i < nl.getLength(); i++) {
-
-            Node n = nl.item(i);
-
-            if (n.getNodeType() == Node.ELEMENT_NODE) {
-
-                Element e = (Element) n;
-
-                // ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
-                ce.setEstado((e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent()));
-                if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0260") == 0) {
-
-                    ce.setEnviado(true);
-
-                }
-
-                // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
-                // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
-                // log.info(e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
-            }
-
-            // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
-            // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
-        }
-
-        this.comprobanteElectronicoRepo.save(ce);
-
     }
 
     private TgCamCond procesarMetodoPago(CondicionOperacion condicionOperacion) {
@@ -294,7 +238,7 @@ public class ComprobanteServicio {
 
             TgPagCred gPagCred = new TgPagCred();
 
-            gPagCred.setiCondCred(TiCondCred.getByVal(new Short(String.valueOf(condicionOperacion.getCondicion()))));
+            gPagCred.setiCondCred(TiCondCred.getByVal(condicionOperacion.getCondicion().shortValue()));
 
             if (gPagCred.getiCondCred().getVal() == TiCondCred.PLAZO.getVal()) {
 
@@ -304,7 +248,7 @@ public class ComprobanteServicio {
 
             if (gPagCred.getiCondCred().getVal() == TiCondCred.CUOTA.getVal()) {
 
-                gPagCred.setdCuotas(new Short(String.valueOf(condicionOperacion.getCantidadCuota())));
+                gPagCred.setdCuotas(condicionOperacion.getCantidadCuota().shortValue());
 
                 List<TgCuotas> cuotas = new ArrayList<TgCuotas>();
 
@@ -364,7 +308,7 @@ public class ComprobanteServicio {
         return gTimb;
     }
 
-    private TgEmis procesarEmisor(Comprobante comprobante, Contribuyente contribuyente) {
+    private TgEmis procesarEmisor(String sucursal, Contribuyente contribuyente) {
 
         TgEmis gEmis = new TgEmis();
         gEmis.setdRucEm(contribuyente.getRuc());
@@ -403,7 +347,7 @@ public class ComprobanteServicio {
 
         gEmis.setdTelEmi(contribuyente.getTelefono());
         gEmis.setdEmailE(contribuyente.getEmail());
-        gEmis.setdDenSuc(comprobante.getSucursal());
+        gEmis.setdDenSuc(sucursal);
 
         List<TgActEco> gActEcoList = new ArrayList<TgActEco>(); //discutir
 
@@ -423,18 +367,18 @@ public class ComprobanteServicio {
 
     }
 
-    private TgDatRec procesarReceptor(Comprobante comprobante) {
+    private TgDatRec procesarReceptor(Receptor receptor) {
 
         int naturaleza = 1;
 
-        if (comprobante.getReceptor().getDv() == null || comprobante.getReceptor().getDv().length() == 0) {
+        if (receptor.getDv() == null || receptor.getDv().length() == 0) {
 
             naturaleza = 2;
 
         }
 
         TgDatRec gDatRec = new TgDatRec();
-        gDatRec.setiNatRec(TiNatRec.getByVal(new Short(String.valueOf(naturaleza)))); //discutir
+        gDatRec.setiNatRec(TiNatRec.getByVal(Short.parseShort(String.valueOf(naturaleza)))); //discutir
 
         if (naturaleza == 1) {
 
@@ -458,7 +402,7 @@ public class ComprobanteServicio {
 
         if (naturaleza == 1) {
 
-            if (Integer.parseInt(comprobante.getReceptor().getDocNro()) >= 80000000) {
+            if (Integer.parseInt(receptor.getDocNro()) >= 80000000) {
 
                 gDatRec.setiTiContRec(TiTipCont.PERSONA_JURIDICA);
 
@@ -468,21 +412,21 @@ public class ComprobanteServicio {
 
             }
 
-            gDatRec.setdRucRec(comprobante.getReceptor().getDocNro());
-            gDatRec.setdNomRec(rucRepo.findByRuc(comprobante.getReceptor().getDocNro()).getRazonSocial());
-            gDatRec.setdDVRec(new Short(comprobante.getReceptor().getDv()));
+            gDatRec.setdRucRec(receptor.getDocNro());
+            gDatRec.setdNomRec(rucRepo.findByRuc(receptor.getDocNro()).getRazonSocial());
+            gDatRec.setdDVRec(Short.parseShort(receptor.getDv()));
 
         }
 
         if (naturaleza == 2 && gDatRec.getiTiOpe().getVal() != TiTiOpe.B2F.getVal()) {
 
-            gDatRec.setiTipIDRec(TiTipDocRec.getByVal(new Short(String.valueOf(comprobante.getReceptor().getTipoDocumento()))));
-            gDatRec.setdNumIDRec(comprobante.getReceptor().getDocNro());
-            gDatRec.setdDirRec(comprobante.getReceptor().getDireccion());
-            gDatRec.setdNumCasRec(comprobante.getReceptor().getCasaNro());
-            gDatRec.setcDepRec(TDepartamento.getByVal(new Short(String.valueOf(comprobante.getReceptor().getDepartamento()))));
-            gDatRec.setcDisRec(new Short(String.valueOf(comprobante.getReceptor().getCiudad())));
-            gDatRec.setcCiuRec(new Short(String.valueOf(comprobante.getReceptor().getCiudad())));
+            gDatRec.setiTipIDRec(TiTipDocRec.getByVal(receptor.getTipoDocumento().shortValue()));
+            gDatRec.setdNumIDRec(receptor.getDocNro());
+            gDatRec.setdDirRec(receptor.getDireccion());
+            gDatRec.setdNumCasRec(receptor.getCasaNro());
+            gDatRec.setcDepRec(TDepartamento.getByVal(receptor.getDepartamento().shortValue()));
+            gDatRec.setcDisRec(receptor.getCiudad().shortValue());
+            gDatRec.setcCiuRec(receptor.getCiudad().shortValue());
         }
 
         return gDatRec;
@@ -490,10 +434,10 @@ public class ComprobanteServicio {
         // Fin receptor
     }
 
-    private List<TgCamItem> procesarDetalle(Comprobante comprobante) {
+    private List<TgCamItem> procesarDetalle(List<ComprobanteDetalle> detalles) {
 
         List<TgCamItem> gCamItemList = new ArrayList<TgCamItem>();
-        for (ComprobanteDetalle x : comprobante.getDetalles()) {
+        for (ComprobanteDetalle x : detalles) {
 
             TgCamItem gCamItem = new TgCamItem();
             gCamItem.setdCodInt(x.getItemCodigo());
@@ -527,5 +471,54 @@ public class ComprobanteServicio {
 
         return gCamItemList;
     }
+    
+    @Async
+    public void enviarDE(DocumentoElectronico de, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        SifenConfig config = getSifenConfig(contribuyente);
+
+        RespuestaRecepcionDE rrde = Sifen.recepcionDE(de, config);
+        String respuesta = rrde.getRespuestaBruta();
+
+        ComprobanteElectronico ce = comprobanteElectronicoRepo.findByCdc(cdc);
+        ce.setRespuesta(respuesta);
+
+        log.info(respuesta);
+
+        InputSource is = new InputSource();
+        is.setCharacterStream(new StringReader(respuesta));
+        Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+        d.getDocumentElement().normalize();
+        NodeList nl = d.getElementsByTagName("ns2:rProtDe");
+
+        for (int i = 0; i < nl.getLength(); i++) {
+
+            Node n = nl.item(i);
+
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+
+                Element e = (Element) n;
+
+                // ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+                ce.setEstado((e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent()));
+                if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0260") == 0) {
+
+                    ce.setEnviado(true);
+
+                }
+
+                // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+                // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+                // log.info(e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
+            }
+
+            // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+            // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+        }
+
+        this.comprobanteElectronicoRepo.save(ce);
+
+    }
+
 
 }
