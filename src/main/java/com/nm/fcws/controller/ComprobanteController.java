@@ -13,6 +13,7 @@ import com.nm.fcws.repo.RucRepo;
 import com.nm.fcws.services.ComprobanteServicio;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
 import com.roshka.sifen.core.exceptions.SifenException;
+import com.roshka.sifen.core.types.TTiDE;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class ComprobanteController {
 
         Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
 
-        DocumentoElectronico de = comprobanteServicio.procesar(factura, contribuyente);
+        DocumentoElectronico de = comprobanteServicio.procesar(factura, contribuyente, TTiDE.FACTURA_ELECTRONICA);
         String cdc = de.obtenerCDC();
         log.info(cdc);
         Kude kude = new Kude(de.getEnlaceQR(), cdc);
@@ -72,37 +73,37 @@ public class ComprobanteController {
 
     private String chequearCampos(Comprobante comprobante) {
 
-        if (comprobante.getTimbrado() == null || comprobante.getTimbrado().length() != 8) {
+        if (comprobante.getTimbrado() == null || comprobante.getTimbrado().getTimbrado().length() != 8) {
 
             return "Error en datos de timbrado";
 
         }
 
-        if (comprobante.getEstablecimiento() == null || comprobante.getEstablecimiento().length() != 3) {
+        if (comprobante.getTimbrado().getEstablecimiento() == null || comprobante.getTimbrado().getEstablecimiento().length() != 3) {
 
             return "Error en datos de Establecimiento";
 
         }
 
-        if (comprobante.getPuntoExpedicion() == null || comprobante.getPuntoExpedicion().length() != 3) {
+        if (comprobante.getTimbrado().getPuntoExpedicion() == null || comprobante.getTimbrado().getPuntoExpedicion().length() != 3) {
 
             return "Error en datos de Punto de Expedicion";
 
         }
 
-        if (comprobante.getPuntoExpedicion() == null || comprobante.getPuntoExpedicion().length() != 3) {
+        if (comprobante.getTimbrado().getPuntoExpedicion() == null || comprobante.getTimbrado().getPuntoExpedicion().length() != 3) {
 
             return "Error en datos de Punto de Expedicion";
 
         }
 
-        if (comprobante.getDocumentoNum() == null || comprobante.getDocumentoNum().length() != 7) {
+        if (comprobante.getTimbrado().getDocumentoNro() == null || comprobante.getTimbrado().getDocumentoNro().length() != 7) {
 
             return "Error en datos en el Numero de documento";
 
         }
 
-        if (comprobante.getTimbradoFecIni() == null) {
+        if (comprobante.getTimbrado().getFecIni() == null) {
 
             return "Error en datos de Fecha de Timbrado";
 
@@ -120,57 +121,51 @@ public class ComprobanteController {
 
         }
 
-        if (comprobante.getTiposPagos().size() <= 0) {
-
-            return "Error no hay datos de pago";
-
-        }
-
         if (comprobante.getDetalles().size() <= 0) {
 
             return "Error no hay detalles de factora";
 
         }
 
-        if (comprobante.getReceptorDocNum() == null) {
+        if (comprobante.getReceptor().getDocNro() == null) {
 
             return "Error no Ruc o Numero de Documento del receptor";
 
         }
 
-        if (comprobante.getReceptorDV() == null) {
+        if (comprobante.getReceptor().getDv() == null) {
 
-            if (comprobante.getReceptorTipoDocumento() == null) {
+            if (comprobante.getReceptor().getTipoDocumento() == null) {
 
                 return "Error no hay Tipo de Documento";
 
             }
 
-            if (comprobante.getReceptorDireccion() == null || comprobante.getReceptorDireccion().length() <= 0) {
+            if (comprobante.getReceptor().getDireccion() == null || comprobante.getReceptor().getDireccion().length() <= 0) {
 
                 return "Error no hay datos de direccion";
 
             }
             
-            if (comprobante.getReceptorNumCasa() == null) {
+            if (comprobante.getReceptor().getCasaNro() == null) {
 
                 return "Error no existe Numero de Residencia";
 
             }
             
-            if (comprobante.getReceptorDepartamento() == null) {
+            if (comprobante.getReceptor().getDepartamento() == null) {
 
                 return "Error no hay datos de Departamento";
 
             }
             
-            if (comprobante.getReceptorDistrito() == null) {
+            if (comprobante.getReceptor().getDistrito() == null) {
 
                 return "Error no hay datos de Distrito";
 
             }
             
-            if (comprobante.getReceptorCiudad() == null) {
+            if (comprobante.getReceptor().getCiudad() == null) {
 
                 return "Error no hay datos de Ciudad";
 

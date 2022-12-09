@@ -5,15 +5,16 @@
  */
 package com.nm.fcws.services;
 
-import com.nm.fcws.controller.hello;
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.ComprobanteDetalle;
+import com.nm.fcws.model.CondicionOperacion;
+import com.nm.fcws.model.Cuota;
+import com.nm.fcws.model.Timbrado;
 import com.nm.fcws.model.TipoPago;
 import com.nm.fcws.modeldb.ActividadEconomica;
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
-import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.RucRepo;
 import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.SifenConfig;
@@ -26,12 +27,14 @@ import com.roshka.sifen.core.fields.request.de.TgCamCond;
 import com.roshka.sifen.core.fields.request.de.TgCamFE;
 import com.roshka.sifen.core.fields.request.de.TgCamIVA;
 import com.roshka.sifen.core.fields.request.de.TgCamItem;
+import com.roshka.sifen.core.fields.request.de.TgCuotas;
 import com.roshka.sifen.core.fields.request.de.TgDatRec;
 import com.roshka.sifen.core.fields.request.de.TgDtipDE;
 import com.roshka.sifen.core.fields.request.de.TgEmis;
 import com.roshka.sifen.core.fields.request.de.TgOpeCom;
 import com.roshka.sifen.core.fields.request.de.TgOpeDE;
 import com.roshka.sifen.core.fields.request.de.TgPaConEIni;
+import com.roshka.sifen.core.fields.request.de.TgPagCred;
 import com.roshka.sifen.core.fields.request.de.TgTimb;
 import com.roshka.sifen.core.fields.request.de.TgTotSub;
 import com.roshka.sifen.core.fields.request.de.TgValorItem;
@@ -45,6 +48,7 @@ import com.roshka.sifen.core.types.TTipEmi;
 import com.roshka.sifen.core.types.TTipTra;
 import com.roshka.sifen.core.types.TcUniMed;
 import com.roshka.sifen.core.types.TiAfecIVA;
+import com.roshka.sifen.core.types.TiCondCred;
 import com.roshka.sifen.core.types.TiCondOpe;
 import com.roshka.sifen.core.types.TiIndPres;
 import com.roshka.sifen.core.types.TiNatRec;
@@ -78,18 +82,16 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class ComprobanteServicio {
-    
+
     private static Logger log = LoggerFactory.getLogger(ComprobanteServicio.class);
 
-    @Autowired
-    private ContribuyenteRepo contribuyenteRepo;
 
     @Autowired
     private ComprobanteElectronicoRepo comprobanteElectronicoRepo;
 
     @Autowired
     private RucRepo rucRepo;
-    
+
     private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
         /*SifenConfig config = new SifenConfig(
@@ -113,11 +115,9 @@ public class ComprobanteServicio {
         return config;
     }
 
-    
-    public DocumentoElectronico procesar(Comprobante comprobante, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    public DocumentoElectronico procesar(Comprobante comprobante, Contribuyente contribuyente, TTiDE tipoDE) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         //Contribuyente contribuyente = contribuyenteRepo.findById(comprobante.getContribuyente().getContribuyenteid()).get();
-
         DocumentoElectronico de = new DocumentoElectronico();
 
         de.setdFecFirma(comprobante.getFecha().toInstant()
@@ -133,7 +133,7 @@ public class ComprobanteServicio {
         de.setgOpeDE(gOpeDe);
 
         //timbrado
-        de.setgTimb(this.procesarTimbrado(comprobante));
+        de.setgTimb(this.procesarTimbrado(comprobante.getTimbrado(), tipoDE));
 
         //datos generales de operacion
         TdDatGralOpe gDatGralOpe = new TdDatGralOpe();
@@ -172,7 +172,7 @@ public class ComprobanteServicio {
         gCamFE.setiIndPres(TiIndPres.OPERACION_ELECTRONICA); //default operacion electronica
         gDtipDE.setgCamFE(gCamFE);
 
-        gDtipDE.setgCamCond(this.procesarMetodoPago(comprobante));
+        gDtipDE.setgCamCond(this.procesarMetodoPago(comprobante.getCondicionOperacion()));
 
         gDtipDE.setgCamItemList(this.procesarDetalle(comprobante));
 
@@ -187,33 +187,31 @@ public class ComprobanteServicio {
         SifenConfig config = getSifenConfig(contribuyente);
 
         ce.setContribuyente(contribuyente);
-        ce.setNumero(comprobante.getEstablecimiento() + "-" + comprobante.getPuntoExpedicion() + "-" + comprobante.getDocumentoNum());
+        ce.setNumero(comprobante.getTimbrado().getEstablecimiento() + "-" + comprobante.getTimbrado().getPuntoExpedicion() + "-" + comprobante.getTimbrado().getDocumentoNro());
         ce.setXml(de.generarXml(config));
         ce.setCdc(de.obtenerCDC());
 
-       
-        
         ce.setTotal(de.getgTotSub().getdTotalGs().doubleValue());
-       // log.info(de.getEnlaceQR());
+        // log.info(de.getEnlaceQR());
 
         this.comprobanteElectronicoRepo.save(ce);
 
         return de;
     }
-    
+
     @Async
-    public void enviarDE(DocumentoElectronico de, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException{
+    public void enviarDE(DocumentoElectronico de, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         SifenConfig config = getSifenConfig(contribuyente);
-        
+
         RespuestaRecepcionDE rrde = Sifen.recepcionDE(de, config);
         String respuesta = rrde.getRespuestaBruta();
-        
+
         ComprobanteElectronico ce = comprobanteElectronicoRepo.findByCdc(cdc);
         ce.setRespuesta(respuesta);
 
         log.info(respuesta);
-    
+
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(respuesta));
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
@@ -228,84 +226,138 @@ public class ComprobanteServicio {
 
                 Element e = (Element) n;
 
-               // ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+                // ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
                 ce.setEstado((e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent()));
-                if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0260") == 0){
-                
+                if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0260") == 0) {
+
                     ce.setEnviado(true);
-                    
+
                 }
 
-               // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
-               // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
-               // log.info(e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
+                // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+                // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+                // log.info(e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
             }
 
             // log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
             // log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
         }
-        
-        this.comprobanteElectronicoRepo.save(ce);
-        
-    }
-    
-    
 
-    private TgCamCond procesarMetodoPago(Comprobante comprobante) {
+        this.comprobanteElectronicoRepo.save(ce);
+
+    }
+
+    private TgCamCond procesarMetodoPago(CondicionOperacion condicionOperacion) {
 
         TgCamCond gCamCond = new TgCamCond();
 
         //System.out.println("Condiciones de operacion");
         //System.out.println("operacion contado " + TiCondOpe.CONTADO.getVal());
         //System.out.println("operacion credito " + TiCondOpe.CREDITO.getVal());
-        gCamCond.setiCondOpe(TiCondOpe.getByVal(comprobante.getCondicionOperacion().shortValue()));
+        gCamCond.setiCondOpe(TiCondOpe.getByVal(condicionOperacion.getCondicion().shortValue()));
 
-        List<TgPaConEIni> gPaConEIniList = new ArrayList<TgPaConEIni>();
+        if (gCamCond.getiCondOpe().getVal() == TiCondOpe.CONTADO.getVal()) {
 
-        for (TipoPago fp : comprobante.getTiposPagos()) {
+            List<TgPaConEIni> gPaConEIniList = new ArrayList<TgPaConEIni>();
 
-            TgPaConEIni gPaConEIni = new TgPaConEIni();
+            for (TipoPago fp : condicionOperacion.getTiposPagos()) {
 
-            if (fp.getTipoPagoCodigo() == null) {
+                TgPaConEIni gPaConEIni = new TgPaConEIni();
 
-                gPaConEIni.setiTiPago(TiTiPago.EFECTIVO);
+                if (fp.getTipoPagoCodigo() == null) {
 
-            } else {
+                    gPaConEIni.setiTiPago(TiTiPago.EFECTIVO);
 
-                gPaConEIni.setiTiPago(TiTiPago.getByVal(fp.getTipoPagoCodigo().shortValue()));
+                } else {
+
+                    gPaConEIni.setiTiPago(TiTiPago.getByVal(fp.getTipoPagoCodigo().shortValue()));
+
+                }
+
+                gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto())); // si viene solo el monto es efectivo por defecto
+                //en caso que se multiple se tiene que definier efectivo tarjeta etc
+
+                if (fp.getModeda() == null) {
+
+                    gPaConEIni.setcMoneTiPag(CMondT.PYG); // si no pasa nada es guaranies
+
+                } else {
+                    gPaConEIni.setcMoneTiPag(CMondT.getByName(fp.getModeda())); // si no pasa nada es guaranies
+                }
+
+                gPaConEIniList.add(gPaConEIni);
 
             }
 
-            gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto())); // si viene solo el monto es efectivo por defecto
-            //en caso que se multiple se tiene que definier efectivo tarjeta etc
+            gCamCond.setgPaConEIniList(gPaConEIniList);
+        } else {
 
-            if (fp.getModeda() == null) {
+            TgPagCred gPagCred = new TgPagCred();
 
-                gPaConEIni.setcMoneTiPag(CMondT.PYG); // si no pasa nada es guaranies
+            gPagCred.setiCondCred(TiCondCred.getByVal(new Short(String.valueOf(condicionOperacion.getCondicion()))));
 
-            } else {
-                gPaConEIni.setcMoneTiPag(CMondT.getByName(fp.getModeda())); // si no pasa nada es guaranies
+            if (gPagCred.getiCondCred().getVal() == TiCondCred.PLAZO.getVal()) {
+
+                gPagCred.setdPlazoCre(condicionOperacion.getPlazoCredito());
+
             }
 
-            gPaConEIniList.add(gPaConEIni);
+            if (gPagCred.getiCondCred().getVal() == TiCondCred.CUOTA.getVal()) {
+
+                gPagCred.setdCuotas(new Short(String.valueOf(condicionOperacion.getCantidadCuota())));
+
+                List<TgCuotas> cuotas = new ArrayList<TgCuotas>();
+
+                for (Cuota x : condicionOperacion.getCuotas()) {
+
+                    TgCuotas tgCuotas = new TgCuotas();
+
+                    if (x.getMoneda() == null) {
+
+                        tgCuotas.setcMoneCuo(CMondT.PYG);
+
+                    } else {
+
+                        tgCuotas.setcMoneCuo(CMondT.getByName(x.getMoneda()));
+                    }
+
+                    tgCuotas.setdMonCuota(new BigDecimal(x.getMonto()));
+                    tgCuotas.setdVencCuo(x.getVencimiento().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate());
+                    
+                    cuotas.add(tgCuotas);
+
+                }
+
+                gPagCred.setgCuotasList(cuotas);
+
+            }
+
+            if (condicionOperacion.getMontoEntregaIni() != null) {
+
+                gPagCred.setdMonEnt(new BigDecimal(condicionOperacion.getMontoEntregaIni()));
+
+            }
+
+            gCamCond.setgPagCred(gPagCred);
 
         }
-
-        gCamCond.setgPaConEIniList(gPaConEIniList);
 
         return gCamCond;
     }
 
-    private TgTimb procesarTimbrado(Comprobante comprobante) {
+    private TgTimb procesarTimbrado(Timbrado timbrado, TTiDE tTiDE) {
 
         TgTimb gTimb = new TgTimb();
 
-        gTimb.setiTiDE(TTiDE.FACTURA_ELECTRONICA);
-        gTimb.setdNumTim(Integer.parseInt(comprobante.getTimbrado()));
-        gTimb.setdEst(comprobante.getEstablecimiento());
-        gTimb.setdPunExp(comprobante.getPuntoExpedicion());
-        gTimb.setdNumDoc(comprobante.getDocumentoNum());
-        gTimb.setdFeIniT(comprobante.getTimbradoFecIni().toInstant()
+        //gTimb.setiTiDE(TTiDE.FACTURA_ELECTRONICA);
+        gTimb.setiTiDE(tTiDE);
+        gTimb.setdNumTim(Integer.parseInt(timbrado.getTimbrado()));
+        gTimb.setdEst(timbrado.getEstablecimiento());
+        gTimb.setdPunExp(timbrado.getPuntoExpedicion());
+        gTimb.setdNumDoc(timbrado.getDocumentoNro());
+        gTimb.setdFeIniT(timbrado.getFecIni().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
 
@@ -375,7 +427,7 @@ public class ComprobanteServicio {
 
         int naturaleza = 1;
 
-        if (comprobante.getReceptorDV() == null || comprobante.getReceptorDV().length() == 0) {
+        if (comprobante.getReceptor().getDv() == null || comprobante.getReceptor().getDv().length() == 0) {
 
             naturaleza = 2;
 
@@ -406,7 +458,7 @@ public class ComprobanteServicio {
 
         if (naturaleza == 1) {
 
-            if (Integer.parseInt(comprobante.getReceptorDocNum()) >= 80000000) {
+            if (Integer.parseInt(comprobante.getReceptor().getDocNro()) >= 80000000) {
 
                 gDatRec.setiTiContRec(TiTipCont.PERSONA_JURIDICA);
 
@@ -416,21 +468,21 @@ public class ComprobanteServicio {
 
             }
 
-            gDatRec.setdRucRec(comprobante.getReceptorDocNum());
-            gDatRec.setdNomRec(rucRepo.findByRuc(comprobante.getReceptorDocNum()).getRazonSocial());
-            gDatRec.setdDVRec(new Short(comprobante.getReceptorDV()));
+            gDatRec.setdRucRec(comprobante.getReceptor().getDocNro());
+            gDatRec.setdNomRec(rucRepo.findByRuc(comprobante.getReceptor().getDocNro()).getRazonSocial());
+            gDatRec.setdDVRec(new Short(comprobante.getReceptor().getDv()));
 
         }
 
         if (naturaleza == 2 && gDatRec.getiTiOpe().getVal() != TiTiOpe.B2F.getVal()) {
 
-            gDatRec.setiTipIDRec(TiTipDocRec.getByVal(new Short(String.valueOf(comprobante.getReceptorTipoDocumento()))));
-            gDatRec.setdNumIDRec(comprobante.getReceptorDocNum());
-            gDatRec.setdDirRec(comprobante.getReceptorDireccion());
-            gDatRec.setdNumCasRec(comprobante.getReceptorNumCasa());
-            gDatRec.setcDepRec(TDepartamento.getByVal(new Short(String.valueOf(comprobante.getReceptorDepartamento()))));
-            gDatRec.setcDisRec(new Short(String.valueOf(comprobante.getReceptorCiudad())));
-            gDatRec.setcCiuRec(new Short(String.valueOf(comprobante.getReceptorCiudad())));
+            gDatRec.setiTipIDRec(TiTipDocRec.getByVal(new Short(String.valueOf(comprobante.getReceptor().getTipoDocumento()))));
+            gDatRec.setdNumIDRec(comprobante.getReceptor().getDocNro());
+            gDatRec.setdDirRec(comprobante.getReceptor().getDireccion());
+            gDatRec.setdNumCasRec(comprobante.getReceptor().getCasaNro());
+            gDatRec.setcDepRec(TDepartamento.getByVal(new Short(String.valueOf(comprobante.getReceptor().getDepartamento()))));
+            gDatRec.setcDisRec(new Short(String.valueOf(comprobante.getReceptor().getCiudad())));
+            gDatRec.setcCiuRec(new Short(String.valueOf(comprobante.getReceptor().getCiudad())));
         }
 
         return gDatRec;
@@ -475,7 +527,5 @@ public class ComprobanteServicio {
 
         return gCamItemList;
     }
-
-    
 
 }

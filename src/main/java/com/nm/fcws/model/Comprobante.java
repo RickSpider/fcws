@@ -25,50 +25,20 @@ public class Comprobante {
     //datos contribuyente
     private Contribuyente contribuyente;
     
-    private String timbrado;
-    private String establecimiento;
-    private String puntoExpedicion;
-    private String documentoNum;
-    private Calendar timbradoFecIni;
-    
-    
+    private Timbrado timbrado;
+
     private String sucursal;
-    
-    
+   
     //conforme a la moneda en sifen
     private String operacionMoneda;
-    
-    //datos receptor
-    /*
-        1= Contribuyente1
-        2= No Contribuyente
-    */
-    private int receptorNaturaleza;
-    
-    /*
-        1= B2B
-        2= B2C
-        3= B2G
-        4= B2F 
-    */
-    private int receptorTipoOperacion;
-    private String receptorDocNum;
-    private String receptorDV;
-    
-    //estos campos se debe agregar si el receptor no tiene ruc
-    private Long receptorTipoDocumento;
-    private String receptorDireccion;
-    private Integer receptorNumCasa;
-    private Long receptorDepartamento;
-    private Long receptorDistrito;
-    private Long receptorCiudad;
 
+    private Receptor receptor;
     
     //private String receptorTipoPersona;
    // private int tipoTransaccion;
     //private int tipoImpuesto;
     
-    
+  
     private Date fecha;
 
    
@@ -78,8 +48,11 @@ public class Comprobante {
         1= Contado
         2= credito
     */
-    private Long condicionOperacion;
-    private ArrayList<TipoPago> tiposPagos = new ArrayList<TipoPago>() ;
+  //  private Long condicionOperacion;
+    
+    private CondicionOperacion condicionOperacion;
+    
+   // private ArrayList<TipoPago> tiposPagos = new ArrayList<TipoPago>() ;
     private ArrayList<ComprobanteDetalle> detalles = new ArrayList<ComprobanteDetalle>();
 
  /*   public Long getComprobanteid() {
@@ -91,6 +64,7 @@ public class Comprobante {
     }*/
 
     public Contribuyente getContribuyente() {
+        
         return contribuyente;
     }
 
@@ -98,88 +72,14 @@ public class Comprobante {
         this.contribuyente = contribuyente;
     }
 
-    public String getTimbrado() {
+    public Timbrado getTimbrado() {
         return timbrado;
     }
 
-    public void setTimbrado(String timbrado) {
+    public void setTimbrado(Timbrado timbrado) {
         this.timbrado = timbrado;
     }
-    public String getEstablecimiento() {
-        return establecimiento;
-    }
-
-    public void setEstablecimiento(String establecimiento) {
-        this.establecimiento = establecimiento;
-    }
-
-    public String getPuntoExpedicion() {
-        return puntoExpedicion;
-    }
-
-    public void setPuntoExpedicion(String puntoExpedicion) {
-        this.puntoExpedicion = puntoExpedicion;
-    }
-
-    public String getDocumentoNum() {
-        return documentoNum;
-    }
-
-    public void setDocumentoNum(String documentoNum) {
-        this.documentoNum = documentoNum;
-    }
-
-    public Calendar getTimbradoFecIni() {
-        return timbradoFecIni;
-    }
-
-    public void setTimbradoFecIni(Calendar timbradoFecIni) {
-        this.timbradoFecIni = timbradoFecIni;
-    }
-
-   
-    public int getReceptorNaturaleza() {
-        return receptorNaturaleza;
-    }
-
-    public void setReceptorNaturaleza(int receptorNaturaleza) {
-        this.receptorNaturaleza = receptorNaturaleza;
-    }
-
-    public int getReceptorTipoOperacion() {
-        return receptorTipoOperacion;
-    }
-
-    public void setReceptorTipoOperacion(int receptorTipoOperacion) {
-        this.receptorTipoOperacion = receptorTipoOperacion;
-    }
-
-    public String getReceptorDocNum() {
-        return receptorDocNum;
-    }
-
-    public void setReceptorDocNum(String receptorDocNum) {
-        this.receptorDocNum = receptorDocNum;
-    }
-
-    public String getReceptorDV() {
-        return receptorDV;
-    }
-
-    public void setReceptorDV(String receptorDV) {
-        this.receptorDV = receptorDV;
-    }
-
-    public Long getCondicionOperacion() {
-        return condicionOperacion;
-    }
-
-    public void setCondicionOperacion(Long condicionOperacion) {
-        this.condicionOperacion = condicionOperacion;
-    }
-
-   
-
+    
     public ArrayList<ComprobanteDetalle> getDetalles() {
         return detalles;
     }
@@ -205,14 +105,6 @@ public class Comprobante {
         this.operacionMoneda = operacionMoneda;
     }
 
-    public ArrayList<TipoPago> getTiposPagos() {
-        return tiposPagos;
-    }
-
-    public void setTiposPagos(ArrayList<TipoPago> tiposPagos) {
-        this.tiposPagos = tiposPagos;
-    }
-
     public Date getFecha() {
         return fecha;
     }
@@ -221,54 +113,22 @@ public class Comprobante {
         this.fecha = fecha;
     }
 
-    public Long getReceptorTipoDocumento() {
-        return receptorTipoDocumento;
+    public Receptor getReceptor() {
+        return receptor;
     }
 
-    public void setReceptorTipoDocumento(Long receptorTipoDocumento) {
-        this.receptorTipoDocumento = receptorTipoDocumento;
+    public void setReceptor(Receptor receptor) {
+        this.receptor = receptor;
     }
 
-    public String getReceptorDireccion() {
-        return receptorDireccion;
+    public CondicionOperacion getCondicionOperacion() {
+        return condicionOperacion;
     }
 
-    public void setReceptorDireccion(String receptorDireccion) {
-        this.receptorDireccion = receptorDireccion;
+    public void setCondicionOperacion(CondicionOperacion condicionOperacion) {
+        this.condicionOperacion = condicionOperacion;
     }
-
-    public Integer getReceptorNumCasa() {
-        return receptorNumCasa;
-    }
-
-    public void setReceptorNumCasa(Integer receptorNumCasa) {
-        this.receptorNumCasa = receptorNumCasa;
-    }
-
-    public Long getReceptorDepartamento() {
-        return receptorDepartamento;
-    }
-
-    public void setReceptorDepartamento(Long receptorDepartamento) {
-        this.receptorDepartamento = receptorDepartamento;
-    }
-
-    public Long getReceptorDistrito() {
-        return receptorDistrito;
-    }
-
-    public void setReceptorDistrito(Long receptorDistrito) {
-        this.receptorDistrito = receptorDistrito;
-    }
-
-    public Long getReceptorCiudad() {
-        return receptorCiudad;
-    }
-
-    public void setReceptorCiudad(Long receptorCiudad) {
-        this.receptorCiudad = receptorCiudad;
-    }
-
-  
     
+    
+   
 }
