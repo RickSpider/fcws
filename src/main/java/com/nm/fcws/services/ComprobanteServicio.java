@@ -36,6 +36,7 @@ import com.roshka.sifen.core.fields.request.de.TgOpeCom;
 import com.roshka.sifen.core.fields.request.de.TgOpeDE;
 import com.roshka.sifen.core.fields.request.de.TgPaConEIni;
 import com.roshka.sifen.core.fields.request.de.TgPagCred;
+import com.roshka.sifen.core.fields.request.de.TgPagTarCD;
 import com.roshka.sifen.core.fields.request.de.TgTimb;
 import com.roshka.sifen.core.fields.request.de.TgTotSub;
 import com.roshka.sifen.core.fields.request.de.TgValorItem;
@@ -51,6 +52,8 @@ import com.roshka.sifen.core.types.TcUniMed;
 import com.roshka.sifen.core.types.TiAfecIVA;
 import com.roshka.sifen.core.types.TiCondCred;
 import com.roshka.sifen.core.types.TiCondOpe;
+import com.roshka.sifen.core.types.TiDenTarj;
+import com.roshka.sifen.core.types.TiForProPa;
 import com.roshka.sifen.core.types.TiIndPres;
 import com.roshka.sifen.core.types.TiNatRec;
 import com.roshka.sifen.core.types.TiTiOpe;
@@ -215,6 +218,64 @@ public class ComprobanteServicio {
                 } else {
 
                     gPaConEIni.setiTiPago(TiTiPago.getByVal(fp.getTipoPagoCodigo().shortValue()));
+                    
+                    if (gPaConEIni.getiTiPago().getVal() == TiTiPago.TARJETA_DE_CREDITO.getVal() || gPaConEIni.getiTiPago().getVal() == TiTiPago.TARJETA_DE_DEBITO.getVal() ){
+                    
+                        TgPagTarCD gPagTarCD = new TgPagTarCD();
+                        
+                        gPagTarCD.setiDenTarj(TiDenTarj.getByVal(fp.getDenominacionTarjeta().shortValue()));
+                        
+                        gPagTarCD.setiForProPa(TiForProPa.getByVal(fp.getFormaProcesamiento().shortValue()));
+                        
+                        
+                       
+                        
+                        try{
+                        //estos campos no son obligatorios
+                        if (fp.getProcesadora().length() > 0){
+                        
+                            gPagTarCD.setdRSProTar(fp.getProcesadora());
+                            
+                        }
+                        
+                        if (fp.getProcesadoraRuc().length() > 0){
+                        
+                            gPagTarCD.setdRUCProTar(fp.getProcesadoraRuc());
+                            
+                        }
+                        
+                        if (fp.getProcesadoraDV() != null){
+                        
+                            gPagTarCD.setdDVProTar(fp.getProcesadoraDV().shortValue());
+                            
+                        }
+                        
+                         if (fp.getCodigoAutorizacion()!= null){
+                        
+                            gPagTarCD.setdCodAuOpe(fp.getCodigoAutorizacion());
+                            
+                        }
+                         
+                        if (fp.getTarjetaNombre() != null || fp.getTarjetaNombre().length() > 0){
+                        
+                            gPagTarCD.setdNomTit(fp.getTarjetaNombre());
+                            
+                        }
+                        
+                        if (fp.getTarjetaNro()!= null){
+                        
+                            gPagTarCD.setdNumTarj(fp.getTarjetaNro().shortValue());
+                            
+                        }
+                        }catch(java.lang.NullPointerException ex){
+                        
+                            
+                        }
+                        
+                        
+                        gPaConEIni.setgPagTarCD(gPagTarCD);
+                        
+                    }
 
                 }
 
@@ -234,7 +295,9 @@ public class ComprobanteServicio {
             }
 
             gCamCond.setgPaConEIniList(gPaConEIniList);
-        } else {
+        } 
+        
+        if (gCamCond.getiCondOpe().getVal() == TiCondOpe.CREDITO.getVal()) { 
 
             TgPagCred gPagCred = new TgPagCred();
 

@@ -7,7 +7,7 @@
         "timbrado": "12558948",
         "establecimiento": "001",
         "puntoExpedicion": "001",
-        "documentoNro": "0000060",
+        "documentoNro": "0000067",
         "fecIni": "2021-08-25T00:00:00-04:00"
     },
 	"sucursal": "Central",
@@ -15,14 +15,19 @@
         "docNro": "4912021",
         "dv": "2"
     },
-    "fecha": "2022-12-05T00:00:00-04:00",
+    "fecha": "2022-12-09T00:00:00-04:00",
     "condicionOperacion":{
 
         "condicion":1,
 
         "tiposPagos": [
         {
-            "monto": 200000
+            "monto": 100000
+        },{
+            "tipoPagoCodigo":3,
+            "denominacionTarjeta":2,
+            "formaProcesamiento":1,
+            "monto":100000
         }
     ]
 
