@@ -39,7 +39,7 @@ public class Comprobante {
     //private int tipoImpuesto;
     
   
-    private Date fecha;
+    private Calendar fecha;
 
    
     //detalles de pago
@@ -105,11 +105,11 @@ public class Comprobante {
         this.operacionMoneda = operacionMoneda;
     }
 
-    public Date getFecha() {
+    public Calendar getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(Calendar fecha) {
         this.fecha = fecha;
     }
 

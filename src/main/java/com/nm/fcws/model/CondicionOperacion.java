@@ -43,6 +43,7 @@ public class CondicionOperacion {
      * Solo agregar esto en caso de que la condicion se CONTADO
      * 
      * @param tiposPagos 
+     * 
      */
     public void setTiposPagos(ArrayList<TipoPago> tiposPagos) {
         this.tiposPagos = tiposPagos;
@@ -62,7 +63,7 @@ public class CondicionOperacion {
     
     private List<Cuota> cuotas;
     
-      public Long getOperacionTipo() {
+    public Long getOperacionTipo() {
         return operacionTipo;
     }
 

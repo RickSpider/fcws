@@ -18,26 +18,14 @@
     "fecha": "2022-12-09T00:00:00-04:00",
     "condicionOperacion":{
 
-        "condicion":1,
+        "condicion":2,
 
-        "tiposPagos": [
-        {
-            "monto": 100000
-        },
-        {
-            "monto":100000,
-
-            "tarjeta":{
-            "tipoPagoCodigo":3,
-            "denominacionTarjeta":2,
-            "formaProcesamiento":1
-           
-        }
-
-        }
-    ]
-
+        "operacionTipo": 1,
+        
+        "plazoCredito":"30 dias"
+        
     },
+
     "detalles": [
         {
             "itemCodigo": "001",
