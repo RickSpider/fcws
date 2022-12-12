@@ -85,7 +85,7 @@ public class CondicionOperacion {
 
     /**
      * Solo si la operacionTipo es Plazo
-     * Ejemplo: 30 días, 12 meses
+     * Ejemplo: 30 dias, 12 meses
      * 
      * @param plazoCredito 
      */
@@ -133,8 +133,5 @@ public class CondicionOperacion {
     public void setCuotas(List<Cuota> cuotas) {
         this.cuotas = cuotas;
     }
-
-    
-    
     
 }
