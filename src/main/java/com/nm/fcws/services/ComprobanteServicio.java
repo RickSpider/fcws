@@ -35,6 +35,7 @@ import com.roshka.sifen.core.fields.request.de.TgEmis;
 import com.roshka.sifen.core.fields.request.de.TgOpeCom;
 import com.roshka.sifen.core.fields.request.de.TgOpeDE;
 import com.roshka.sifen.core.fields.request.de.TgPaConEIni;
+import com.roshka.sifen.core.fields.request.de.TgPagCheq;
 import com.roshka.sifen.core.fields.request.de.TgPagCred;
 import com.roshka.sifen.core.fields.request.de.TgPagTarCD;
 import com.roshka.sifen.core.fields.request.de.TgTimb;
@@ -223,48 +224,48 @@ public class ComprobanteServicio {
                     
                         TgPagTarCD gPagTarCD = new TgPagTarCD();
                         
-                        gPagTarCD.setiDenTarj(TiDenTarj.getByVal(fp.getDenominacionTarjeta().shortValue()));
+                        gPagTarCD.setiDenTarj(TiDenTarj.getByVal(fp.getTarjeta().getDenominacionTarjeta().shortValue()));
                         
-                        gPagTarCD.setiForProPa(TiForProPa.getByVal(fp.getFormaProcesamiento().shortValue()));
+                        gPagTarCD.setiForProPa(TiForProPa.getByVal(fp.getTarjeta().getFormaProcesamiento().shortValue()));
                         
                         
                        
                         
                         try{
                         //estos campos no son obligatorios
-                        if (fp.getProcesadora().length() > 0){
+                        if (fp.getTarjeta().getProcesadora().length() > 0){
                         
-                            gPagTarCD.setdRSProTar(fp.getProcesadora());
+                            gPagTarCD.setdRSProTar(fp.getTarjeta().getProcesadora());
                             
                         }
                         
-                        if (fp.getProcesadoraRuc().length() > 0){
+                        if (fp.getTarjeta().getProcesadoraRuc().length() > 0){
                         
-                            gPagTarCD.setdRUCProTar(fp.getProcesadoraRuc());
+                            gPagTarCD.setdRUCProTar(fp.getTarjeta().getProcesadoraRuc());
                             
                         }
                         
-                        if (fp.getProcesadoraDV() != null){
+                        if (fp.getTarjeta().getProcesadoraDV() != null){
                         
-                            gPagTarCD.setdDVProTar(fp.getProcesadoraDV().shortValue());
+                            gPagTarCD.setdDVProTar(fp.getTarjeta().getProcesadoraDV().shortValue());
                             
                         }
                         
-                         if (fp.getCodigoAutorizacion()!= null){
+                         if (fp.getTarjeta().getCodigoAutorizacion()!= null){
                         
-                            gPagTarCD.setdCodAuOpe(fp.getCodigoAutorizacion());
+                            gPagTarCD.setdCodAuOpe(fp.getTarjeta().getCodigoAutorizacion());
                             
                         }
                          
-                        if (fp.getTarjetaNombre() != null || fp.getTarjetaNombre().length() > 0){
+                        if (fp.getTarjeta().getTarjetaNombre() != null || fp.getTarjeta().getTarjetaNombre().length() > 0){
                         
-                            gPagTarCD.setdNomTit(fp.getTarjetaNombre());
+                            gPagTarCD.setdNomTit(fp.getTarjeta().getTarjetaNombre());
                             
                         }
                         
-                        if (fp.getTarjetaNro()!= null){
+                        if (fp.getTarjeta().getTarjetaNro()!= null){
                         
-                            gPagTarCD.setdNumTarj(fp.getTarjetaNro().shortValue());
+                            gPagTarCD.setdNumTarj(fp.getTarjeta().getTarjetaNro().shortValue());
                             
                         }
                         }catch(java.lang.NullPointerException ex){
@@ -276,6 +277,18 @@ public class ComprobanteServicio {
                         gPaConEIni.setgPagTarCD(gPagTarCD);
                         
                     }
+                    
+                    
+                     if (gPaConEIni.getiTiPago().getVal() == TiTiPago.CHEQUE.getVal() ){
+                         
+                        TgPagCheq gPagCheq = new TgPagCheq();
+                        
+                        gPagCheq.setdNumCheq(fp.getCheque().getNro());
+                        gPagCheq.setdBcoEmi(fp.getCheque().getBanco());
+                        
+                        gPaConEIni.setgPagCheq(gPagCheq);
+                         
+                     }
 
                 }
 
@@ -301,7 +314,7 @@ public class ComprobanteServicio {
 
             TgPagCred gPagCred = new TgPagCred();
 
-            gPagCred.setiCondCred(TiCondCred.getByVal(condicionOperacion.getCondicion().shortValue()));
+            gPagCred.setiCondCred(TiCondCred.getByVal(condicionOperacion.getOperacionTipo().shortValue()));
 
             if (gPagCred.getiCondCred().getVal() == TiCondCred.PLAZO.getVal()) {
 
@@ -327,11 +340,18 @@ public class ComprobanteServicio {
 
                         tgCuotas.setcMoneCuo(CMondT.getByName(x.getMoneda()));
                     }
-
+                    
                     tgCuotas.setdMonCuota(new BigDecimal(x.getMonto()));
-                    tgCuotas.setdVencCuo(x.getVencimiento().toInstant()
+                    
+                    if (x.getVencimiento() != null){
+                        
+                       
+                        tgCuotas.setdVencCuo(x.getVencimiento().toInstant()
                             .atZone(ZoneId.systemDefault())
                             .toLocalDate());
+                    
+                    }
+                    
                     
                     cuotas.add(tgCuotas);
 
