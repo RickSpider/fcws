@@ -20,8 +20,21 @@ public class Remision {
 
     public Long getMotivoEmsion() {
         return motivoEmsion;
-    }
+    } 
 
+    /**
+     * 
+     * 1: Devolución y Ajuste de precios
+     * 2: Devolución
+     * 3: Descuento
+     * 4: Bonificación
+     * 5: Crédito incobrable
+     * 6: Recupero de costo
+     * 7: Recupero de gasto
+     * 8: Ajuste de precio
+     * 
+     * @param motivoEmsion 
+     */
     public void setMotivoEmsion(Long motivoEmsion) {
         this.motivoEmsion = motivoEmsion;
     }
