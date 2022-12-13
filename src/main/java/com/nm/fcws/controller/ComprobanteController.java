@@ -46,8 +46,7 @@ public class ComprobanteController {
     private RucRepo rucRepo;
 
     @PostMapping(value = "/factura", produces = "application/json")
-    public @ResponseBody
-    ResponseEntity comprobante(@RequestBody Comprobante factura) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    public @ResponseBody ResponseEntity factura(@RequestBody Comprobante factura) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         //log.info("Esto llego"+factura.getTimbradoFecIni().getTime());
         //log.info("Esto llego"+factura.getTimbradoFecIni());
@@ -62,15 +61,37 @@ public class ComprobanteController {
         Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
 
         DocumentoElectronico de = comprobanteServicio.procesar(factura, contribuyente, TTiDE.FACTURA_ELECTRONICA);
+       
+
+        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED);
+    }
+    
+    
+    
+    @PostMapping(value = "/remision", produces = "application/json")
+    public @ResponseBody ResponseEntity remision(@RequestBody Comprobante remision) throws SifenException, ParserConfigurationException, SAXException, IOException{
+    
+        Contribuyente contribuyente = contribuyenteRepo.findById(remision.getContribuyente().getContribuyenteid()).get();
+        DocumentoElectronico de = comprobanteServicio.procesar(remision, contribuyente, TTiDE.COMPROBANTE_RETENCION_ELECTRONICO);
+        
+        
+        
+        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED);
+    }
+    
+    
+    private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException{
+    
         String cdc = de.obtenerCDC();
-        log.info(cdc);
+        //log.info(cdc);
         Kude kude = new Kude(de.getEnlaceQR(), cdc);
 
         comprobanteServicio.enviarDE(de, contribuyente, cdc);
-
-        return new ResponseEntity(kude, HttpStatus.CREATED);
+        
+        return kude;
     }
-
+   
+   
     private String chequearCampos(Comprobante comprobante) {
 
         if (comprobante.getTimbrado() == null || comprobante.getTimbrado().getTimbrado().length() != 8) {
