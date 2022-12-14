@@ -15,17 +15,53 @@ public class Transporte {
     
     private Long tipoTransporte;
     private Long modoTransporte;
-    private Long responsable;
+    private Long responsableFlete;
+    private String condicionNeg;
     private String manifiestoNro;
-    private String despachoNro;
+    private String despachoImpNro;
     private Calendar fechaSalida;
     private Calendar fechaLlegada;
     private Long paisDestino;
+
+    
+    /**
+     * Campos minimos para declarar un Transporte 
+     * 
+     * Posibles Tipos de Transporte
+     * 1:Propio
+     * 2:Tercero
+     * 
+     * Posibles responsables del costo de transporte
+     * 1:Emisor de factura
+     * 2:Receptor de la factura
+     * 3:Tercero
+     * 4:Agente intermediario del transorte (cuado interventa)
+     * 5:Transporte propio
+     * 
+     * @param modoTransporte
+     * @param responsableFlete 
+     */
+    public Transporte(Long modoTransporte, Long responsableFlete) {
+        this.modoTransporte = modoTransporte;
+        this.responsableFlete = responsableFlete;
+    }
+    
+   
 
     public Long getTipoTransporte() {
         return tipoTransporte;
     }
 
+    /**
+     * 
+     * Posibles modos de Transporte
+     * 1:Terrestre
+     * 2:Flvial
+     * 3:Aereo
+     * 4:Multimodal
+     * 
+     * @param tipoTransporte 
+     */
     public void setTipoTransporte(Long tipoTransporte) {
         this.tipoTransporte = tipoTransporte;
     }
@@ -34,16 +70,36 @@ public class Transporte {
         return modoTransporte;
     }
 
+    /**
+     * Posibles modos de Transporte
+     * 1:Terrestre
+     * 2:Flvial
+     * 3:Aereo
+     * 4:Multimodal
+     * 
+     * @param modoTransporte 
+     */
     public void setModoTransporte(Long modoTransporte) {
         this.modoTransporte = modoTransporte;
     }
 
-    public Long getResponsable() {
-        return responsable;
+    public Long getResponsableFlete() {
+        return responsableFlete;
     }
 
-    public void setResponsable(Long responsable) {
-        this.responsable = responsable;
+    /**
+     * 
+     * Posibles responsables del costo de transporte
+     * 1:Emisor de factura
+     * 2:Receptor de la factura
+     * 3:Tercero
+     * 4:Agente intermediario del transorte (cuado interventa)
+     * 5:Transporte propio
+     * 
+     * @param responsable 
+     */
+    public void setResponsableFlete(Long responsableFlete) {
+        this.responsableFlete = responsableFlete;
     }
 
     public String getManifiestoNro() {
@@ -52,14 +108,6 @@ public class Transporte {
 
     public void setManifiestoNro(String manifiestoNro) {
         this.manifiestoNro = manifiestoNro;
-    }
-
-    public String getDespachoNro() {
-        return despachoNro;
-    }
-
-    public void setDespachoNro(String despachoNro) {
-        this.despachoNro = despachoNro;
     }
 
     public Calendar getFechaSalida() {
@@ -84,6 +132,23 @@ public class Transporte {
 
     public void setPaisDestino(Long paisDestino) {
         this.paisDestino = paisDestino;
+    }
+
+
+    public String getCondicionNeg() {
+        return condicionNeg;
+    }
+
+    public void setCondicionNeg(String condicionNeg) {
+        this.condicionNeg = condicionNeg;
+    }
+
+    public String getDespachoImpNro() {
+        return despachoImpNro;
+    }
+
+    public void setDespachoImpNro(String despachoImpNro) {
+        this.despachoImpNro = despachoImpNro;
     }
     
     

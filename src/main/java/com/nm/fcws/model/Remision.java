@@ -5,7 +5,7 @@
  */
 package com.nm.fcws.model;
 
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  *
@@ -15,8 +15,8 @@ public class Remision {
     
     private Long motivoEmsion;
     private Long responsableEmision;
-    private double kilometrosRecorrido;
-    private Date fechaEmiFactura;
+    private Integer kilometrosRecorrido;
+    private Calendar fechaEmiFactura;
 
     public Long getMotivoEmsion() {
         return motivoEmsion;
@@ -24,11 +24,11 @@ public class Remision {
 
     /**
      * 
-     * 1: Devolución y Ajuste de precios
-     * 2: Devolución
+     * 1: Devolucion y Ajuste de precios
+     * 2: Devolucion
      * 3: Descuento
-     * 4: Bonificación
-     * 5: Crédito incobrable
+     * 4: Bonificacion
+     * 5: Crodito incobrable
      * 6: Recupero de costo
      * 7: Recupero de gasto
      * 8: Ajuste de precio
@@ -47,19 +47,26 @@ public class Remision {
         this.responsableEmision = responsableEmision;
     }
 
-    public double getKilometrosRecorrido() {
+    public Integer getKilometrosRecorrido() {
         return kilometrosRecorrido;
     }
 
-    public void setKilometrosRecorrido(double kilometrosRecorrido) {
+    public void setKilometrosRecorrido(Integer kilometrosRecorrido) {
         this.kilometrosRecorrido = kilometrosRecorrido;
     }
 
-    public Date getFechaEmiFactura() {
+    public Calendar getFechaEmiFactura() {
         return fechaEmiFactura;
     }
 
-    public void setFechaEmiFactura(Date fechaEmiFactura) {
+    
+    /**
+     * cuando no se ha emitido aÃºn la factura electrÃ³nica, en caso que corresponda.
+     *
+     * 
+     * @param fechaEmiFactura 
+     */
+    public void setFechaEmiFactura(Calendar fechaEmiFactura) {
         this.fechaEmiFactura = fechaEmiFactura;
     }
     

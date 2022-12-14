@@ -8,7 +8,6 @@ package com.nm.fcws.model;
 import com.nm.fcws.modeldb.Contribuyente;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  *
@@ -40,28 +39,15 @@ public class Comprobante {
     
   
     private Calendar fecha;
-
-   
-    //detalles de pago
-    
-    /*
-        1= Contado
-        2= credito
-    */
-  //  private Long condicionOperacion;
     
     private CondicionOperacion condicionOperacion;
     
-   // private ArrayList<TipoPago> tiposPagos = new ArrayList<TipoPago>() ;
     private ArrayList<ComprobanteDetalle> detalles = new ArrayList<ComprobanteDetalle>();
+    
+    private Transporte transporte;
 
- /*   public Long getComprobanteid() {
-        return comprobanteid;
-    }
-
-    public void setComprobanteid(Long comprobanteid) {
-        this.comprobanteid = comprobanteid;
-    }*/
+    
+    private Remision remision;
 
     public Contribuyente getContribuyente() {
         
@@ -128,7 +114,22 @@ public class Comprobante {
     public void setCondicionOperacion(CondicionOperacion condicionOperacion) {
         this.condicionOperacion = condicionOperacion;
     }
+
+    public Remision getRemision() {
+        return remision;
+    }
+
+    public void setRemision(Remision remision) {
+        this.remision = remision;
+    }
     
+    public Transporte getTransporte() {
+        return transporte;
+    }
+
+    public void setTransporte(Transporte transporte) {
+        this.transporte = transporte;
+    }
     
    
 }

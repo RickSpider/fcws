@@ -10,8 +10,10 @@ import com.nm.fcws.model.ComprobanteDetalle;
 import com.nm.fcws.model.CondicionOperacion;
 import com.nm.fcws.model.Cuota;
 import com.nm.fcws.model.Receptor;
+import com.nm.fcws.model.Remision;
 import com.nm.fcws.model.Timbrado;
 import com.nm.fcws.model.TipoPago;
+import com.nm.fcws.model.Transporte;
 import com.nm.fcws.modeldb.ActividadEconomica;
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
@@ -28,6 +30,7 @@ import com.roshka.sifen.core.fields.request.de.TgCamCond;
 import com.roshka.sifen.core.fields.request.de.TgCamFE;
 import com.roshka.sifen.core.fields.request.de.TgCamIVA;
 import com.roshka.sifen.core.fields.request.de.TgCamItem;
+import com.roshka.sifen.core.fields.request.de.TgCamNRE;
 import com.roshka.sifen.core.fields.request.de.TgCuotas;
 import com.roshka.sifen.core.fields.request.de.TgDatRec;
 import com.roshka.sifen.core.fields.request.de.TgDtipDE;
@@ -40,6 +43,7 @@ import com.roshka.sifen.core.fields.request.de.TgPagCred;
 import com.roshka.sifen.core.fields.request.de.TgPagTarCD;
 import com.roshka.sifen.core.fields.request.de.TgTimb;
 import com.roshka.sifen.core.fields.request.de.TgTotSub;
+import com.roshka.sifen.core.fields.request.de.TgTransp;
 import com.roshka.sifen.core.fields.request.de.TgValorItem;
 import com.roshka.sifen.core.fields.request.de.TgValorRestaItem;
 import com.roshka.sifen.core.types.CMondT;
@@ -49,6 +53,7 @@ import com.roshka.sifen.core.types.TTImp;
 import com.roshka.sifen.core.types.TTiDE;
 import com.roshka.sifen.core.types.TTipEmi;
 import com.roshka.sifen.core.types.TTipTra;
+import com.roshka.sifen.core.types.TcCondNeg;
 import com.roshka.sifen.core.types.TcUniMed;
 import com.roshka.sifen.core.types.TiAfecIVA;
 import com.roshka.sifen.core.types.TiCondCred;
@@ -56,7 +61,11 @@ import com.roshka.sifen.core.types.TiCondOpe;
 import com.roshka.sifen.core.types.TiDenTarj;
 import com.roshka.sifen.core.types.TiForProPa;
 import com.roshka.sifen.core.types.TiIndPres;
+import com.roshka.sifen.core.types.TiModTrans;
+import com.roshka.sifen.core.types.TiMotivTras;
 import com.roshka.sifen.core.types.TiNatRec;
+import com.roshka.sifen.core.types.TiRespEmiNR;
+import com.roshka.sifen.core.types.TiRespFlete;
 import com.roshka.sifen.core.types.TiTiOpe;
 import com.roshka.sifen.core.types.TiTiPago;
 import com.roshka.sifen.core.types.TiTipCont;
@@ -67,6 +76,7 @@ import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
@@ -113,7 +123,6 @@ public class ComprobanteServicio {
 
     public DocumentoElectronico procesar(Comprobante comprobante, Contribuyente contribuyente, TTiDE tipoDE) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        //Contribuyente contribuyente = contribuyenteRepo.findById(comprobante.getContribuyente().getContribuyenteid()).get();
         DocumentoElectronico de = new DocumentoElectronico();
 
         de.setdFecFirma(comprobante.getFecha().toInstant()
@@ -134,23 +143,17 @@ public class ComprobanteServicio {
         //datos generales de operacion
         TdDatGralOpe gDatGralOpe = new TdDatGralOpe();
         gDatGralOpe.setdFeEmiDE(de.getdFecFirma());
-
-        TgOpeCom gOpeCom = new TgOpeCom();
-        gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue()));
-        gOpeCom.setiTImp(TTImp.getByVal(contribuyente.getTipoImpuesto().getCodigoSifen().shortValue()));
-
-        if (comprobante.getOperacionMoneda() == null) {
-
-            gOpeCom.setcMoneOpe(CMondT.PYG); //discutir
-
-        } else {
-
-            gOpeCom.setcMoneOpe(CMondT.getByName(comprobante.getOperacionMoneda())); //discutir
-
+        
+        
+        
+        if (de.getgTimb().getiTiDE().getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
+                || de.getgTimb().getiTiDE().getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()){
+ 
+            //estandarizar a guaranies
+            gDatGralOpe.setgOpeCom(this.procesarOperacionComercial(contribuyente, comprobante));
+        
         }
-
-        //estandarizar a guaranies
-        gDatGralOpe.setgOpeCom(gOpeCom);
+        
 
         //Inicio Emisor de Documento Electronico
         gDatGralOpe.setgEmis(procesarEmisor(comprobante.getSucursal(), contribuyente));
@@ -163,12 +166,27 @@ public class ComprobanteServicio {
         //Detalles
         //delles de pago
         TgDtipDE gDtipDE = new TgDtipDE();
-
-        TgCamFE gCamFE = new TgCamFE();
-        gCamFE.setiIndPres(TiIndPres.OPERACION_ELECTRONICA); //default operacion electronica
-        gDtipDE.setgCamFE(gCamFE);
-
-        gDtipDE.setgCamCond(this.procesarMetodoPago(comprobante.getCondicionOperacion()));
+        
+        if (de.getgTimb().getiTiDE().getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
+                || de.getgTimb().getiTiDE().getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()){
+        
+            TgCamFE gCamFE = new TgCamFE();
+            gCamFE.setiIndPres(TiIndPres.OPERACION_ELECTRONICA); //default operacion electronica
+            gDtipDE.setgCamFE(gCamFE);
+            
+            gDtipDE.setgCamCond(this.procesarMetodoPago(comprobante.getCondicionOperacion()));
+            
+        }
+        
+        if (de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()){
+       
+            
+            gDtipDE.setgCamNRE(this.procesarRemision(comprobante.getRemision()));
+            
+            gDtipDE.setgTransp(this.procesarTransporte(comprobante.getTransporte()));
+            
+        }
+        
 
         gDtipDE.setgCamItemList(this.procesarDetalle(comprobante.getDetalles()));
 
@@ -193,6 +211,26 @@ public class ComprobanteServicio {
         this.comprobanteElectronicoRepo.save(ce);
 
         return de;
+    }
+    
+    private TgOpeCom procesarOperacionComercial(Contribuyente contribuyente, Comprobante comprobante){
+    
+        TgOpeCom gOpeCom = new TgOpeCom();
+        gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue()));
+        gOpeCom.setiTImp(TTImp.getByVal(contribuyente.getTipoImpuesto().getCodigoSifen().shortValue()));
+        
+        if (comprobante.getOperacionMoneda() == null) {
+
+            gOpeCom.setcMoneOpe(CMondT.PYG); //discutir
+
+        } else {
+
+            gOpeCom.setcMoneOpe(CMondT.getByName(comprobante.getOperacionMoneda())); //discutir
+
+        }
+        
+        return gOpeCom;
+        
     }
 
     private TgCamCond procesarMetodoPago(CondicionOperacion condicionOperacion) {
@@ -515,6 +553,41 @@ public class ComprobanteServicio {
         return gDatRec;
 
         // Fin receptor
+    }
+    
+    private TgCamNRE procesarRemision(Remision remision){
+    
+         TgCamNRE gCamNRE = new TgCamNRE();
+         
+         gCamNRE.setiMotEmiNR(TiMotivTras.getByVal(remision.getMotivoEmsion().shortValue()));
+         gCamNRE.setiRespEmiNR(TiRespEmiNR.getByVal(remision.getResponsableEmision().shortValue()));
+         gCamNRE.setdKmR(remision.getKilometrosRecorrido());
+         
+         if (remision.getFechaEmiFactura() != null){
+         
+             gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+         
+         }
+         
+         return gCamNRE;
+         
+    }
+    
+    private TgTransp procesarTransporte(Transporte transporte){
+    
+        TgTransp gTransp = new TgTransp();
+        
+        gTransp.setiModTrans(TiModTrans.getByVal(transporte.getModoTransporte().shortValue()));
+        gTransp.setiRespFlete(TiRespFlete.getByVal(transporte.getResponsableFlete().shortValue()));
+        
+        if (!Objects.isNull(transporte.getCondicionNeg())){ 
+            //gTransp.setcCondNeg(TcCondNeg.);
+        }
+        
+        return gTransp;
+    
     }
 
     private List<TgCamItem> procesarDetalle(List<ComprobanteDetalle> detalles) {
