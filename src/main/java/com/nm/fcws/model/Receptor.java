@@ -22,6 +22,45 @@ public class Receptor {
     private Long distrito;
     private Long ciudad;
 
+    public Receptor() {
+    }
+    
+    
+
+    /**
+     * campos minimos cuando es contribuyente
+     * 
+     * @param docNro
+     * @param dv 
+     */
+    public Receptor(String docNro, String dv) {
+        this.docNro = docNro;
+        this.dv = dv;
+    }
+
+    /**
+     * 
+     * Campos minimos para remision y es contribuyente
+     * 
+     * 
+     * @param docNro
+     * @param dv
+     * @param direccion
+     * @param casaNro
+     * @param departamento
+     * @param ciudad 
+     */
+    public Receptor(String docNro, String dv, String direccion, Integer casaNro, Long departamento, Long ciudad) {
+        this.docNro = docNro;
+        this.dv = dv;
+        this.direccion = direccion;
+        this.casaNro = casaNro;
+        this.departamento = departamento;
+        this.ciudad = ciudad;
+    }
+
+    
+    
     public String getDv() {
         return dv;
     }

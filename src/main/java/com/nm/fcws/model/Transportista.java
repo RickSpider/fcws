@@ -11,12 +11,11 @@ package com.nm.fcws.model;
  */
 public class Transportista {
     
-    private Long naturaleza;
     private String Nombre;
     private String docNro;
-    private String dv;
+    private Integer dv;
     private Long tipoDoc;
-    private Long nacionalidad;
+    private String nacionalidad;
     private String choferDocNum;
     private String choferNombre;
     private String domicilio;
@@ -24,14 +23,6 @@ public class Transportista {
     private String agenteRuc;
     private String agenteDV;
     private String agenteDireccion;
-
-    public Long getNaturaleza() {
-        return naturaleza;
-    }
-
-    public void setNaturaleza(Long naturaleza) {
-        this.naturaleza = naturaleza;
-    }
 
     public String getNombre() {
         return Nombre;
@@ -49,11 +40,11 @@ public class Transportista {
         this.docNro = docNro;
     }
 
-    public String getDv() {
+    public Integer getDv() {
         return dv;
     }
 
-    public void setDv(String dv) {
+    public void setDv(Integer dv) {
         this.dv = dv;
     }
 
@@ -65,11 +56,20 @@ public class Transportista {
         this.tipoDoc = tipoDoc;
     }
 
-    public Long getNacionalidad() {
+    public String getNacionalidad() {
         return nacionalidad;
     }
 
-    public void setNacionalidad(Long nacionalidad) {
+    /**
+     * 
+     * Buscar codigo de nacionalidad en 
+     * https://es.wikipedia.org/wiki/ISO_3166-1#C%C3%B3digos_ISO_3166-1
+     * columna Codigo alf-3 
+     *
+     * 
+     * @param nacionalidad 
+     */
+    public void setNacionalidad(String nacionalidad) {
         this.nacionalidad = nacionalidad;
     }
 
@@ -128,8 +128,5 @@ public class Transportista {
     public void setAgenteDireccion(String agenteDireccion) {
         this.agenteDireccion = agenteDireccion;
     }
-    
-    
-    
     
 }

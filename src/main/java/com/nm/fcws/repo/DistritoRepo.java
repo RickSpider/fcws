@@ -14,4 +14,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface DistritoRepo extends CrudRepository<Distrito,Long> {
     
+   Distrito findByCodigoSifen(Long codigoSifen);
+    
 }

@@ -48,6 +48,8 @@ public class Comprobante {
 
     
     private Remision remision;
+    
+    private String infoFisco;
 
     public Contribuyente getContribuyente() {
         
@@ -129,6 +131,14 @@ public class Comprobante {
 
     public void setTransporte(Transporte transporte) {
         this.transporte = transporte;
+    }
+
+    public String getInfoFisco() {
+        return infoFisco;
+    }
+
+    public void setInfoFisco(String infoFisco) {
+        this.infoFisco = infoFisco;
     }
     
    

@@ -1,0 +1,94 @@
+{
+    "contribuyente": {
+        "contribuyenteid": 1,
+        "pass": ""
+    },
+    "timbrado": {
+        "timbrado": "12558948",
+        "establecimiento": "001",
+        "puntoExpedicion": "001",
+        "documentoNro": "0000001",
+        "fecIni": "2021-08-25T00:00:00-04:00"
+    },
+	"sucursal": "Central",
+    "receptor": {
+        "docNro": "4912021",
+        "dv": "2",
+
+        "direccion":"algun lado de la casa de xime",
+        "casaNro":"1234",
+        "departamento":1,
+        "distrito":1,
+        "ciudad":1
+    },
+    "fecha": "2022-12-15T00:00:00-04:00",
+    "remision":{
+
+        "motivoEmsion": 1,
+        "responsableEmision":1,
+        "kilometrosRecorrido":50,
+        "fechaEmiFactura": "2022-12-15T00:00:00-04:00"
+    },
+
+    "transporte":{
+
+        "tipo":1,
+        "modo":1,
+        "responsableFlete":1,
+        "fechaSalida":"2022-12-15T00:00:00-04:00",
+        "fechaLlegada":"2022-12-20T00:00:00-04:00",
+        "salida":{
+
+            "direccion":"VL",
+            "casaNro":"1234",
+            "departamento":1,
+            "ciudad":1
+
+        },
+
+        "entregas":[{
+
+            "direccion":"algun lado de la casa de xime",
+            "casaNro":"12346",
+            "departamento":1,
+            "ciudad":1
+
+        }],
+
+        "vehiculos":[{
+
+            "marca":"kia",
+            "tipoIdentificacion":1,
+            "nro":"abc123"
+
+        }],
+        "transportista":{
+
+            "nombre":"Rick",
+            "domicilio":"algun lado del pais",
+            "tipoDoc":1,
+            "docNro":"4524164",
+            "choferDocNum":"4524164",
+            "choferNombre":"Rick",
+            "choferDireccion":"la casa del chofer"
+
+
+        }
+
+
+    },
+
+    "detalles": [
+        {
+            "itemCodigo": "001",
+            "itemDescripcion": "producto001",
+            "cantidad": 1,
+            "precioUnitario": 200000,
+            "afectacionTributaria": 1,
+            "proporcionIVA": 100,
+            "tasaIVA": 10
+        }
+    ],
+    "infoFisco":"Mercaderia Fragil"
+
+}

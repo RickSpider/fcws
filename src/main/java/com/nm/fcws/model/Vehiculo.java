@@ -10,21 +10,44 @@ package com.nm.fcws.model;
  * @author BlackSpider
  */
 public class Vehiculo {
-    
-    private Long tipoVehiculo;
+   
     private String marca;
     private Long tipoIdentificacion;
-    private String nroIdentificacion;
+    private String identificacionNro;
     private String datosAdicionales;
     private String matriculaNro;
     private String vueloNro;
+    
+   /**
+    * 
+    * Tipo de identificacion
+    * 1:Numero de identificacion del vehiculo 
+    * 2:Numero de matricula del vehiculo
+    * 
+    * 
+    * 
+    * @param marca
+    * @param tipoIdentificacion
+    * @param nro : Es el numero de identificacion o numero de matricula dependiendo al tipo de identificacion del vehiculo
+    */
 
-    public Long getTipoVehiculo() {
-        return tipoVehiculo;
-    }
-
-    public void setTipoVehiculo(Long tipoVehiculo) {
-        this.tipoVehiculo = tipoVehiculo;
+    public Vehiculo(String marca, Long tipoIdentificacion, String nro) {
+        
+        this.marca = marca;
+        this.tipoIdentificacion = tipoIdentificacion;
+        
+        if (this.tipoIdentificacion.longValue() == 1L){
+        
+            this.identificacionNro = nro;
+             
+        }
+        
+        if(this.tipoIdentificacion.longValue() == 2L){
+        
+            this.matriculaNro = nro;
+            
+        }
+       
     }
 
     public String getMarca() {
@@ -39,16 +62,15 @@ public class Vehiculo {
         return tipoIdentificacion;
     }
 
+    /**
+      * Tipo de identificacion
+      * 1:Numero de identificacion del vehiculo 
+      * 2:Numero de matricula del vehiculo
+     * 
+     * @param tipoIdentificacion 
+     */
     public void setTipoIdentificacion(Long tipoIdentificacion) {
         this.tipoIdentificacion = tipoIdentificacion;
-    }
-
-    public String getNroIdentificacion() {
-        return nroIdentificacion;
-    }
-
-    public void setNroIdentificacion(String nroIdentificacion) {
-        this.nroIdentificacion = nroIdentificacion;
     }
 
     public String getDatosAdicionales() {
@@ -73,6 +95,14 @@ public class Vehiculo {
 
     public void setVueloNro(String vueloNro) {
         this.vueloNro = vueloNro;
+    }
+
+    public String getIdentificacionNro() {
+        return identificacionNro;
+    }
+
+    public void setIdentificacionNro(String identificacionNro) {
+        this.identificacionNro = identificacionNro;
     }
     
     

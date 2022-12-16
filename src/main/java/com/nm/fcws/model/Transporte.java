@@ -6,6 +6,7 @@
 package com.nm.fcws.model;
 
 import java.util.Calendar;
+import java.util.List;
 
 /**
  *
@@ -13,8 +14,8 @@ import java.util.Calendar;
  */
 public class Transporte {
     
-    private Long tipoTransporte;
-    private Long modoTransporte;
+    private Long tipo;
+    private Long modo;
     private Long responsableFlete;
     private String condicionNeg;
     private String manifiestoNro;
@@ -23,13 +24,26 @@ public class Transporte {
     private Calendar fechaLlegada;
     private Long paisDestino;
 
+    private MercaderiaMov salida;
+    private List<MercaderiaMov> entregas;
+    
+    private List<Vehiculo> vehiculos;
+    private Transportista transportista;
+    
     
     /**
-     * Campos minimos para declarar un Transporte 
+     *  Campos minimos para declarar un Transporte 
      * 
      * Posibles Tipos de Transporte
      * 1:Propio
      * 2:Tercero
+     * 
+     * Posibles modos de Transporte
+     * 1:Terrestre
+     * 2:Flvial
+     * 3:Aereo
+     * 4:Multimodal
+     * 
      * 
      * Posibles responsables del costo de transporte
      * 1:Emisor de factura
@@ -38,36 +52,50 @@ public class Transporte {
      * 4:Agente intermediario del transorte (cuado interventa)
      * 5:Transporte propio
      * 
-     * @param modoTransporte
-     * @param responsableFlete 
+     * @param tipo
+     * @param modo
+     * @param responsableFlete
+     * @param fechaSalida
+     * @param fechaLlegada
+     * @param salida
+     * @param entregas
+     * @param vehiculos
+     * @param transportista 
      */
-    public Transporte(Long modoTransporte, Long responsableFlete) {
-        this.modoTransporte = modoTransporte;
+    public Transporte(Long tipo, Long modo, Long responsableFlete, Calendar fechaSalida, Calendar fechaLlegada, MercaderiaMov salida, List<MercaderiaMov> entregas, List<Vehiculo> vehiculos, Transportista transportista) {
+        this.tipo = tipo;
+        this.modo = modo;
         this.responsableFlete = responsableFlete;
+        this.fechaSalida = fechaSalida;
+        this.fechaLlegada = fechaLlegada;
+        this.salida = salida;
+        this.entregas = entregas;
+        this.vehiculos = vehiculos;
+        this.transportista = transportista;
     }
+    
+    
     
    
 
-    public Long getTipoTransporte() {
-        return tipoTransporte;
+    public Long getTipo() {
+        return tipo;
     }
 
     /**
      * 
-     * Posibles modos de Transporte
-     * 1:Terrestre
-     * 2:Flvial
-     * 3:Aereo
-     * 4:Multimodal
+     * Posibles Tipos de Transporte
+     * 1:Propio
+     * 2:Tercero
      * 
      * @param tipoTransporte 
      */
-    public void setTipoTransporte(Long tipoTransporte) {
-        this.tipoTransporte = tipoTransporte;
+    public void setTipo(Long tipoTransporte) {
+        this.tipo = tipoTransporte;
     }
 
-    public Long getModoTransporte() {
-        return modoTransporte;
+    public Long getModo() {
+        return modo;
     }
 
     /**
@@ -79,8 +107,8 @@ public class Transporte {
      * 
      * @param modoTransporte 
      */
-    public void setModoTransporte(Long modoTransporte) {
-        this.modoTransporte = modoTransporte;
+    public void setModo(Long modoTransporte) {
+        this.modo = modoTransporte;
     }
 
     public Long getResponsableFlete() {
@@ -96,7 +124,7 @@ public class Transporte {
      * 4:Agente intermediario del transorte (cuado interventa)
      * 5:Transporte propio
      * 
-     * @param responsable 
+     * @param responsableFlete 
      */
     public void setResponsableFlete(Long responsableFlete) {
         this.responsableFlete = responsableFlete;
@@ -150,7 +178,40 @@ public class Transporte {
     public void setDespachoImpNro(String despachoImpNro) {
         this.despachoImpNro = despachoImpNro;
     }
-    
+
+    public MercaderiaMov getSalida() {
+        return salida;
+    }
+
+    public void setSalida(MercaderiaMov salida) {
+        this.salida = salida;
+    }
+
+    public Transportista getTransportista() {
+        return transportista;
+    }
+
+    public void setTransportista(Transportista transportista) {
+        this.transportista = transportista;
+    }
+
+    public List<MercaderiaMov> getEntregas() {
+        return entregas;
+    }
+
+    public void setEntregas(List<MercaderiaMov> entregas) {
+        this.entregas = entregas;
+    }
+
+    public List<Vehiculo> getVehiculos() {
+        return vehiculos;
+    }
+
+    public void setVehiculos(List<Vehiculo> vehiculos) {
+        this.vehiculos = vehiculos;
+    }
+
+   
     
     
 }

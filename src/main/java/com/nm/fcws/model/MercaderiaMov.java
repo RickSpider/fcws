@@ -11,8 +11,8 @@ package com.nm.fcws.model;
  */
 public class MercaderiaMov {
     
-    private String dicreccion;
-    private Integer numCasa;
+    private String direccion;
+    private Integer casaNro = 0;
     private String direccion1;
     private String direccion2;
     
@@ -22,21 +22,50 @@ public class MercaderiaMov {
     
     private String telf;
 
-    public String getDicreccion() {
-        return dicreccion;
+    public MercaderiaMov() {
+    }
+    
+    
+    
+    public MercaderiaMov(String direccion, Integer casaNro, Long departamento, Long ciudad) {
+        this.direccion = direccion;
+        this.casaNro = casaNro;
+        this.departamento = departamento;
+        this.ciudad = ciudad;
+    }
+    
+    /**
+     * 
+     * Campos Minimos requeridos
+     * 
+     * 
+     * @param direccion
+     * @param departamento
+     * @param ciudad 
+     */
+    public MercaderiaMov(String direccion,  Long departamento, Long ciudad) {
+        this.direccion = direccion;
+        this.departamento = departamento;
+        this.ciudad = ciudad;
     }
 
-    public void setDicreccion(String dicreccion) {
-        this.dicreccion = dicreccion;
+    public String getDireccion() {
+        return direccion;
     }
 
-    public Integer getNumCasa() {
-        return numCasa;
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
-    public void setNumCasa(Integer numCasa) {
-        this.numCasa = numCasa;
+    public Integer getCasaNro() {
+        return casaNro;
     }
+
+    public void setCasaNro(Integer casaNro) {
+        this.casaNro = casaNro;
+    }
+
+  
 
     public String getDireccion1() {
         return direccion1;

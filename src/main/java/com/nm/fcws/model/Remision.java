@@ -18,20 +18,63 @@ public class Remision {
     private Integer kilometrosRecorrido;
     private Calendar fechaEmiFactura;
 
+    /**
+     * 
+     * Motivo de Remision
+     * 1: Traslado por venta
+     * 2: Traslado por consignacion
+     * 3: Exportación
+     * 4: Traslado por compra
+     * 5: Importación
+     * 6: Traslado por devolucion
+     * 7: Traslado entre locales de la empresa
+     * 8: Traslado de bienes por transformación
+     * 9: Traslado de bienes por reparación
+     * 10: Traslado por emisor movil 
+     * 11: Exhibición o demostracion
+     * 12: Participación en ferias
+     * 13: Traslado de encomienda
+     * 14: Decomiso
+     * 99: Otro
+     * 
+     * Responsables
+     * 1:Emisor de la factura
+     * 2:Poseedor de la Factura y Bienes
+     * 3:Despachante de Aduanas
+     * 5:Agente de transporte o intermediario
+     * 
+     * @param motivoEmsion
+     * @param responsableEmision 
+     */
+    public Remision(Long motivoEmsion, Long responsableEmision) {
+        this.motivoEmsion = motivoEmsion;
+        this.responsableEmision = responsableEmision;
+    }
+    
+    
+ 
     public Long getMotivoEmsion() {
         return motivoEmsion;
     } 
 
     /**
      * 
-     * 1: Devolucion y Ajuste de precios
-     * 2: Devolucion
-     * 3: Descuento
-     * 4: Bonificacion
-     * 5: Crodito incobrable
-     * 6: Recupero de costo
-     * 7: Recupero de gasto
-     * 8: Ajuste de precio
+     * 
+     * 1: Traslado por venta
+     * 2: Traslado por consignación
+     * 3: Exportación
+     * 4: Traslado por compra
+     * 5: Importación
+     * 6: Traslado por devolución
+     * 7: Traslado entre locales de la empresa
+     * 8: Traslado de bienes por transformación
+     * 9: Traslado de bienes por reparación
+     * 10: Traslado por emisor móvil 
+     * 11: Exhibición o demostración
+     * 12: Participación en ferias
+     * 13: Traslado de encomienda
+     * 14: Decomiso
+     * 99: Otro
      * 
      * @param motivoEmsion 
      */
@@ -43,6 +86,15 @@ public class Remision {
         return responsableEmision;
     }
 
+    /**
+     * 
+     * 1:Emisor de la factura
+     * 2:Poseedor de la Factura y Bienes
+     * 3:Despachante de Aduanas
+     * 5:Agente de transporte o intermediario
+     * 
+     * @param responsableEmision 
+     */
     public void setResponsableEmision(Long responsableEmision) {
         this.responsableEmision = responsableEmision;
     }

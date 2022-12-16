@@ -72,11 +72,9 @@ public class ComprobanteController {
     public @ResponseBody ResponseEntity remision(@RequestBody Comprobante remision) throws SifenException, ParserConfigurationException, SAXException, IOException{
     
         Contribuyente contribuyente = contribuyenteRepo.findById(remision.getContribuyente().getContribuyenteid()).get();
-        DocumentoElectronico de = comprobanteServicio.procesar(remision, contribuyente, TTiDE.COMPROBANTE_RETENCION_ELECTRONICO);
-        
-        
-        
-        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED);
+        DocumentoElectronico de = comprobanteServicio.procesar(remision, contribuyente, TTiDE.NOTA_DE_REMISION_ELECTRONICA);
+
+        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED); 
     }
     
     
