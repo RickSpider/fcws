@@ -23,16 +23,16 @@ public class Remision {
      * Motivo de Remision
      * 1: Traslado por venta
      * 2: Traslado por consignacion
-     * 3: Exportación
+     * 3: Exportacion
      * 4: Traslado por compra
-     * 5: Importación
+     * 5: Importacion
      * 6: Traslado por devolucion
      * 7: Traslado entre locales de la empresa
-     * 8: Traslado de bienes por transformación
-     * 9: Traslado de bienes por reparación
+     * 8: Traslado de bienes por transformacion
+     * 9: Traslado de bienes por reparacion
      * 10: Traslado por emisor movil 
-     * 11: Exhibición o demostracion
-     * 12: Participación en ferias
+     * 11: Exhibicion o demostracion
+     * 12: Participacion en ferias
      * 13: Traslado de encomienda
      * 14: Decomiso
      * 99: Otro
@@ -61,17 +61,17 @@ public class Remision {
      * 
      * 
      * 1: Traslado por venta
-     * 2: Traslado por consignación
-     * 3: Exportación
+     * 2: Traslado por consignacion
+     * 3: Exportacion
      * 4: Traslado por compra
-     * 5: Importación
-     * 6: Traslado por devolución
+     * 5: Importacion
+     * 6: Traslado por devolucion
      * 7: Traslado entre locales de la empresa
-     * 8: Traslado de bienes por transformación
-     * 9: Traslado de bienes por reparación
-     * 10: Traslado por emisor móvil 
-     * 11: Exhibición o demostración
-     * 12: Participación en ferias
+     * 8: Traslado de bienes por transformacion
+     * 9: Traslado de bienes por reparacion
+     * 10: Traslado por emisor movil 
+     * 11: Exhibicion o demostracion
+     * 12: Participacion en ferias
      * 13: Traslado de encomienda
      * 14: Decomiso
      * 99: Otro

@@ -77,6 +77,15 @@ public class ComprobanteController {
         return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED); 
     }
     
+    @PostMapping(value = "/notacredito", produces = "application/json")
+    public @ResponseBody ResponseEntity notaCredito(@RequestBody Comprobante notaCredito) throws SifenException, ParserConfigurationException, SAXException, IOException{
+    
+        Contribuyente contribuyente = contribuyenteRepo.findById(notaCredito.getContribuyente().getContribuyenteid()).get();
+        DocumentoElectronico de = comprobanteServicio.procesar(notaCredito, contribuyente, TTiDE.NOTA_DE_CREDITO_ELECTRONICA);
+
+        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED); 
+    }
+    
     
     private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException{
     

@@ -9,7 +9,9 @@ import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.ComprobanteDetalle;
 import com.nm.fcws.model.CondicionOperacion;
 import com.nm.fcws.model.Cuota;
+import com.nm.fcws.model.DocAsociado;
 import com.nm.fcws.model.MercaderiaMov;
+import com.nm.fcws.model.NotaCreditoDebito;
 import com.nm.fcws.model.Receptor;
 import com.nm.fcws.model.Remision;
 import com.nm.fcws.model.Timbrado;
@@ -33,10 +35,12 @@ import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.fields.request.de.TdDatGralOpe;
 import com.roshka.sifen.core.fields.request.de.TgActEco;
 import com.roshka.sifen.core.fields.request.de.TgCamCond;
+import com.roshka.sifen.core.fields.request.de.TgCamDEAsoc;
 import com.roshka.sifen.core.fields.request.de.TgCamEnt;
 import com.roshka.sifen.core.fields.request.de.TgCamFE;
 import com.roshka.sifen.core.fields.request.de.TgCamIVA;
 import com.roshka.sifen.core.fields.request.de.TgCamItem;
+import com.roshka.sifen.core.fields.request.de.TgCamNCDE;
 import com.roshka.sifen.core.fields.request.de.TgCamNRE;
 import com.roshka.sifen.core.fields.request.de.TgCamSal;
 import com.roshka.sifen.core.fields.request.de.TgCamTrans;
@@ -71,19 +75,23 @@ import com.roshka.sifen.core.types.TiDenTarj;
 import com.roshka.sifen.core.types.TiForProPa;
 import com.roshka.sifen.core.types.TiIndPres;
 import com.roshka.sifen.core.types.TiModTrans;
+import com.roshka.sifen.core.types.TiMotEmi;
 import com.roshka.sifen.core.types.TiMotivTras;
 import com.roshka.sifen.core.types.TiNatRec;
 import com.roshka.sifen.core.types.TiRespEmiNR;
 import com.roshka.sifen.core.types.TiRespFlete;
+import com.roshka.sifen.core.types.TiTIpoDoc;
 import com.roshka.sifen.core.types.TiTTrans;
 import com.roshka.sifen.core.types.TiTiOpe;
 import com.roshka.sifen.core.types.TiTiPago;
 import com.roshka.sifen.core.types.TiTipCont;
 import com.roshka.sifen.core.types.TiTipDoc;
+import com.roshka.sifen.core.types.TiTipDocAso;
 import com.roshka.sifen.core.types.TiTipDocRec;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +127,7 @@ public class ComprobanteServicio {
 
     @Autowired
     private DistritoRepo distritoRepo;
-    
+
     private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
         SifenConfig config = new SifenConfig(
@@ -148,12 +156,12 @@ public class ComprobanteServicio {
         //gOpeDE
         TgOpeDE gOpeDe = new TgOpeDE();
         gOpeDe.setiTipEmi(TTipEmi.NORMAL);
-        
-        if (!Objects.isNull(comprobante.getInfoFisco())){
-        
+
+        if (!Objects.isNull(comprobante.getInfoFisco())) {
+
             gOpeDe.setdInfoFisc(comprobante.getInfoFisco());
         }
-        
+
         de.setgOpeDE(gOpeDe);
 
         //timbrado
@@ -162,14 +170,20 @@ public class ComprobanteServicio {
         //datos generales de operacion
         TdDatGralOpe gDatGralOpe = new TdDatGralOpe();
         gDatGralOpe.setdFeEmiDE(de.getdFecFirma());
-        
-       
 
         if (de.getgTimb().getiTiDE().getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
-                || de.getgTimb().getiTiDE().getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()) {
+                || de.getgTimb().getiTiDE().getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()
+                || de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()) {
 
             //estandarizar a guaranies
-            gDatGralOpe.setgOpeCom(this.procesarOperacionComercial(contribuyente, comprobante));
+            gDatGralOpe.setgOpeCom(this.procesarOperacionComercial(contribuyente, comprobante, de.getgTimb().getiTiDE().getVal()));
+
+        }
+
+        if (de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()
+                || de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_DEBITO_ELECTRONICA.getVal()) {
+
+            de.setgCamDEAsocList(this.procesarDocumentoAsociado(comprobante.getDocAsociados()));
 
         }
 
@@ -204,6 +218,12 @@ public class ComprobanteServicio {
 
         }
 
+        if (de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal() || de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_DEBITO_ELECTRONICA.getVal()) {
+
+            gDtipDE.setgCamNCDE(procesarNotaCreditoDebito(comprobante.getNotaCreditoDebito()));
+
+        }
+
         gDtipDE.setgCamItemList(this.procesarDetalle(comprobante.getDetalles()));
 
         de.setgDtipDE(gDtipDE);
@@ -229,10 +249,16 @@ public class ComprobanteServicio {
         return de;
     }
 
-    private TgOpeCom procesarOperacionComercial(Contribuyente contribuyente, Comprobante comprobante) {
+    private TgOpeCom procesarOperacionComercial(Contribuyente contribuyente, Comprobante comprobante, short tipoComprobante) {
 
         TgOpeCom gOpeCom = new TgOpeCom();
-        gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue()));
+
+        if (tipoComprobante == TTiDE.FACTURA_ELECTRONICA.getVal()
+                || tipoComprobante == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()) {
+
+            gOpeCom.setiTipTra(TTipTra.getByVal(contribuyente.getTipoTransaccion().getCodigoSifen().shortValue()));
+        }
+
         gOpeCom.setiTImp(TTImp.getByVal(contribuyente.getTipoImpuesto().getCodigoSifen().shortValue()));
 
         if (comprobante.getOperacionMoneda() == null) {
@@ -335,7 +361,7 @@ public class ComprobanteServicio {
                         gPagCheq.setdBcoEmi(fp.getCheque().getBanco());
 
                         gPaConEIni.setgPagCheq(gPagCheq);
-
+ 
                     }
 
                 }
@@ -554,40 +580,33 @@ public class ComprobanteServicio {
 
         }
 
-        if (!Objects.isNull(receptor.getDireccion())){
+        if (!Objects.isNull(receptor.getDireccion())) {
             gDatRec.setdDirRec(receptor.getDireccion());
         }
-        if (!Objects.isNull(receptor.getCasaNro())){
-             gDatRec.setdNumCasRec(receptor.getCasaNro());
+        if (!Objects.isNull(receptor.getCasaNro())) {
+            gDatRec.setdNumCasRec(receptor.getCasaNro());
         }
-        if (!Objects.isNull(receptor.getDepartamento())){
-              gDatRec.setcDepRec(TDepartamento.getByVal(receptor.getDepartamento().shortValue()));
+        if (!Objects.isNull(receptor.getDepartamento())) {
+            gDatRec.setcDepRec(TDepartamento.getByVal(receptor.getDepartamento().shortValue()));
         }
-        
-       
+
         Distrito dis = this.distritoRepo.findByCodigoSifen(receptor.getDistrito());
-        
-        if (!Objects.isNull(receptor.getDistrito())){
-            
+
+        if (!Objects.isNull(receptor.getDistrito())) {
+
             gDatRec.setcDisRec(dis.getCodigoSifen().shortValue());
             gDatRec.setdDesDisRec(dis.getDistrito());
         }
-        
-        if (!Objects.isNull(receptor.getCiudad())){
-              gDatRec.setcCiuRec(dis.getCodigoSifen().shortValue());
-              gDatRec.setdDesCiuRec(dis.getDistrito());
+
+        if (!Objects.isNull(receptor.getCiudad())) {
+            gDatRec.setcCiuRec(dis.getCodigoSifen().shortValue());
+            gDatRec.setdDesCiuRec(dis.getDistrito());
         }
-       
-      
-        
-      
 
         return gDatRec;
 
         // Fin receptor
     }
-    
-   
 
     private TgCamNRE procesarRemision(Remision remision) {
 
@@ -597,10 +616,62 @@ public class ComprobanteServicio {
         gCamNRE.setiRespEmiNR(TiRespEmiNR.getByVal(remision.getResponsableEmision().shortValue()));
         gCamNRE.setdKmR(remision.getKilometrosRecorrido());
         gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate());
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
 
         return gCamNRE;
+
+    }
+
+    private TgCamNCDE procesarNotaCreditoDebito(NotaCreditoDebito nota) {
+
+        TgCamNCDE gCamNCDE = new TgCamNCDE();
+
+        gCamNCDE.setiMotEmi(TiMotEmi.getByVal(nota.getMotivoEmision().shortValue()));
+
+        return gCamNCDE;
+
+    }
+
+    private List<TgCamDEAsoc> procesarDocumentoAsociado(ArrayList<DocAsociado> documentosAsociados) {
+
+        List<TgCamDEAsoc> lgCamDEAsoc = new ArrayList<TgCamDEAsoc>();
+
+        for (DocAsociado x : documentosAsociados) {
+
+            TgCamDEAsoc gCamDEAsoc = new TgCamDEAsoc();
+
+            gCamDEAsoc.setiTipDocAso(TiTipDocAso.getByVal(x.getTipo().shortValue()));
+
+            if (gCamDEAsoc.getiTipDocAso().getVal() == TiTipDocAso.ELECTRONICO.getVal()) {
+
+                gCamDEAsoc.setdCdCDERef(x.getCdc());
+              
+                
+            }
+            
+            if (gCamDEAsoc.getiTipDocAso().getVal() == TiTipDocAso.IMPRESO.getVal()){
+            
+                gCamDEAsoc.setdNTimDI(String.valueOf(x.getTimbrado()));
+                gCamDEAsoc.setdEstDocAso(x.getEstablecimiento());
+                gCamDEAsoc.setdPExpDocAso(x.getPuntoExpedicion());
+                gCamDEAsoc.setdNumDocAso(x.getDocNro());
+                gCamDEAsoc.setiTipoDocAso(TiTIpoDoc.getByVal(x.getTipoDocAsociado().shortValue()));
+                gCamDEAsoc.setdFecEmiDI(x.getFechaEmision().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate());
+                
+            }
+            
+            
+            
+            //if (){}
+            
+            
+            lgCamDEAsoc.add(gCamDEAsoc);
+        }
+
+        return lgCamDEAsoc;
 
     }
 
@@ -710,21 +781,19 @@ public class ComprobanteServicio {
     private TgCamTrans procesarTransportista(Transportista transportista) {
 
         TgCamTrans gCamTrans = new TgCamTrans();
-        
+
         gCamTrans.setdNomTrans(transportista.getNombre());
         gCamTrans.setdDomFisc(transportista.getDomicilio());
-        
+
         gCamTrans.setdNumIDChof(transportista.getChoferDocNum());
         gCamTrans.setdNomChof(transportista.getChoferNombre());
         gCamTrans.setdDirChof(transportista.getChoferDireccion());
-
-        
 
         if (!Objects.isNull(transportista.getDv())) {
 
             gCamTrans.setiNatTrans(TiNatRec.CONTRIBUYENTE);
             Ruc ruc = this.rucRepo.findByRuc(transportista.getDocNro());
-            
+
             gCamTrans.setdNomTrans(ruc.getRazonSocial());
             gCamTrans.setdRucTrans(transportista.getDocNro());
             gCamTrans.setdDVTrans(transportista.getDv().shortValue());
@@ -738,8 +807,6 @@ public class ComprobanteServicio {
             gCamTrans.setcNacTrans(PaisType.getByName(transportista.getNacionalidad()));
 
         }
-        
-        
 
         return gCamTrans;
 

@@ -49,6 +49,10 @@ public class Comprobante {
     
     private Remision remision;
     
+    private NotaCreditoDebito notaCreditoDebito;
+
+    private ArrayList<DocAsociado> docAsociados;
+    
     private String infoFisco;
 
     public Contribuyente getContribuyente() {
@@ -140,6 +144,23 @@ public class Comprobante {
     public void setInfoFisco(String infoFisco) {
         this.infoFisco = infoFisco;
     }
-    
+
+    public NotaCreditoDebito getNotaCreditoDebito() {
+        return notaCreditoDebito;
+    }
+
+    public void setNotaCreditoDebito(NotaCreditoDebito notaCreditoDebito) {
+        this.notaCreditoDebito = notaCreditoDebito;
+    }
+
+    public ArrayList<DocAsociado> getDocAsociados() {
+        return docAsociados;
+    }
+
+    public void setDocAsociados(ArrayList<DocAsociado> docAsociados) {
+        this.docAsociados = docAsociados;
+    }
+
+   
    
 }

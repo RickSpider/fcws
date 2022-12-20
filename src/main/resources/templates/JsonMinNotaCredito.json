@@ -1,0 +1,43 @@
+
+{
+    "contribuyente": {
+        "contribuyenteid": 1,
+        "pass": ""
+    },
+    "timbrado": {
+        "timbrado": "12558948",
+        "establecimiento": "001",
+        "puntoExpedicion": "001",
+        "documentoNro": "0000001",
+        "fecIni": "2021-08-25T00:00:00-04:00"
+    },
+	"sucursal": "Central",
+    "receptor": {
+        "docNro": "4912021",
+        "dv": "2"
+    },
+    "fecha": "2022-12-20T00:00:00-04:00",
+    "notaCreditoDebito":{
+
+        "motivoEmision":1
+
+    },
+     "docAsociados":[{
+        "tipo":1,
+        "cdc":"01800025245001001000010522022121916667215900",
+        "tipoDocAsociado":"1"
+
+
+    }],
+    "detalles": [
+        {
+            "itemCodigo": "001",
+            "itemDescripcion": "producto001",
+            "cantidad": 1,
+            "precioUnitario": 200000,
+            "afectacionTributaria": 1,
+            "proporcionIVA": 100,
+            "tasaIVA": 10
+        }
+    ]
+}
