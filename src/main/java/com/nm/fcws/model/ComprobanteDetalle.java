@@ -14,7 +14,6 @@ public class ComprobanteDetalle {
     private String itemCodigo;
     private String itemDescripcion;
     private Long itemUndMedida;
-    private double desccuento;
     
     private double cantidad;
     private double precioUnitario;
@@ -98,14 +97,5 @@ public class ComprobanteDetalle {
     public void setAfectacionTributaria(Long afectacionTributaria) {
         this.afectacionTributaria = afectacionTributaria;
     }
-
-    public double getDesccuento() {
-        return desccuento;
-    }
-
-    public void setDesccuento(double desccuento) {
-        this.desccuento = desccuento;
-    }
-
      
 }
