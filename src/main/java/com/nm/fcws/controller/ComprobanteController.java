@@ -15,6 +15,7 @@ import com.roshka.sifen.core.beans.DocumentoElectronico;
 import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.types.TTiDE;
 import java.io.IOException;
+import java.util.Optional;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,16 @@ public class ComprobanteController {
 
         //log.info("Esto llego"+factura.getTimbradoFecIni().getTime());
         //log.info("Esto llego"+factura.getTimbradoFecIni());
+        
+        //Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
+        
+        Contribuyente contribuyente = this.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass()).get();
+        
+        if (contribuyente == null){
+        
+            return new ResponseEntity("Los datos del contribuyente no son correctos", HttpStatus.BAD_REQUEST);
+        }
+        
         String chequear = chequearCampos(factura);
 
         if (chequear != null) {
@@ -58,7 +69,9 @@ public class ComprobanteController {
 
         }
 
-        Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
+       
+        
+        
 
         DocumentoElectronico de = comprobanteServicio.procesar(factura, contribuyente, TTiDE.FACTURA_ELECTRONICA);
        
@@ -96,6 +109,25 @@ public class ComprobanteController {
         comprobanteServicio.enviarDE(de, contribuyente, cdc);
         
         return kude;
+    }
+    
+    private Optional<Contribuyente>  verfificarContribuyente(Long id, String pass){
+    
+        Optional<Contribuyente> oContribuyente = contribuyenteRepo.findById(id);
+        
+        if (oContribuyente.isPresent()){
+            
+            if (oContribuyente.get().getPass().compareTo(pass) == 0){
+            
+                return oContribuyente;
+                
+            }
+            
+            
+        }
+        
+        return Optional.empty();
+
     }
    
    

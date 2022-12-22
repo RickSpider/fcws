@@ -54,6 +54,11 @@ public class Comprobante {
     private ArrayList<DocAsociado> docAsociados;
     
     private String infoFisco;
+    
+    private double totalComprobante;
+    private double totalIVA10;
+    private double totalIVA5;
+    private double totalExcento;
 
     public Contribuyente getContribuyente() {
         
@@ -159,6 +164,38 @@ public class Comprobante {
 
     public void setDocAsociados(ArrayList<DocAsociado> docAsociados) {
         this.docAsociados = docAsociados;
+    }
+
+    public double getTotalComprobante() {
+        return totalComprobante;
+    }
+
+    public void setTotalComprobante(double totalComprobante) {
+        this.totalComprobante = totalComprobante;
+    }
+
+    public double getTotalIVA10() {
+        return totalIVA10;
+    }
+
+    public void setTotalIVA10(double totalIVA10) {
+        this.totalIVA10 = totalIVA10;
+    }
+
+    public double getTotalIVA5() {
+        return totalIVA5;
+    }
+
+    public void setTotalIVA5(double totalIVA5) {
+        this.totalIVA5 = totalIVA5;
+    }
+
+    public double getTotalExcento() {
+        return totalExcento;
+    }
+
+    public void setTotalExcento(double totalExcento) {
+        this.totalExcento = totalExcento;
     }
 
    

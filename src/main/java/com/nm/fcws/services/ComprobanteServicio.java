@@ -91,7 +91,6 @@ import com.roshka.sifen.core.types.TiTipDocRec;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,14 +129,31 @@ public class ComprobanteServicio {
 
     private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
-        SifenConfig config = new SifenConfig(
-                SifenConfig.TipoAmbiente.DEV,
-                "0001",
-                "ABCD0000000000000000000000000000",
-                SifenConfig.TipoCertificadoCliente.PFX,
-                contribuyente.getPathkey(),
-                contribuyente.getPasskey()
-        );
+        SifenConfig config = null;
+
+        if (contribuyente.getAmbiente().compareTo("DEV") == 0) {
+
+            config = new SifenConfig(
+                    SifenConfig.TipoAmbiente.DEV,
+                    "0001",
+                    "ABCD0000000000000000000000000000",
+                    SifenConfig.TipoCertificadoCliente.PFX,
+                    contribuyente.getPathkey(),
+                    contribuyente.getPasskey()
+            );
+
+        }
+
+        if (contribuyente.getAmbiente().compareTo("PROD") == 0) {
+
+            config = new SifenConfig(
+                    SifenConfig.TipoAmbiente.PROD,
+                    SifenConfig.TipoCertificadoCliente.PFX,
+                    contribuyente.getPathkey(),
+                    contribuyente.getPasskey()
+            );
+
+        }
 
         return config;
     }
@@ -361,7 +377,7 @@ public class ComprobanteServicio {
                         gPagCheq.setdBcoEmi(fp.getCheque().getBanco());
 
                         gPaConEIni.setgPagCheq(gPagCheq);
- 
+
                     }
 
                 }
@@ -646,28 +662,23 @@ public class ComprobanteServicio {
             if (gCamDEAsoc.getiTipDocAso().getVal() == TiTipDocAso.ELECTRONICO.getVal()) {
 
                 gCamDEAsoc.setdCdCDERef(x.getCdc());
-              
-                
+
             }
-            
-            if (gCamDEAsoc.getiTipDocAso().getVal() == TiTipDocAso.IMPRESO.getVal()){
-            
+
+            if (gCamDEAsoc.getiTipDocAso().getVal() == TiTipDocAso.IMPRESO.getVal()) {
+
                 gCamDEAsoc.setdNTimDI(String.valueOf(x.getTimbrado()));
                 gCamDEAsoc.setdEstDocAso(x.getEstablecimiento());
                 gCamDEAsoc.setdPExpDocAso(x.getPuntoExpedicion());
                 gCamDEAsoc.setdNumDocAso(x.getDocNro());
                 gCamDEAsoc.setiTipoDocAso(TiTIpoDoc.getByVal(x.getTipoDocAsociado().shortValue()));
                 gCamDEAsoc.setdFecEmiDI(x.getFechaEmision().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate());
-                
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate());
+
             }
-            
-            
-            
+
             //if (){}
-            
-            
             lgCamDEAsoc.add(gCamDEAsoc);
         }
 

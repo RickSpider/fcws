@@ -14,17 +14,12 @@ public class ComprobanteDetalle {
     private String itemCodigo;
     private String itemDescripcion;
     private Long itemUndMedida;
+    private double desccuento;
     
-    private int cantidad;
+    private double cantidad;
     private double precioUnitario;
     
-    /*
-        1= Gravado IVA
-        2= Exonerado (Art. 83- Ley 125/91)
-        3= Exento
-        4= Gravado parcial (Grav-Exento)
-    
-    */
+  
     private Long afectacionTributaria;
     private int proporcionIVA;
     private int tasaIVA;
@@ -45,14 +40,15 @@ public class ComprobanteDetalle {
         this.itemDescripcion = itemDescripcion;
     }
 
-    public int getCantidad() {
+    public double getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(double cantidad) {
         this.cantidad = cantidad;
     }
 
+    
     public double getPrecioUnitario() {
         return precioUnitario;
     }
@@ -89,8 +85,26 @@ public class ComprobanteDetalle {
         return afectacionTributaria;
     }
 
+    /**
+     * Posibles valores
+     *   
+     *   1: Gravado IVA
+     *   2: Exonerado (Art. 83- Ley 125/91)
+     *   3: Exento
+     *   4: Gravado parcial (Grav-Exento)
+     * 
+     * @param afectacionTributaria 
+     */
     public void setAfectacionTributaria(Long afectacionTributaria) {
         this.afectacionTributaria = afectacionTributaria;
+    }
+
+    public double getDesccuento() {
+        return desccuento;
+    }
+
+    public void setDesccuento(double desccuento) {
+        this.desccuento = desccuento;
     }
 
      
