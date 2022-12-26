@@ -6,6 +6,7 @@
 package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +29,10 @@ public class ActividadEconomica implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long actividadeconomicaid;
+    
+    @Column(columnDefinition = "boolean default false")
+    private boolean principal;
+    
     private String codigo;
     private String descripcion;
 
@@ -53,6 +58,14 @@ public class ActividadEconomica implements Serializable {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public boolean isPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(boolean principal) {
+        this.principal = principal;
     }
     
     

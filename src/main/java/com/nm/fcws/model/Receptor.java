@@ -14,7 +14,7 @@ public class Receptor {
     private String docNro;
     private String dv;
     
-    //estos campos se debe agregar si el receptor no tiene ruc
+    //estos campos se debe agregar si el receptor no tiene ruc  
     private Long tipoDocumento;
     private String direccion;
     private Integer casaNro;
@@ -73,6 +73,18 @@ public class Receptor {
         return tipoDocumento;
     }
 
+    /**
+     * 
+     * 1:Cedula Paraguay
+     * 2:Pasaporte
+     * 3:Cedula Extranjera
+     * 4:Carnet de Residencia
+     * 5:Innominado
+     * 6:Tarjeta Diplomatica de exoneracion fiscal
+     * 9:Otro
+     * 
+     * @param tipoDocumento 
+     */
     public void setTipoDocumento(Long tipoDocumento) {
         this.tipoDocumento = tipoDocumento;
     }

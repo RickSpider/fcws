@@ -54,9 +54,9 @@ public class ComprobanteController {
         
         //Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
         
-        Contribuyente contribuyente = this.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass()).get();
+        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass());
         
-        if (contribuyente == null){
+        if (!oContribuyente.isPresent()){
         
             return new ResponseEntity("Los datos del contribuyente no son correctos", HttpStatus.BAD_REQUEST);
         }
@@ -69,14 +69,11 @@ public class ComprobanteController {
 
         }
 
-       
-        
-        
 
-        DocumentoElectronico de = comprobanteServicio.procesar(factura, contribuyente, TTiDE.FACTURA_ELECTRONICA);
+        DocumentoElectronico de = comprobanteServicio.procesar(factura, oContribuyente.get(), TTiDE.FACTURA_ELECTRONICA);
        
 
-        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED);
+        return new ResponseEntity(generarKude(de, oContribuyente.get()), HttpStatus.CREATED);
     }
     
     

@@ -5,12 +5,18 @@
  */
 package com.nm.fcws.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.nm.fcws.modeldb.Contribuyente;
+
+
 /**
  *
  * @author BlackSpider
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Kude {
     
+    private Contribuyente Contribuyente;
     private String qr;
     private String cdc;
     
@@ -36,5 +42,15 @@ public class Kude {
     public void setCdc(String cdc) {
         this.cdc = cdc;
     }
+
+    public Contribuyente getContribuyente() {
+        return Contribuyente;
+    }
+
+    public void setContribuyente(Contribuyente Contribuyente) {
+        this.Contribuyente = Contribuyente;
+    }
+    
+    
     
 }

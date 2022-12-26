@@ -257,7 +257,7 @@ public class ComprobanteServicio {
         ce.setXml(de.generarXml(config));
         ce.setCdc(de.obtenerCDC());
 
-        ce.setTotal(de.getgTotSub().getdTotalGs().doubleValue());
+        ce.setTotal(comprobante.getTotalComprobante());
         // log.info(de.getEnlaceQR());
 
         this.comprobanteElectronicoRepo.save(ce);
