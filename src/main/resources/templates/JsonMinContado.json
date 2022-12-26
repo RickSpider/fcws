@@ -1,13 +1,13 @@
 {
     "contribuyente": {
         "contribuyenteid": 1,
-        "pass": ""
+        "pass": "A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3"
     },
     "timbrado": {
         "timbrado": "12558948",
         "establecimiento": "001",
         "puntoExpedicion": "001",
-        "documentoNro": "0000081",
+        "documentoNro": "0000110",
         "fecIni": "2021-08-25T00:00:00-04:00"
     },
 	"sucursal": "Central",
@@ -15,7 +15,7 @@
         "docNro": "4912021",
         "dv": "2"
     },
-    "fecha": "2022-12-09T00:00:00-04:00",
+    "fecha": "2022-12-23T00:00:00-04:00",
     "condicionOperacion":{
 
         "condicion":1,
@@ -25,16 +25,37 @@
             "monto": 100000
         },
         {
-            "monto":100000,
+            "monto":25000,
 
             "tarjeta":{
             "tipoPagoCodigo":3,
             "denominacionTarjeta":2,
             "formaProcesamiento":1
            
-        }
+            }
+        },
+         {
+            "monto":25000,
+
+            "tarjeta":{
+            "tipoPagoCodigo":3,
+            "denominacionTarjeta":2,
+            "formaProcesamiento":1
+           
+            }
+        },
+        {
+            "monto":50000,
+            "cheque":{
+
+                "nro":"12345678",
+                "banco":"Itau"
+
+            }
 
         }
+
+        
     ]
 
     },
