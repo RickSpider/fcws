@@ -7,7 +7,6 @@ package com.nm.fcws.model;
 
 import com.nm.fcws.modeldb.Contribuyente;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -18,6 +17,8 @@ import java.util.Date;
 //por el momento solo soporte para guaranies
 
 public class Comprobante {
+    
+    
     
    // private Long comprobanteid;
     

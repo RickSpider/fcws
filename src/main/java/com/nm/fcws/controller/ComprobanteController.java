@@ -75,7 +75,7 @@ public class ComprobanteController {
         DocumentoElectronico de = comprobanteServicio.procesar(factura, oContribuyente.get(), TTiDE.FACTURA_ELECTRONICA);
        
 
-        return new ResponseEntity(generarKude(de, oContribuyente.get()), HttpStatus.CREATED);
+        return new ResponseEntity(generarKude(de, oContribuyente.get(),Kude.FACTURA_ELECTRONICA), HttpStatus.CREATED);
     }
     
     
@@ -86,7 +86,7 @@ public class ComprobanteController {
         Contribuyente contribuyente = contribuyenteRepo.findById(remision.getContribuyente().getContribuyenteid()).get();
         DocumentoElectronico de = comprobanteServicio.procesar(remision, contribuyente, TTiDE.NOTA_DE_REMISION_ELECTRONICA);
 
-        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED); 
+        return new ResponseEntity(generarKude(de, contribuyente, Kude.NOTA_REMISION_ELECTRONICA), HttpStatus.CREATED); 
     }
     
     @PostMapping(value = "/notacredito", produces = "application/json")
@@ -95,15 +95,15 @@ public class ComprobanteController {
         Contribuyente contribuyente = contribuyenteRepo.findById(notaCredito.getContribuyente().getContribuyenteid()).get();
         DocumentoElectronico de = comprobanteServicio.procesar(notaCredito, contribuyente, TTiDE.NOTA_DE_CREDITO_ELECTRONICA);
 
-        return new ResponseEntity(generarKude(de, contribuyente), HttpStatus.CREATED); 
+        return new ResponseEntity(generarKude(de, contribuyente, Kude.NOTA_DEBITO_ELECTRONICA), HttpStatus.CREATED); 
     }
     
     
-    private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException{
+    private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente, String tipoKude) throws SifenException, ParserConfigurationException, SAXException, IOException{
     
         String cdc = de.obtenerCDC();
         //log.info(cdc);
-        Kude kude = new Kude(de.getEnlaceQR(), cdc);
+        Kude kude = new Kude(de.getEnlaceQR(), cdc, tipoKude);
 
         comprobanteServicio.enviarDE(de, contribuyente, cdc);
         
