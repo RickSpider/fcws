@@ -5,7 +5,7 @@
  */
 package com.nm.fcws.model;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,8 +20,8 @@ public class Transporte {
     private String condicionNeg;
     private String manifiestoNro;
     private String despachoImpNro;
-    private Calendar fechaSalida;
-    private Calendar fechaLlegada;
+    private Date fechaSalida;
+    private Date fechaLlegada;
     private Long paisDestino;
 
     private MercaderiaMov salida;
@@ -62,7 +62,7 @@ public class Transporte {
      * @param vehiculos
      * @param transportista 
      */
-    public Transporte(Long tipo, Long modo, Long responsableFlete, Calendar fechaSalida, Calendar fechaLlegada, MercaderiaMov salida, List<MercaderiaMov> entregas, List<Vehiculo> vehiculos, Transportista transportista) {
+    public Transporte(Long tipo, Long modo, Long responsableFlete, Date fechaSalida, Date fechaLlegada, MercaderiaMov salida, List<MercaderiaMov> entregas, List<Vehiculo> vehiculos, Transportista transportista) {
         this.tipo = tipo;
         this.modo = modo;
         this.responsableFlete = responsableFlete;
@@ -138,19 +138,19 @@ public class Transporte {
         this.manifiestoNro = manifiestoNro;
     }
 
-    public Calendar getFechaSalida() {
+    public Date getFechaSalida() {
         return fechaSalida;
     }
 
-    public void setFechaSalida(Calendar fechaSalida) {
+    public void setFechaSalida(Date fechaSalida) {
         this.fechaSalida = fechaSalida;
     }
 
-    public Calendar getFechaLlegada() {
+    public Date getFechaLlegada() {
         return fechaLlegada;
     }
 
-    public void setFechaLlegada(Calendar fechaLlegada) {
+    public void setFechaLlegada(Date fechaLlegada) {
         this.fechaLlegada = fechaLlegada;
     }
 

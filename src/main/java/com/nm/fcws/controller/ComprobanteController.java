@@ -54,6 +54,8 @@ public class ComprobanteController {
         
         //Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
         
+        log.info("Recibiendo Factura!!!!!");
+        
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass());
         
         if (!oContribuyente.isPresent()){

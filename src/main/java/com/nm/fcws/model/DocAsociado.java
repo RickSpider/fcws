@@ -4,7 +4,7 @@
  */
 package com.nm.fcws.model;
 
-import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -19,7 +19,7 @@ public class DocAsociado {
     private String puntoExpedicion;
     private String docNro;
     private Long tipoDocAsociado;
-    private Calendar fechaEmision;
+    private Date fechaEmision;
     private String compRetencionNro;
     private String resolucionCreditoFiscalNro;
     private Long constanciaTipo;
@@ -134,11 +134,11 @@ public class DocAsociado {
         this.tipoDocAsociado = tipoDocAsociado;
     }
 
-    public Calendar getFechaEmision() {
+    public Date getFechaEmision() {
         return fechaEmision;
     }
 
-    public void setFechaEmision(Calendar fechaEmision) {
+    public void setFechaEmision(Date fechaEmision) {
         this.fechaEmision = fechaEmision;
     }
 

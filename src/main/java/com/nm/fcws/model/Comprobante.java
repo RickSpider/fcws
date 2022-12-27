@@ -8,6 +8,7 @@ package com.nm.fcws.model;
 import com.nm.fcws.modeldb.Contribuyente;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -38,7 +39,7 @@ public class Comprobante {
     //private int tipoImpuesto;
     
   
-    private Calendar fecha;
+    private Date fecha;
     
     private CondicionOperacion condicionOperacion;
     
@@ -102,11 +103,11 @@ public class Comprobante {
         this.operacionMoneda = operacionMoneda;
     }
 
-    public Calendar getFecha() {
+    public Date getFecha() {
         return fecha;
     }
 
-    public void setFecha(Calendar fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 

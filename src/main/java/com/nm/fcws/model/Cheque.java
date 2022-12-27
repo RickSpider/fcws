@@ -24,12 +24,11 @@ public class Cheque {
         this.nro = nro;
         this.banco = banco;
     }
-    
-    
 
     public String getNro() {
         return nro;
     }
+    
     /**
      * 
      * Completar con 0 (cero) a la izquierda hasta alcanzar 8 (ocho) cifras
@@ -48,7 +47,5 @@ public class Cheque {
     public void setBanco(String banco) {
         this.banco = banco;
     }
-    
-    
-    
+
 }

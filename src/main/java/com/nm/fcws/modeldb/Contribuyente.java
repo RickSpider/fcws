@@ -6,8 +6,6 @@
 package com.nm.fcws.modeldb;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -259,7 +257,5 @@ public class Contribuyente implements Serializable {
     public void setUnidadMedida(UnidadMedida unidadMedida) {
         this.unidadMedida = unidadMedida;
     }
-
-    
     
 }

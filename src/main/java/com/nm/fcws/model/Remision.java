@@ -5,7 +5,7 @@
  */
 package com.nm.fcws.model;
 
-import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -16,7 +16,7 @@ public class Remision {
     private Long motivoEmsion;
     private Long responsableEmision;
     private Integer kilometrosRecorrido;
-    private Calendar fechaEmiFactura;
+    private Date fechaEmiFactura;
 
     /**
      * 
@@ -107,7 +107,7 @@ public class Remision {
         this.kilometrosRecorrido = kilometrosRecorrido;
     }
 
-    public Calendar getFechaEmiFactura() {
+    public Date getFechaEmiFactura() {
         return fechaEmiFactura;
     }
 
@@ -118,7 +118,7 @@ public class Remision {
      * 
      * @param fechaEmiFactura 
      */
-    public void setFechaEmiFactura(Calendar fechaEmiFactura) {
+    public void setFechaEmiFactura(Date fechaEmiFactura) {
         this.fechaEmiFactura = fechaEmiFactura;
     }
     
