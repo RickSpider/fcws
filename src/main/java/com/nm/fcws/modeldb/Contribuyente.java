@@ -88,7 +88,17 @@ public class Contribuyente implements Serializable {
     @ManyToOne
     @JoinColumn(name = "unidadmedidaid")
     private UnidadMedida unidadMedida;
+    
+    private Long cscid;
+    private String csc;
 
+    /**
+     * 
+     * PROD = produccion
+     * DEV = desarrollo
+     * 
+     * @param ambiente 
+     */
     public void setAmbiente(String ambiente) {
         this.ambiente = ambiente;
     }
@@ -257,5 +267,22 @@ public class Contribuyente implements Serializable {
     public void setUnidadMedida(UnidadMedida unidadMedida) {
         this.unidadMedida = unidadMedida;
     }
+
+    public Long getCscid() {
+        return cscid;
+    }
+
+    public void setCscid(Long cscid) {
+        this.cscid = cscid;
+    }
+
+    public String getCsc() {
+        return csc;
+    }
+
+    public void setCsc(String csc) {
+        this.csc = csc;
+    }
+    
     
 }
