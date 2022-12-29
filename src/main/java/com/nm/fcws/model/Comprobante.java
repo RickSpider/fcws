@@ -204,10 +204,5 @@ public class Comprobante {
     public void setTotalExcento(Double totalExcento) {
         this.totalExcento = totalExcento;
     }
-
- 
- 
-
-   
    
 }

@@ -5,8 +5,9 @@
  */
 package com.nm.fcws.model;
 
-import java.util.Calendar;
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -14,10 +15,19 @@ import java.util.Date;
  */
 public class Timbrado {
  
+    @NotNull(message="Falta numero de Timbrado")
     private String timbrado;
+    
+    @NotBlank(message="Falta numero de establecimiento ej: 001")
     private String establecimiento;
+    
+    @NotBlank(message="Falta punto de expedicion ej: 001")
     private String puntoExpedicion;
+    
+    @NotBlank(message="Falta numero de documento ej: 0000001")
     private String documentoNro;
+    
+    @NotNull(message="Falta la fecha de inicio del timbrado formato ")
     private Date fecIni;
 
     public String getTimbrado() {

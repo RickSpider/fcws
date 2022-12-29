@@ -57,15 +57,11 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity factura(@Valid @RequestBody Comprobante factura) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        //log.info("Esto llego"+factura.getTimbradoFecIni().getTime());
-        //log.info("Esto llego"+factura.getTimbradoFecIni());
-        //Contribuyente contribuyente = contribuyenteRepo.findById(factura.getContribuyente().getContribuyenteid()).get();
-        //log.info("Recibiendo Factura!!!!!");
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
-            return new ResponseEntity("Los datos del contribuyente no son correctos", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
 
         DocumentoElectronico de = comprobanteServicio.procesar(factura, oContribuyente.get(), TTiDE.FACTURA_ELECTRONICA);
@@ -77,12 +73,11 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity remision(@RequestBody Comprobante remision) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        //Contribuyente contribuyente = contribuyenteRepo.findById(remision.getContribuyente().getContribuyenteid()).get();
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(remision.getContribuyente().getContribuyenteid(), remision.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
-            return new ResponseEntity("Los datos del contribuyente no son correctos", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
 
         DocumentoElectronico de = comprobanteServicio.procesar(remision, oContribuyente.get(), TTiDE.NOTA_DE_REMISION_ELECTRONICA);
@@ -94,12 +89,11 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity notaCredito(@RequestBody Comprobante notaCredito) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        //Contribuyente contribuyente = contribuyenteRepo.findById(notaCredito.getContribuyente().getContribuyenteid()).get();
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(notaCredito.getContribuyente().getContribuyenteid(), notaCredito.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
-            return new ResponseEntity("Los datos del contribuyente no son correctos", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
 
         DocumentoElectronico de = comprobanteServicio.procesar(notaCredito, oContribuyente.get(), TTiDE.NOTA_DE_CREDITO_ELECTRONICA);
