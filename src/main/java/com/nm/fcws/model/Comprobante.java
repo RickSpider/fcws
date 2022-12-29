@@ -55,7 +55,6 @@ public class Comprobante {
     
     private String infoFisco;
     
-    @NotNull(message = "Falta datos de Total de Comprobante")
     private Double totalComprobante;
     
     
