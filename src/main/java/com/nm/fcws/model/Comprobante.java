@@ -8,6 +8,8 @@ package com.nm.fcws.model;
 import com.nm.fcws.modeldb.Contribuyente;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -18,32 +20,28 @@ import java.util.Date;
 
 public class Comprobante {
     
-    
-    
-   // private Long comprobanteid;
-    
-    
-    //datos contribuyente
+
+    @NotNull(message = "Falta datos de Contribuyente")
     private Contribuyente contribuyente;
     
+    @NotNull(message = "Falta datos de Timbrado")
     private Timbrado timbrado;
 
+    @NotBlank(message="Falta nombre de la Sucursal de Emision")
     private String sucursal;
    
     //conforme a la moneda en sifen
     private String operacionMoneda;
 
+    @NotNull(message = "Falta datos del Receptor")
     private Receptor receptor;
-    
-    //private String receptorTipoPersona;
-   // private int tipoTransaccion;
-    //private int tipoImpuesto;
-    
   
+    @NotNull(message = "Falta la Fecha de Emision del comprobante")
     private Date fecha;
     
     private CondicionOperacion condicionOperacion;
     
+    @NotNull(message = "Faltan Los detalles del comprobante")
     private ArrayList<ComprobanteDetalle> detalles = new ArrayList<ComprobanteDetalle>();
     
     private Transporte transporte;
@@ -57,10 +55,17 @@ public class Comprobante {
     
     private String infoFisco;
     
-    private double totalComprobante;
-    private double totalIVA10;
-    private double totalIVA5;
-    private double totalExcento;
+    @NotNull(message = "Falta datos de Total de Comprobante")
+    private Double totalComprobante;
+    
+    
+    private Double totalIVA10;
+    
+   
+    private Double totalIVA5;
+    
+    
+    private Double totalExcento;
 
     public Contribuyente getContribuyente() {
         
@@ -168,37 +173,40 @@ public class Comprobante {
         this.docAsociados = docAsociados;
     }
 
-    public double getTotalComprobante() {
+    public Double getTotalComprobante() {
         return totalComprobante;
     }
 
-    public void setTotalComprobante(double totalComprobante) {
+    public void setTotalComprobante(Double totalComprobante) {
         this.totalComprobante = totalComprobante;
     }
 
-    public double getTotalIVA10() {
+    public Double getTotalIVA10() {
         return totalIVA10;
     }
 
-    public void setTotalIVA10(double totalIVA10) {
+    public void setTotalIVA10(Double totalIVA10) {
         this.totalIVA10 = totalIVA10;
     }
 
-    public double getTotalIVA5() {
+    public Double getTotalIVA5() {
         return totalIVA5;
     }
 
-    public void setTotalIVA5(double totalIVA5) {
+    public void setTotalIVA5(Double totalIVA5) {
         this.totalIVA5 = totalIVA5;
     }
 
-    public double getTotalExcento() {
+    public Double getTotalExcento() {
         return totalExcento;
     }
 
-    public void setTotalExcento(double totalExcento) {
+    public void setTotalExcento(Double totalExcento) {
         this.totalExcento = totalExcento;
     }
+
+ 
+ 
 
    
    
