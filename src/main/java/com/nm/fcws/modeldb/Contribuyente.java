@@ -89,7 +89,7 @@ public class Contribuyente implements Serializable {
     @JoinColumn(name = "unidadmedidaid")
     private UnidadMedida unidadMedida;
     
-    private Long cscid;
+    private String cscid;
     private String csc;
 
     /**
@@ -268,11 +268,11 @@ public class Contribuyente implements Serializable {
         this.unidadMedida = unidadMedida;
     }
 
-    public Long getCscid() {
+    public String getCscid() {
         return cscid;
     }
 
-    public void setCscid(Long cscid) {
+    public void setCscid(String cscid) {
         this.cscid = cscid;
     }
 

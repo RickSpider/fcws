@@ -10,6 +10,7 @@ import com.nm.fcws.model.ComprobanteDetalle;
 import com.nm.fcws.model.CondicionOperacion;
 import com.nm.fcws.model.Cuota;
 import com.nm.fcws.model.DocAsociado;
+import com.nm.fcws.model.Kude;
 import com.nm.fcws.model.MercaderiaMov;
 import com.nm.fcws.model.NotaCreditoDebito;
 import com.nm.fcws.model.Receptor;
@@ -24,6 +25,7 @@ import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.modeldb.Distrito;
 import com.nm.fcws.modeldb.Ruc;
+import com.nm.fcws.modeldb.TipoComprobanteElectronico;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
 import com.nm.fcws.repo.DistritoRepo;
 import com.nm.fcws.repo.RucRepo;
@@ -148,6 +150,8 @@ public class ComprobanteServicio {
 
             config = new SifenConfig(
                     SifenConfig.TipoAmbiente.PROD,
+                    contribuyente.getCscid(),
+                    contribuyente.getCsc(),
                     SifenConfig.TipoCertificadoCliente.PFX,
                     contribuyente.getPathkey(),
                     contribuyente.getPasskey()
@@ -187,17 +191,17 @@ public class ComprobanteServicio {
         TdDatGralOpe gDatGralOpe = new TdDatGralOpe();
         gDatGralOpe.setdFeEmiDE(de.getdFecFirma());
 
-        if (de.getgTimb().getiTiDE().getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
-                || de.getgTimb().getiTiDE().getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()
-                || de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()) {
+        if (tipoDE.getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
+                || tipoDE.getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()
+                || tipoDE.getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()) {
 
             //estandarizar a guaranies
             gDatGralOpe.setgOpeCom(this.procesarOperacionComercial(contribuyente, comprobante, de.getgTimb().getiTiDE().getVal()));
 
         }
 
-        if (de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()
-                || de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_DEBITO_ELECTRONICA.getVal()) {
+        if (tipoDE.getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()
+                || tipoDE.getVal() == TTiDE.NOTA_DE_DEBITO_ELECTRONICA.getVal()) {
 
             de.setgCamDEAsocList(this.procesarDocumentoAsociado(comprobante.getDocAsociados()));
 
@@ -215,8 +219,8 @@ public class ComprobanteServicio {
         //delles de pago
         TgDtipDE gDtipDE = new TgDtipDE();
 
-        if (de.getgTimb().getiTiDE().getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
-                || de.getgTimb().getiTiDE().getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()) {
+        if (tipoDE.getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
+                || tipoDE.getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()) {
 
             TgCamFE gCamFE = new TgCamFE();
             gCamFE.setiIndPres(TiIndPres.OPERACION_ELECTRONICA); //default operacion electronica
@@ -226,7 +230,7 @@ public class ComprobanteServicio {
 
         }
 
-        if (de.getgTimb().getiTiDE().getVal() == TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()) {
+        if (tipoDE.getVal() == TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()) {
 
             gDtipDE.setgCamNRE(this.procesarRemision(comprobante.getRemision()));
 
@@ -256,7 +260,9 @@ public class ComprobanteServicio {
         ce.setNumero(comprobante.getTimbrado().getEstablecimiento() + "-" + comprobante.getTimbrado().getPuntoExpedicion() + "-" + comprobante.getTimbrado().getDocumentoNro());
         ce.setXml(de.generarXml(config));
         ce.setCdc(de.obtenerCDC());
-
+        
+        ce.setTipoComprobanteElectronico(new TipoComprobanteElectronico(Long.valueOf(tipoDE.getVal())));
+        
         ce.setTotal(comprobante.getTotalComprobante());
         // log.info(de.getEnlaceQR());
 

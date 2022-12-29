@@ -42,6 +42,14 @@ insert into contribuyentesactividades (contribuyenteid, actividadeconomicaid) va
 insert into contribuyentesactividades (contribuyenteid, actividadeconomicaid) values (1,3);
 insert into contribuyentesactividades (contribuyenteid, actividadeconomicaid) values (1,4);
 
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (1,'FACTURA ELECTRONICA');
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (2,'FACTURA ELECTRONICA DE EXPORTACION');
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (3,'FACTURA ELECTRONICA DE IMPORTACION');
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (4,'AUTOFACTURA ELECTRONICA');
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (5,'NOTA DE CREDITO');
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (6,'NOTA DE DEBITO');
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (7,'NOTA D REMISION ELECTRONICA');
+insert into tiposcomprobanteselectronicos(tipocomprobanteelectronicoid, tipocomprobanteelectronico) values (8,'COMPROBANTE DE RETENCION ELECTRONICO');
 
 --update contribuyentes
 --set pathkey = '', passkey=''

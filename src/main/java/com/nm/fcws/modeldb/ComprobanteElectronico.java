@@ -60,6 +60,10 @@ public class ComprobanteElectronico implements Serializable {
     
     @Column(columnDefinition = "boolean default false")
     private boolean enviado = false;
+    
+    @ManyToOne
+    @JoinColumn(name = "tipocomprobanteelectronicoid")
+    private TipoComprobanteElectronico tipoComprobanteElectronico;
 
     public Long getId() {
         return id;
@@ -140,4 +144,14 @@ public class ComprobanteElectronico implements Serializable {
     public void setEnviado(boolean enviado) {
         this.enviado = enviado;
     }
+
+    public TipoComprobanteElectronico getTipoComprobanteElectronico() {
+        return tipoComprobanteElectronico;
+    }
+
+    public void setTipoComprobanteElectronico(TipoComprobanteElectronico tipoComprobanteElectronico) {
+        this.tipoComprobanteElectronico = tipoComprobanteElectronico;
+    }
+    
+    
 }
