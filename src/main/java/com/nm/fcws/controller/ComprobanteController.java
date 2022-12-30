@@ -18,6 +18,7 @@ import com.nm.fcws.repo.RucRepo;
 import com.nm.fcws.services.ComprobanteServicio;
 import com.nm.fcws.services.EventoServicio;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
+import com.roshka.sifen.core.beans.EventosDE;
 import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.types.TTiDE;
 import java.io.IOException;
@@ -111,9 +112,9 @@ public class ComprobanteController {
         return new ResponseEntity(generarKude(de, oContribuyente.get(), Kude.NOTA_CREDITO_ELECTRONICA), HttpStatus.CREATED);
     }
     
-    @PostMapping(value = "/cancelacion", produces = "application/json")
+    @PostMapping(value = "/cancelarfactura", produces = "application/json")
     public @ResponseBody
-    ResponseEntity cancelacion(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    ResponseEntity cancelarFactura(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
 
@@ -123,10 +124,50 @@ public class ComprobanteController {
         }
 
         
-        eventoServicio.procesarCancelacion(comprobante, oContribuyente.get());
+        EventosDE ede = eventoServicio.procesarCancelacion(comprobante, oContribuyente.get(), "1");
+        
+        eventoServicio.enviarEvento(ede, oContribuyente.get(), comprobante.getCdc());
 
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity("Cancelacion de factura enviada",HttpStatus.CREATED);
     }
+    
+    @PostMapping(value = "/cancelarnotacredito", produces = "application/json")
+    public @ResponseBody
+    ResponseEntity cancelarNotaCredito(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
+
+        if (!oContribuyente.isPresent()) {
+
+            return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
+        }
+
+        
+        EventosDE ede = eventoServicio.procesarCancelacion(comprobante, oContribuyente.get(), "5");
+        
+        eventoServicio.enviarEvento(ede, oContribuyente.get(), comprobante.getCdc());
+
+        return new ResponseEntity("Cancelacion de Nota de Credito enviada",HttpStatus.CREATED);
+    }
+    
+    @PostMapping(value = "/cancelarremision", produces = "application/json")
+    public @ResponseBody
+    ResponseEntity cancelarRemision(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
+
+        if (!oContribuyente.isPresent()) {
+
+            return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
+        }
+
+        EventosDE ede = eventoServicio.procesarCancelacion(comprobante, oContribuyente.get(), "7");
+        
+        eventoServicio.enviarEvento(ede, oContribuyente.get(), comprobante.getCdc());
+
+        return new ResponseEntity("Cancelacion de Remision enviada",HttpStatus.CREATED);
+    }
+    
     private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente, String tipoKude) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         String cdc = de.obtenerCDC();
