@@ -5,6 +5,8 @@
  */
 package com.nm.fcws.controller;
 
+import com.nm.fcws.interfaces.iCancelacion;
+import com.nm.fcws.interfaces.iEvento;
 import com.nm.fcws.interfaces.iFactura;
 import com.nm.fcws.interfaces.iNotaCD;
 import com.nm.fcws.interfaces.iRemision;
@@ -14,6 +16,7 @@ import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.RucRepo;
 import com.nm.fcws.services.ComprobanteServicio;
+import com.nm.fcws.services.EventoServicio;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
 import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.types.TTiDE;
@@ -53,6 +56,9 @@ public class ComprobanteController {
 
     @Autowired
     private ComprobanteServicio comprobanteServicio;
+    
+    @Autowired
+    public EventoServicio eventoServicio;
 
     @Autowired
     private RucRepo rucRepo;
@@ -104,7 +110,23 @@ public class ComprobanteController {
 
         return new ResponseEntity(generarKude(de, oContribuyente.get(), Kude.NOTA_CREDITO_ELECTRONICA), HttpStatus.CREATED);
     }
+    
+    @PostMapping(value = "/cancelacion", produces = "application/json")
+    public @ResponseBody
+    ResponseEntity cancelacion(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
+        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
+
+        if (!oContribuyente.isPresent()) {
+
+            return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
+        }
+
+        
+        eventoServicio.procesarCancelacion(comprobante, oContribuyente.get());
+
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
     private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente, String tipoKude) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         String cdc = de.obtenerCDC();

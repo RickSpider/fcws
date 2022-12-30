@@ -5,6 +5,8 @@
  */
 package com.nm.fcws.model;
 
+import com.nm.fcws.interfaces.iCancelacion;
+import com.nm.fcws.interfaces.iEvento;
 import com.nm.fcws.modeldb.Contribuyente;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +26,7 @@ import com.nm.fcws.interfaces.iRemision;
 public class Comprobante{
     
 
-    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta datos de Contribuyente" )
+    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class, iCancelacion.class, iEvento.class}, message = "Falta datos de Contribuyente" )
     private Contribuyente contribuyente;
     
     @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta datos de Timbrado")
@@ -39,7 +41,7 @@ public class Comprobante{
     @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta datos del Receptor")
     private Receptor receptor;
   
-    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta la Fecha de Emision del comprobante")
+    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class, iCancelacion.class, iEvento.class}, message = "Falta la Fecha de Emision del comprobante")
     private Date fecha;
     
     private CondicionOperacion condicionOperacion;
@@ -73,6 +75,12 @@ public class Comprobante{
     
   
     private Double totalExcento;
+    
+    //seccion de cancelacion
+    @NotBlank(message = "Falta el CDC del comprobante", groups = {iCancelacion.class, iEvento.class})
+    private String cdc;
+    
+    private String motivoEvento;
 
     public Contribuyente getContribuyente() {
         
@@ -211,5 +219,22 @@ public class Comprobante{
     public void setTotalExcento(Double totalExcento) {
         this.totalExcento = totalExcento;
     }
+
+    public String getCdc() {
+        return cdc;
+    }
+
+    public void setCdc(String cdc) {
+        this.cdc = cdc;
+    }
+
+    public String getMotivoEvento() {
+        return motivoEvento;
+    }
+
+    public void setMotivoEvento(String motivoEvento) {
+        this.motivoEvento = motivoEvento;
+    }
    
+    
 }
