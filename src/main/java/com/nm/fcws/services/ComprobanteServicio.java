@@ -94,6 +94,7 @@ import com.roshka.sifen.core.types.TiTipDocRec;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -798,7 +799,7 @@ public class ComprobanteServicio {
 
             if (x.getTipoIdentificacion().longValue() == 2L) {
 
-                gVehTras.setdMarVeh(x.getMatriculaNro());
+                gVehTras.setdNroMatVeh(x.getMatriculaNro());
 
             }
             lTgVehTras.add(gVehTras);
@@ -863,7 +864,8 @@ public class ComprobanteServicio {
             }
 
             //discutir va a pasar el cliente proveer la tabla del sifen
-            gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()));
+           // gCamItem.setdCantProSer(x.getCantidad());
+           gCamItem.setdCantProSer(BigDecimal.valueOf(x.getCantidad()).setScale(2, RoundingMode.HALF_UP));
            
             if (TipoDE.getVal() != TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()){
             
