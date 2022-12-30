@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import com.nm.fcws.interfaces.iFactura;
+import com.nm.fcws.interfaces.iNotaCD;
+import com.nm.fcws.interfaces.iRemision;
 
 /**
  *
@@ -18,52 +21,57 @@ import javax.validation.constraints.NotNull;
 
 //por el momento solo soporte para guaranies
 
-public class Comprobante {
+public class Comprobante{
     
 
-    @NotNull(message = "Falta datos de Contribuyente")
+    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta datos de Contribuyente" )
     private Contribuyente contribuyente;
     
-    @NotNull(message = "Falta datos de Timbrado")
+    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta datos de Timbrado")
     private Timbrado timbrado;
 
-    @NotBlank(message="Falta nombre de la Sucursal de Emision")
+    @NotBlank(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message="Falta nombre de la Sucursal de Emision")
     private String sucursal;
    
     //conforme a la moneda en sifen
     private String operacionMoneda;
 
-    @NotNull(message = "Falta datos del Receptor")
+    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta datos del Receptor")
     private Receptor receptor;
   
-    @NotNull(message = "Falta la Fecha de Emision del comprobante")
+    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Falta la Fecha de Emision del comprobante")
     private Date fecha;
     
     private CondicionOperacion condicionOperacion;
     
-    @NotNull(message = "Faltan Los detalles del comprobante")
+    @NotNull(groups = {iFactura.class, iNotaCD.class, iRemision.class}, message = "Faltan Los detalles del comprobante")
     private ArrayList<ComprobanteDetalle> detalles = new ArrayList<ComprobanteDetalle>();
     
+    @NotNull(message = "Faltan datos de Transporte", groups = iRemision.class)
     private Transporte transporte;
 
-    
+    @NotNull(message = "Faltan datos de Remision", groups = iRemision.class)
     private Remision remision;
     
+    @NotNull(message = "Faltan datos de Remision", groups = iNotaCD.class)
     private NotaCreditoDebito notaCreditoDebito;
 
+    @NotNull(message = "Faltan datos de Remision", groups = iNotaCD.class)
     private ArrayList<DocAsociado> docAsociados;
     
+    @NotNull(message = "Faltan datos de Informacion para el Fisco", groups = iRemision.class)
     private String infoFisco;
     
+    @NotNull(message = "Falta el monto total del comprobante", groups = {iFactura.class, iNotaCD.class})
     private Double totalComprobante;
     
-    
+   
     private Double totalIVA10;
     
-   
+    
     private Double totalIVA5;
     
-    
+  
     private Double totalExcento;
 
     public Contribuyente getContribuyente() {
