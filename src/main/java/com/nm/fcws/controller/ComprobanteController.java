@@ -5,6 +5,9 @@
  */
 package com.nm.fcws.controller;
 
+import com.nm.fcws.interfaces.iFactura;
+import com.nm.fcws.interfaces.iNotaCD;
+import com.nm.fcws.interfaces.iRemision;
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.Kude;
 import com.nm.fcws.modeldb.Contribuyente;
@@ -26,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +59,7 @@ public class ComprobanteController {
 
     @PostMapping(value = "/factura", produces = "application/json")
     public @ResponseBody
-    ResponseEntity factura(@Valid @RequestBody Comprobante factura) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    ResponseEntity factura(@Validated({iFactura.class}) @RequestBody Comprobante factura) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass());
 
@@ -71,7 +75,7 @@ public class ComprobanteController {
 
     @PostMapping(value = "/remision", produces = "application/json")
     public @ResponseBody
-    ResponseEntity remision(@RequestBody Comprobante remision) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    ResponseEntity remision(@Validated(iRemision.class) @RequestBody Comprobante remision) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(remision.getContribuyente().getContribuyenteid(), remision.getContribuyente().getPass());
 
@@ -87,7 +91,7 @@ public class ComprobanteController {
 
     @PostMapping(value = "/notacredito", produces = "application/json")
     public @ResponseBody
-    ResponseEntity notaCredito(@RequestBody Comprobante notaCredito) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    ResponseEntity notaCredito(@Validated(iNotaCD.class) @RequestBody Comprobante notaCredito) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(notaCredito.getContribuyente().getContribuyenteid(), notaCredito.getContribuyente().getPass());
 
@@ -98,7 +102,7 @@ public class ComprobanteController {
 
         DocumentoElectronico de = comprobanteServicio.procesar(notaCredito, oContribuyente.get(), TTiDE.NOTA_DE_CREDITO_ELECTRONICA);
 
-        return new ResponseEntity(generarKude(de, oContribuyente.get(), Kude.NOTA_DEBITO_ELECTRONICA), HttpStatus.CREATED);
+        return new ResponseEntity(generarKude(de, oContribuyente.get(), Kude.NOTA_CREDITO_ELECTRONICA), HttpStatus.CREATED);
     }
 
     private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente, String tipoKude) throws SifenException, ParserConfigurationException, SAXException, IOException {
