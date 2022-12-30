@@ -1,14 +1,13 @@
-
 {
     "contribuyente": {
         "contribuyenteid": 1,
-        "pass": ""
+        "pass": "A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3"
     },
     "timbrado": {
         "timbrado": "12558948",
         "establecimiento": "001",
         "puntoExpedicion": "001",
-        "documentoNro": "0000001",
+        "documentoNro": "0000003",
         "fecIni": "2021-08-25T00:00:00-04:00"
     },
 	"sucursal": "Central",
@@ -24,7 +23,7 @@
     },
      "docAsociados":[{
         "tipo":1,
-        "cdc":"01800025245001001000010522022121916667215900",
+        "cdc":"01800025245001001000016422022122618681113960",
         "tipoDocAsociado":"1"
 
 
@@ -39,5 +38,7 @@
             "proporcionIVA": 100,
             "tasaIVA": 10
         }
-    ]
+    ],
+
+    "totalComprobante":200000
 }

@@ -1,13 +1,13 @@
 {
     "contribuyente": {
         "contribuyenteid": 1,
-        "pass": ""
+        "pass": "A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3"
     },
     "timbrado": {
         "timbrado": "12558948",
         "establecimiento": "001",
         "puntoExpedicion": "001",
-        "documentoNro": "0000001",
+        "documentoNro": "0000005",
         "fecIni": "2021-08-25T00:00:00-04:00"
     },
 	"sucursal": "Central",
@@ -82,11 +82,8 @@
         {
             "itemCodigo": "001",
             "itemDescripcion": "producto001",
-            "cantidad": 1,
-            "precioUnitario": 200000,
-            "afectacionTributaria": 1,
-            "proporcionIVA": 100,
-            "tasaIVA": 10
+            "cantidad": 1
+           
         }
     ],
     "infoFisco":"Mercaderia Fragil"
