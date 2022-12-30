@@ -32,6 +32,7 @@ import com.nm.fcws.repo.RucRepo;
 import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.SifenConfig;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
+import com.roshka.sifen.core.beans.EventosDE;
 import com.roshka.sifen.core.beans.response.RespuestaRecepcionDE;
 import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.fields.request.de.TdDatGralOpe;
@@ -128,8 +129,11 @@ public class ComprobanteServicio {
 
     @Autowired
     private DistritoRepo distritoRepo;
+    
+    @Autowired
+    private ConexionSifenServicio css;
 
-    private SifenConfig getSifenConfig(Contribuyente contribuyente) {
+    /*private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
         SifenConfig config = null;
 
@@ -160,7 +164,7 @@ public class ComprobanteServicio {
         }
 
         return config;
-    }
+    }*/
 
     public DocumentoElectronico procesar(Comprobante comprobante, Contribuyente contribuyente, TTiDE tipoDE) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
@@ -254,7 +258,7 @@ public class ComprobanteServicio {
         //seccion de serializacion en base de datos
         ComprobanteElectronico ce = new ComprobanteElectronico();
 
-        SifenConfig config = getSifenConfig(contribuyente);
+        SifenConfig config = css.getSifenConfig(contribuyente);
 
         ce.setContribuyente(contribuyente);
         ce.setNumero(comprobante.getTimbrado().getEstablecimiento() + "-" + comprobante.getTimbrado().getPuntoExpedicion() + "-" + comprobante.getTimbrado().getDocumentoNro());
@@ -889,7 +893,7 @@ public class ComprobanteServicio {
     @Async
     public void enviarDE(DocumentoElectronico de, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        SifenConfig config = getSifenConfig(contribuyente);
+        SifenConfig config = css.getSifenConfig(contribuyente);
 
         RespuestaRecepcionDE rrde = Sifen.recepcionDE(de, config);
         String respuesta = rrde.getRespuestaBruta();
@@ -933,5 +937,5 @@ public class ComprobanteServicio {
         this.comprobanteElectronicoRepo.save(ce);
 
     }
-
+    
 }
