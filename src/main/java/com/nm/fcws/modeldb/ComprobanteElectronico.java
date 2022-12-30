@@ -61,9 +61,20 @@ public class ComprobanteElectronico implements Serializable {
     @Column(columnDefinition = "boolean default false")
     private boolean enviado = false;
     
+    //Seccion evento
     @ManyToOne
     @JoinColumn(name = "tipocomprobanteelectronicoid")
     private TipoComprobanteElectronico tipoComprobanteElectronico;
+    
+    @Column(columnDefinition = "boolean default false")
+    private boolean evento = false;
+    
+    @Column(name="eventoestado")
+    private String eventoEstado;
+    
+    @Column(name="eventorespuesta", columnDefinition="text")
+    private String eventoRespuesta;
+    
 
     public Long getId() {
         return id;
@@ -152,6 +163,32 @@ public class ComprobanteElectronico implements Serializable {
     public void setTipoComprobanteElectronico(TipoComprobanteElectronico tipoComprobanteElectronico) {
         this.tipoComprobanteElectronico = tipoComprobanteElectronico;
     }
+
+    public boolean isEvento() {
+        return evento;
+    }
+
+    public void setEvento(boolean evento) {
+        this.evento = evento;
+    }
+
+    public String getEventoEstado() {
+        return eventoEstado;
+    }
+
+    public void setEventoEstado(String eventoEstado) {
+        this.eventoEstado = eventoEstado;
+    }
+
+    public String getEventoRespuesta() {
+        return eventoRespuesta;
+    }
+
+    public void setEventoRespuesta(String eventoRespuesta) {
+        this.eventoRespuesta = eventoRespuesta;
+    }
+
+    
     
     
 }
