@@ -244,7 +244,7 @@ public class ComprobanteServicio {
 
         }
 
-        gDtipDE.setgCamItemList(this.procesarDetalle(comprobante.getDetalles()));
+        gDtipDE.setgCamItemList(this.procesarDetalle(comprobante.getDetalles(),tipoDE));
 
         de.setgDtipDE(gDtipDE);
 
@@ -263,7 +263,17 @@ public class ComprobanteServicio {
         
         ce.setTipoComprobanteElectronico(new TipoComprobanteElectronico(Long.valueOf(tipoDE.getVal())));
         
-        ce.setTotal(comprobante.getTotalComprobante());
+        if (tipoDE.getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
+                || tipoDE.getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()
+                || tipoDE.getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()
+                || tipoDE.getVal() == TTiDE.NOTA_DE_DEBITO_ELECTRONICA.getVal()) {
+            
+            ce.setTotal(comprobante.getTotalComprobante());
+            
+        }else{
+            ce.setTotal(0);
+        }
+        
         // log.info(de.getEnlaceQR());
 
         this.comprobanteElectronicoRepo.save(ce);
@@ -829,7 +839,7 @@ public class ComprobanteServicio {
 
     }
 
-    private List<TgCamItem> procesarDetalle(List<ComprobanteDetalle> detalles) {
+    private List<TgCamItem> procesarDetalle(List<ComprobanteDetalle> detalles, TTiDE TipoDE) {
 
         List<TgCamItem> gCamItemList = new ArrayList<TgCamItem>();
         for (ComprobanteDetalle x : detalles) {
@@ -850,16 +860,25 @@ public class ComprobanteServicio {
 
             //discutir va a pasar el cliente proveer la tabla del sifen
             gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()));
-            TgValorItem gValorItem = new TgValorItem();
-            gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()));
-            TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
-            gValorItem.setgValorRestaItem(gValorRestaItem);
-            gCamItem.setgValorItem(gValorItem);
-            TgCamIVA gCamIVA = new TgCamIVA();
-            gCamIVA.setiAfecIVA(TiAfecIVA.getByVal(x.getAfectacionTributaria().shortValue()));
-            gCamIVA.setdPropIVA(new BigDecimal(x.getProporcionIVA()));
-            gCamIVA.setdTasaIVA(new BigDecimal(x.getTasaIVA()));
-            gCamItem.setgCamIVA(gCamIVA);
+           
+            if (TipoDE.getVal() != TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()){
+            
+                TgValorItem gValorItem = new TgValorItem();
+                gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()));
+                TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
+                gValorItem.setgValorRestaItem(gValorRestaItem);
+                gCamItem.setgValorItem(gValorItem);
+
+                TgCamIVA gCamIVA = new TgCamIVA();
+                gCamIVA.setiAfecIVA(TiAfecIVA.getByVal(x.getAfectacionTributaria().shortValue()));
+                gCamIVA.setdPropIVA(new BigDecimal(x.getProporcionIVA()));
+                gCamIVA.setdTasaIVA(new BigDecimal(x.getTasaIVA()));
+                gCamItem.setgCamIVA(gCamIVA);
+                
+            }
+            
+            
+            
             gCamItemList.add(gCamItem);
 
         }
