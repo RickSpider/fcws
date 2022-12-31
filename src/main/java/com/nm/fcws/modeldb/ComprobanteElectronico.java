@@ -61,6 +61,20 @@ public class ComprobanteElectronico implements Serializable {
     @Column(columnDefinition = "boolean default false")
     private boolean enviado = false;
     
+    //Seccion Lote
+    @Column(columnDefinition = "boolean default false")
+    private boolean lote = false;
+    
+    @Column(columnDefinition = "boolean default false", name="enviadolote")
+    private boolean enviadoLote = false;
+    
+    @Column(name="fechaenviadolote")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaEnviadoLote;
+    
+    @Column(name="lotenro")
+    private String loteNro;
+    
     //Seccion evento
     @ManyToOne
     @JoinColumn(name = "tipocomprobanteelectronicoid")
@@ -186,6 +200,38 @@ public class ComprobanteElectronico implements Serializable {
 
     public void setEventoRespuesta(String eventoRespuesta) {
         this.eventoRespuesta = eventoRespuesta;
+    }
+
+    public boolean isLote() {
+        return lote;
+    }
+
+    public void setLote(boolean lote) {
+        this.lote = lote;
+    }
+
+    public boolean isEnviadoLote() {
+        return enviadoLote;
+    }
+
+    public void setEnviadoLote(boolean enviadoLote) {
+        this.enviadoLote = enviadoLote;
+    }
+
+    public Date getFechaEnviadoLote() {
+        return fechaEnviadoLote;
+    }
+
+    public void setFechaEnviadoLote(Date fechaEnviadoLote) {
+        this.fechaEnviadoLote = fechaEnviadoLote;
+    }
+
+    public String getLoteNro() {
+        return loteNro;
+    }
+
+    public void setLoteNro(String loteNro) {
+        this.loteNro = loteNro;
     }
 
     

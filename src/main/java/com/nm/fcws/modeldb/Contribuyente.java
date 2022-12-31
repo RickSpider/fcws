@@ -78,6 +78,8 @@ public class Contribuyente implements Serializable {
     DEV = desarrollo
      */
     private String ambiente;
+    @Column(columnDefinition = "boolean default true", name="sololote")
+    private boolean soloLote;
     
     private String pathkey;
     private String passkey;
@@ -91,7 +93,7 @@ public class Contribuyente implements Serializable {
     
     private String cscid;
     private String csc;
-
+    
     /**
      * 
      * PROD = produccion
@@ -282,6 +284,14 @@ public class Contribuyente implements Serializable {
 
     public void setCsc(String csc) {
         this.csc = csc;
+    }
+
+    public boolean isSoloLote() {
+        return soloLote;
+    }
+
+    public void setSoloLote(boolean soloLote) {
+        this.soloLote = soloLote;
     }
     
     

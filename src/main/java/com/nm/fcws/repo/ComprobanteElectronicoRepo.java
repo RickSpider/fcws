@@ -6,6 +6,8 @@
 package com.nm.fcws.repo;
 
 import com.nm.fcws.modeldb.ComprobanteElectronico;
+import com.nm.fcws.modeldb.Contribuyente;
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -15,5 +17,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface ComprobanteElectronicoRepo extends CrudRepository<ComprobanteElectronico, Long>{
     
     ComprobanteElectronico findByCdc(String cdc);
+    
+    List<ComprobanteElectronico> findByLoteAndEnviadoLoteAndContribuyente (boolean lote, boolean enviadoLote, Contribuyente contribuyente);
+    
     
 }

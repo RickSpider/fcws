@@ -279,6 +279,12 @@ public class ComprobanteServicio {
             ce.setTotal(0);
         }
         
+        if (contribuyente.isSoloLote()){
+        
+            ce.setLote(true);
+            
+        }
+        
         // log.info(de.getEnlaceQR());
 
         this.comprobanteElectronicoRepo.save(ce);

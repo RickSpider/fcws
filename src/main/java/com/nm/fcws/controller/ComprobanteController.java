@@ -12,10 +12,13 @@ import com.nm.fcws.interfaces.iNotaCD;
 import com.nm.fcws.interfaces.iRemision;
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.Kude;
+import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.RucRepo;
+import com.nm.fcws.services.ComprobanteLoteServicio;
 import com.nm.fcws.services.ComprobanteServicio;
+import com.nm.fcws.services.ContribuyenteServicio;
 import com.nm.fcws.services.EventoServicio;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
 import com.roshka.sifen.core.beans.EventosDE;
@@ -23,6 +26,7 @@ import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.types.TTiDE;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -53,14 +57,14 @@ public class ComprobanteController {
     private static Logger log = LoggerFactory.getLogger(ComprobanteController.class);
 
     @Autowired
-    private ContribuyenteRepo contribuyenteRepo;
-
-    @Autowired
     private ComprobanteServicio comprobanteServicio;
     
     @Autowired
-    public EventoServicio eventoServicio;
+    private EventoServicio eventoServicio;
 
+    @Autowired
+    private ContribuyenteServicio contribuyenteServicio; 
+    
     @Autowired
     private RucRepo rucRepo;
 
@@ -68,7 +72,7 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity factura(@Validated({iFactura.class}) @RequestBody Comprobante factura) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass());
+        Optional<Contribuyente> oContribuyente = contribuyenteServicio.verfificarContribuyente(factura.getContribuyente().getContribuyenteid(), factura.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
@@ -84,7 +88,7 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity remision(@Validated(iRemision.class) @RequestBody Comprobante remision) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(remision.getContribuyente().getContribuyenteid(), remision.getContribuyente().getPass());
+        Optional<Contribuyente> oContribuyente = contribuyenteServicio.verfificarContribuyente(remision.getContribuyente().getContribuyenteid(), remision.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
@@ -100,7 +104,7 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity notaCredito(@Validated(iNotaCD.class) @RequestBody Comprobante notaCredito) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(notaCredito.getContribuyente().getContribuyenteid(), notaCredito.getContribuyente().getPass());
+        Optional<Contribuyente> oContribuyente = contribuyenteServicio.verfificarContribuyente(notaCredito.getContribuyente().getContribuyenteid(), notaCredito.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
@@ -116,7 +120,7 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity cancelarFactura(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
+        Optional<Contribuyente> oContribuyente = contribuyenteServicio.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
@@ -135,7 +139,7 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity cancelarNotaCredito(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
+        Optional<Contribuyente> oContribuyente = contribuyenteServicio.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
@@ -154,7 +158,7 @@ public class ComprobanteController {
     public @ResponseBody
     ResponseEntity cancelarRemision(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        Optional<Contribuyente> oContribuyente = this.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
+        Optional<Contribuyente> oContribuyente = contribuyenteServicio.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
 
         if (!oContribuyente.isPresent()) {
 
@@ -168,18 +172,28 @@ public class ComprobanteController {
         return new ResponseEntity("Cancelacion de Remision enviada",HttpStatus.CREATED);
     }
     
+   
+    
     private Kude generarKude(DocumentoElectronico de, Contribuyente contribuyente, String tipoKude) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         String cdc = de.obtenerCDC();
         //log.info(cdc);
         Kude kude = new Kude(de.getEnlaceQR(), cdc, tipoKude);
-
-        comprobanteServicio.enviarDE(de, contribuyente, cdc);
+        
+        if (!contribuyente.isSoloLote()){
+        
+            comprobanteServicio.enviarDE(de, contribuyente, cdc);
+        
+        }else{
+        
+            log.info("El Cliente esta marcado para solo envio de lotes");
+            
+        }
 
         return kude;
     }
 
-    private Optional<Contribuyente> verfificarContribuyente(Long id, String pass) {
+    /*private Optional<Contribuyente> verfificarContribuyente(Long id, String pass) {
 
         Optional<Contribuyente> oContribuyente = contribuyenteRepo.findById(id);
 
@@ -195,7 +209,7 @@ public class ComprobanteController {
 
         return Optional.empty();
 
-    }
+    }*/
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
