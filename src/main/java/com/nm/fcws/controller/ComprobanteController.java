@@ -6,17 +6,13 @@
 package com.nm.fcws.controller;
 
 import com.nm.fcws.interfaces.iCancelacion;
-import com.nm.fcws.interfaces.iEvento;
 import com.nm.fcws.interfaces.iFactura;
 import com.nm.fcws.interfaces.iNotaCD;
 import com.nm.fcws.interfaces.iRemision;
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.model.Kude;
-import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
-import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.RucRepo;
-import com.nm.fcws.services.ComprobanteLoteServicio;
 import com.nm.fcws.services.ComprobanteServicio;
 import com.nm.fcws.services.ContribuyenteServicio;
 import com.nm.fcws.services.EventoServicio;
@@ -26,10 +22,8 @@ import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.types.TTiDE;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.validation.Valid;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +112,8 @@ public class ComprobanteController {
     
     @PostMapping(value = "/cancelarfactura", produces = "application/json")
     public @ResponseBody
-    ResponseEntity cancelarFactura(@Validated(iCancelacion.class) @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    ResponseEntity cancelarFactura(
+            @RequestBody Comprobante comprobante) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         Optional<Contribuyente> oContribuyente = contribuyenteServicio.verfificarContribuyente(comprobante.getContribuyente().getContribuyenteid(), comprobante.getContribuyente().getPass());
 
@@ -186,7 +181,7 @@ public class ComprobanteController {
         
         }else{
         
-            log.info("El Cliente esta marcado para solo envio de lotes");
+            log.info("El Contribuyente esta habilitado para solo envio de lotes.");
             
         }
 

@@ -40,7 +40,11 @@ public class hello {
     @GetMapping(value = "/hello",produces ="application/json")
     public String sayHello(){
         
-        return "hello lo perro";
+        return "Web Service para Facturacion Electronica Sifen/n "
+                + "Autor:"
+                + "Master en Informatica con Enfasis en Investigacion e innovacion /n"
+                + "Licenciado en Analisis de Sistemas /n"
+                + "Ricardo Ramón González Idoyaga";
         
     }
     
@@ -88,8 +92,7 @@ public class hello {
            
        
        }
-       
-       
+
     }
     
 }
