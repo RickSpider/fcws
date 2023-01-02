@@ -18,7 +18,9 @@ public interface ComprobanteElectronicoRepo extends CrudRepository<ComprobanteEl
     
     ComprobanteElectronico findByCdc(String cdc);
     
-    List<ComprobanteElectronico> findByLoteAndEnviadoLoteAndContribuyente (boolean lote, boolean enviadoLote, Contribuyente contribuyente);
+    //List<ComprobanteElectronico> findByLoteAndEnviadoLoteAndContribuyente (boolean lote, boolean enviadoLote, Contribuyente contribuyente);
+    
+    List<ComprobanteElectronico> findByEnvioPorLoteAndContribuyenteAndLoteIsNull (boolean envioPorLote, Contribuyente contribuyente);
     
     
 }

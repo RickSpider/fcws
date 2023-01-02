@@ -6,11 +6,12 @@ package com.nm.fcws.services;
 
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
+import com.nm.fcws.modeldb.Lote;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
+import com.nm.fcws.repo.LoteRepo;
 import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.SifenConfig;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
-import com.roshka.sifen.core.beans.response.RespuestaRecepcionDE;
 import com.roshka.sifen.core.beans.response.RespuestaRecepcionLoteDE;
 import com.roshka.sifen.core.exceptions.SifenException;
 import java.io.IOException;
@@ -38,44 +39,122 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class ComprobanteLoteServicio {
-    
+
     private static Logger log = LoggerFactory.getLogger(ComprobanteLoteServicio.class);
-    
+
+    private int listaMaxima = 70;
+
     @Autowired
     private ComprobanteElectronicoRepo cer;
-    
+
     @Autowired
     private ConexionSifenServicio css;
-    
-    public List<DocumentoElectronico> generarLote(Contribuyente contribuyente) throws SifenException{
-    
-        List<ComprobanteElectronico> lce = cer.findByLoteAndEnviadoLoteAndContribuyente(true, false, contribuyente);
+
+    @Autowired
+    private LoteRepo lr;
+
+    @Async
+    public void auto() {
+
+        log.info("servicio auto");
+        System.out.println("auto envio");
+
+    }
+
+    public List<DocumentoElectronico> generarLote(Contribuyente contribuyente) throws SifenException {
+
+        // List<ComprobanteElectronico> lce = cer.findByLoteAndEnviadoLoteAndContribuyente(true, false, contribuyente);
+        List<ComprobanteElectronico> lce = cer.findByEnvioPorLoteAndContribuyenteAndLoteIsNull(true, contribuyente);
         List<DocumentoElectronico> lde = new ArrayList<DocumentoElectronico>();
-        
-        for (ComprobanteElectronico ce : lce){
-        
+
+        for (ComprobanteElectronico ce : lce) {
+
             DocumentoElectronico de = new DocumentoElectronico(ce.getXml());
             lde.add(de);
         }
-        
+
         return lde;
     }
-    
+
     @Async
-    public void enviarLote(List<DocumentoElectronico> lde, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException{
-    
+    public void enviarLote(List<Contribuyente> lcontribuyentes) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        for (Contribuyente x : lcontribuyentes) {
+
+            this.enviarLote(this.generarLote(x), x);
+
+        }
+
+    }
+
+    @Async
+    public void enviarLote(List<DocumentoElectronico> lde, Contribuyente contribuyente)
+            throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        if (lde.size() <= this.listaMaxima) {
+
+            this.enviarLoteCorto(lde, contribuyente);
+
+        } else {
+
+            this.enviarLoteLargo(lde, contribuyente);
+
+        }
+
+    }
+
+    public void enviarLoteCorto(List<DocumentoElectronico> lde, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
         SifenConfig config = css.getSifenConfig(contribuyente);
-        
+
         RespuestaRecepcionLoteDE rrlde = Sifen.recepcionLoteDE(lde, config);
         String respuesta = rrlde.getRespuestaBruta();
         log.info(respuesta);
-        
+
+        this.procesarRespuesta(respuesta, lde, contribuyente);
+
+    }
+
+    public void enviarLoteLargo(List<DocumentoElectronico> lde, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        SifenConfig config = css.getSifenConfig(contribuyente);
+
+        int c = 0;
+
+        List<DocumentoElectronico> ldeAux = new ArrayList<DocumentoElectronico>();
+
+        for (DocumentoElectronico x : lde) {
+
+            c++;
+
+            ldeAux.add(x);
+
+            if (c == this.listaMaxima) {
+
+                this.enviarLoteCorto(ldeAux, contribuyente);
+
+            }
+
+        }
+
+        if (ldeAux.size() > 0) {
+
+            this.enviarLoteCorto(ldeAux, contribuyente);
+
+        }
+
+    }
+
+    private void procesarRespuesta(String respuesta, List<DocumentoElectronico> lde, Contribuyente contribuyente) throws ParserConfigurationException, SAXException, IOException {
+
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(respuesta));
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         d.getDocumentElement().normalize();
         NodeList nl = d.getElementsByTagName("ns2:rResEnviLoteDe");
-        String loteNro = "-1";
+        //String loteNro = "-1";
+
+        Lote lote = new Lote();
 
         for (int i = 0; i < nl.getLength(); i++) {
 
@@ -85,30 +164,39 @@ public class ComprobanteLoteServicio {
 
                 Element e = (Element) n;
 
-               
                 if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0300") == 0) {
 
-                   loteNro = e.getElementsByTagName("ns2:dProtConsLote").item(0).getTextContent();
+                    //loteNro = e.getElementsByTagName("ns2:dProtConsLote").item(0).getTextContent();
+                    lote.setNro(e.getElementsByTagName("ns2:dProtConsLote").item(0).getTextContent());
+                    lote.setContribuyente(contribuyente);
+                    lote.setRespuestaEnvio(respuesta);
+
+                    lote = lr.save(lote);
+
+                } else {
+
+                    return;
 
                 }
 
             }
 
-           
         }
-        
-        for (DocumentoElectronico de : lde){
-        
+
+        for (DocumentoElectronico de : lde) {
+
             ComprobanteElectronico ce = cer.findByCdc(de.getId());
-            ce.setEnviadoLote(true);
-            ce.setFechaEnviadoLote(new Date());
+            //ce.setEnviadoLote(true);
+            //ce.setFechaEnviadoLote(new Date());
             ce.setEnviado(true);
             ce.setRespuesta(respuesta);
-            ce.setLoteNro(loteNro);
-            
+
+            ce.setLote(lote);
+
+            //ce.setLoteNro(loteNro);
             cer.save(ce);
-            
+
         }
     }
-    
+
 }

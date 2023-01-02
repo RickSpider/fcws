@@ -5,16 +5,13 @@
  */
 package com.nm.fcws.repo;
 
-import com.nm.fcws.modeldb.Contribuyente;
-import java.util.List;
+import com.nm.fcws.modeldb.Lote;
 import org.springframework.data.repository.CrudRepository;
 
 /**
  *
- * @author BlackSpider
+ * @author blackspider
  */
-public interface ContribuyenteRepo extends CrudRepository <Contribuyente, Long>{ 
-    
-    public List<Contribuyente> findBySoloLote(boolean soloLote);
+public interface LoteRepo extends CrudRepository<Lote, Long>{
     
 }

@@ -62,10 +62,14 @@ public class ComprobanteElectronico implements Serializable {
     private boolean enviado = false;
     
     //Seccion Lote
-    @Column(columnDefinition = "boolean default false")
-    private boolean lote = false;
+    @Column(name = "envioporlote", columnDefinition = "boolean default false")
+    private boolean envioPorLote = false;
     
-    @Column(columnDefinition = "boolean default false", name="enviadolote")
+    @ManyToOne
+    @JoinColumn(name = "loteid")
+    private Lote lote;
+    
+   /* @Column(columnDefinition = "boolean default false", name="enviadolote")
     private boolean enviadoLote = false;
     
     @Column(name="fechaenviadolote")
@@ -73,7 +77,7 @@ public class ComprobanteElectronico implements Serializable {
     private Date fechaEnviadoLote;
     
     @Column(name="lotenro")
-    private String loteNro;
+    private String loteNro; */
     
     //Seccion evento
     @ManyToOne
@@ -202,39 +206,20 @@ public class ComprobanteElectronico implements Serializable {
         this.eventoRespuesta = eventoRespuesta;
     }
 
-    public boolean isLote() {
+    public Lote getLote() {
         return lote;
     }
 
-    public void setLote(boolean lote) {
+    public void setLote(Lote lote) {
         this.lote = lote;
     }
 
-    public boolean isEnviadoLote() {
-        return enviadoLote;
+    public boolean isEnvioPorLote() {
+        return envioPorLote;
     }
 
-    public void setEnviadoLote(boolean enviadoLote) {
-        this.enviadoLote = enviadoLote;
+    public void setEnvioPorLote(boolean envioPorLote) {
+        this.envioPorLote = envioPorLote;
     }
 
-    public Date getFechaEnviadoLote() {
-        return fechaEnviadoLote;
-    }
-
-    public void setFechaEnviadoLote(Date fechaEnviadoLote) {
-        this.fechaEnviadoLote = fechaEnviadoLote;
-    }
-
-    public String getLoteNro() {
-        return loteNro;
-    }
-
-    public void setLoteNro(String loteNro) {
-        this.loteNro = loteNro;
-    }
-
-    
-    
-    
 }

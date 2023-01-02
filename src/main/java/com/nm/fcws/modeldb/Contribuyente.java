@@ -5,6 +5,7 @@
  */
 package com.nm.fcws.modeldb;
 
+import com.nm.fcws.interfaces.iLoginPost;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -19,6 +20,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -28,6 +30,7 @@ import javax.persistence.Table;
 @Table(name = "Contribuyentes")
 public class Contribuyente implements Serializable {
 
+    @NotNull(groups = {iLoginPost.class}, message = "Falta datos el id" )
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long contribuyenteid;
@@ -71,6 +74,7 @@ public class Contribuyente implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "actividadeconomicaid"))
     private Set<ActividadEconomica> actividades;
 
+    @NotNull(groups = {iLoginPost.class}, message = "Falta datos el id" )
     private String pass;
 
     /*

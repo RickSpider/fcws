@@ -10,7 +10,6 @@ import com.nm.fcws.model.ComprobanteDetalle;
 import com.nm.fcws.model.CondicionOperacion;
 import com.nm.fcws.model.Cuota;
 import com.nm.fcws.model.DocAsociado;
-import com.nm.fcws.model.Kude;
 import com.nm.fcws.model.MercaderiaMov;
 import com.nm.fcws.model.NotaCreditoDebito;
 import com.nm.fcws.model.Receptor;
@@ -281,7 +280,7 @@ public class ComprobanteServicio {
         
         if (contribuyente.isSoloLote()){
         
-            ce.setLote(true);
+            ce.setEnvioPorLote(true);
             
         }
         
