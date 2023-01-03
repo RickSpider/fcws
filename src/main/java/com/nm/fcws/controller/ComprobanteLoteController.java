@@ -10,7 +10,9 @@ import com.nm.fcws.modeldb.Lote;
 import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.services.ComprobanteLoteServicio;
 import com.nm.fcws.services.ContribuyenteServicio;
+import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
+import com.roshka.sifen.core.beans.response.RespuestaConsultaLoteDE;
 import com.roshka.sifen.core.exceptions.SifenException;
 import java.io.IOException;
 import java.util.List;
@@ -52,17 +54,9 @@ public class ComprobanteLoteController {
             return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
         
-        List<DocumentoElectronico> lde = cls.generarLote(oContribuyente.get());
+        cls.enviarLotes(oContribuyente.get());
         
-        if (lde.size() <= 0){
-        
-            return new ResponseEntity("No hay documentos a enviar",HttpStatus.OK);
-            
-        }
-        
-        cls.enviarLote(lde, oContribuyente.get());
-        
-        return new ResponseEntity("El Lote enviado contiene "+lde.size(),HttpStatus.CREATED);
+        return new ResponseEntity("Iniciando envio de lotes manual.",HttpStatus.CREATED);
     }
     
     @PostMapping(value = "/consultar", produces = "application/json")
@@ -75,8 +69,8 @@ public class ComprobanteLoteController {
 
             return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
-        
-        return null;
+
+        return  new ResponseEntity(cls.consultarLote(lote),HttpStatus.OK);
         
     }
     

@@ -7,11 +7,14 @@ package com.nm.fcws.services;
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.modeldb.Lote;
+import com.nm.fcws.modeldb.TipoComprobanteElectronico;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
 import com.nm.fcws.repo.LoteRepo;
+import com.nm.fcws.repo.TipoComprobanteElectronicoRepo;
 import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.SifenConfig;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
+import com.roshka.sifen.core.beans.response.RespuestaConsultaLoteDE;
 import com.roshka.sifen.core.beans.response.RespuestaRecepcionLoteDE;
 import com.roshka.sifen.core.exceptions.SifenException;
 import java.io.IOException;
@@ -42,7 +45,7 @@ public class ComprobanteLoteServicio {
 
     private static Logger log = LoggerFactory.getLogger(ComprobanteLoteServicio.class);
 
-    private int listaMaxima = 70;
+    private final int listaMaxima = 70;
 
     @Autowired
     private ComprobanteElectronicoRepo cer;
@@ -51,20 +54,15 @@ public class ComprobanteLoteServicio {
     private ConexionSifenServicio css;
 
     @Autowired
+    private TipoComprobanteElectronicoRepo tcer;
+    
+    @Autowired
     private LoteRepo lr;
 
-    @Async
-    public void auto() {
-
-        log.info("servicio auto");
-        System.out.println("auto envio");
-
-    }
-
-    public List<DocumentoElectronico> generarLote(Contribuyente contribuyente) throws SifenException {
+    private List<DocumentoElectronico> generarLote(Contribuyente contribuyente, TipoComprobanteElectronico tce) throws SifenException {
 
         // List<ComprobanteElectronico> lce = cer.findByLoteAndEnviadoLoteAndContribuyente(true, false, contribuyente);
-        List<ComprobanteElectronico> lce = cer.findByEnvioPorLoteAndContribuyenteAndLoteIsNull(true, contribuyente);
+        List<ComprobanteElectronico> lce = cer.findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndLoteIsNull(true, contribuyente, tce);
         List<DocumentoElectronico> lde = new ArrayList<DocumentoElectronico>();
 
         for (ComprobanteElectronico ce : lce) {
@@ -75,20 +73,36 @@ public class ComprobanteLoteServicio {
 
         return lde;
     }
+    
+    @Async
+    public void enviarLotes(Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException{
+    
+        List<TipoComprobanteElectronico> ltce = (List<TipoComprobanteElectronico>) tcer.findAll();
+        
+        for (TipoComprobanteElectronico x : ltce){
+        
+            this.enviarLote(this.generarLote(contribuyente,x), contribuyente);
+            
+        }
+        
+    }
 
     @Async
-    public void enviarLote(List<Contribuyente> lcontribuyentes) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    public void enviarLoteContribuyentes(List<Contribuyente> lcontribuyentes) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
+        
         for (Contribuyente x : lcontribuyentes) {
 
-            this.enviarLote(this.generarLote(x), x);
+            this.enviarLotes(x);
 
         }
 
     }
+    
+    
 
-    @Async
-    public void enviarLote(List<DocumentoElectronico> lde, Contribuyente contribuyente)
+ 
+    private void enviarLote(List<DocumentoElectronico> lde, Contribuyente contribuyente)
             throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         if (lde.size() <= this.listaMaxima) {
@@ -103,7 +117,7 @@ public class ComprobanteLoteServicio {
 
     }
 
-    public void enviarLoteCorto(List<DocumentoElectronico> lde, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
+    private void enviarLoteCorto(List<DocumentoElectronico> lde, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         SifenConfig config = css.getSifenConfig(contribuyente);
 
@@ -115,9 +129,7 @@ public class ComprobanteLoteServicio {
 
     }
 
-    public void enviarLoteLargo(List<DocumentoElectronico> lde, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
-
-        SifenConfig config = css.getSifenConfig(contribuyente);
+    private void enviarLoteLargo(List<DocumentoElectronico> lde, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         int c = 0;
 
@@ -149,6 +161,7 @@ public class ComprobanteLoteServicio {
 
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(respuesta));
+        log.info(respuesta);
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         d.getDocumentElement().normalize();
         NodeList nl = d.getElementsByTagName("ns2:rResEnviLoteDe");
@@ -199,4 +212,13 @@ public class ComprobanteLoteServicio {
         }
     }
 
+    public String consultarLote(Lote lote) throws SifenException{
+    
+        SifenConfig config = css.getSifenConfig(lote.getContribuyente());
+        
+        RespuestaConsultaLoteDE rcl = Sifen.consultaLoteDE(lote.getNro(), config);
+       // System.out.println(rcl.getRespuestaBruta());
+        
+        return rcl.getRespuestaBruta();
+    }
 }

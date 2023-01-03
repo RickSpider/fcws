@@ -7,6 +7,7 @@ package com.nm.fcws.repo;
 
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
+import com.nm.fcws.modeldb.TipoComprobanteElectronico;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
@@ -20,7 +21,7 @@ public interface ComprobanteElectronicoRepo extends CrudRepository<ComprobanteEl
     
     //List<ComprobanteElectronico> findByLoteAndEnviadoLoteAndContribuyente (boolean lote, boolean enviadoLote, Contribuyente contribuyente);
     
-    List<ComprobanteElectronico> findByEnvioPorLoteAndContribuyenteAndLoteIsNull (boolean envioPorLote, Contribuyente contribuyente);
+    List<ComprobanteElectronico> findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndLoteIsNull (boolean envioPorLote, Contribuyente contribuyente, TipoComprobanteElectronico tipoComprobateElectronico);
     
     
 }
