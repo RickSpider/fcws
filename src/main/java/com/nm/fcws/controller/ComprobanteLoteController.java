@@ -69,6 +69,8 @@ public class ComprobanteLoteController {
 
             return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
+        
+        lote.setContribuyente(oContribuyente.get());
 
         return  new ResponseEntity(cls.consultarLote(lote),HttpStatus.OK);
         

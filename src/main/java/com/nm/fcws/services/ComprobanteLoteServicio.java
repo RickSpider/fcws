@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ public class ComprobanteLoteServicio {
     private List<DocumentoElectronico> generarLote(Contribuyente contribuyente, TipoComprobanteElectronico tce) throws SifenException {
 
         // List<ComprobanteElectronico> lce = cer.findByLoteAndEnviadoLoteAndContribuyente(true, false, contribuyente);
-        List<ComprobanteElectronico> lce = cer.findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndLoteIsNull(true, contribuyente, tce);
+        List<ComprobanteElectronico> lce = cer.findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndEnviadoLote(true, contribuyente, tce, false);
         List<DocumentoElectronico> lde = new ArrayList<DocumentoElectronico>();
 
         for (ComprobanteElectronico ce : lce) {
@@ -81,7 +82,13 @@ public class ComprobanteLoteServicio {
         
         for (TipoComprobanteElectronico x : ltce){
         
-            this.enviarLote(this.generarLote(contribuyente,x), contribuyente);
+            List<DocumentoElectronico> lde = this.generarLote(contribuyente,x);
+            
+            if (lde.size() > 0){
+                this.enviarLote(lde, contribuyente);
+            }
+            
+           
             
         }
         
@@ -161,13 +168,13 @@ public class ComprobanteLoteServicio {
 
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(respuesta));
-        log.info(respuesta);
+        //log.info(respuesta);
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         d.getDocumentElement().normalize();
         NodeList nl = d.getElementsByTagName("ns2:rResEnviLoteDe");
         //String loteNro = "-1";
 
-        Lote lote = new Lote();
+        Lote lote = null;
 
         for (int i = 0; i < nl.getLength(); i++) {
 
@@ -180,17 +187,14 @@ public class ComprobanteLoteServicio {
                 if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0300") == 0) {
 
                     //loteNro = e.getElementsByTagName("ns2:dProtConsLote").item(0).getTextContent();
+                    lote = new Lote();
                     lote.setNro(e.getElementsByTagName("ns2:dProtConsLote").item(0).getTextContent());
                     lote.setContribuyente(contribuyente);
                     lote.setRespuestaEnvio(respuesta);
 
                     lote = lr.save(lote);
 
-                } else {
-
-                    return;
-
-                }
+                } 
 
             }
 
@@ -203,8 +207,15 @@ public class ComprobanteLoteServicio {
             //ce.setFechaEnviadoLote(new Date());
             ce.setEnviado(true);
             ce.setRespuesta(respuesta);
-
-            ce.setLote(lote);
+            ce.setEnviadoLote(true);
+            if (!Objects.isNull(lote)){
+                 ce.setLote(lote);
+            }else{
+                log.info("Error al enviar el lote.");
+            }
+            
+           
+            
 
             //ce.setLoteNro(loteNro);
             cer.save(ce);

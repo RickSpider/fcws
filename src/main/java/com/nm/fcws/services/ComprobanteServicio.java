@@ -408,7 +408,7 @@ public class ComprobanteServicio {
 
                 }
 
-                gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto())); // si viene solo el monto es efectivo por defecto
+                gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto()).setScale(2, RoundingMode.HALF_UP)); // si viene solo el monto es efectivo por defecto
                 //en caso que se multiple se tiene que definier efectivo tarjeta etc
 
                 if (fp.getModeda() == null) {
@@ -457,7 +457,7 @@ public class ComprobanteServicio {
                         tgCuotas.setcMoneCuo(CMondT.getByName(x.getMoneda()));
                     }
 
-                    tgCuotas.setdMonCuota(new BigDecimal(x.getMonto()));
+                    tgCuotas.setdMonCuota(new BigDecimal(x.getMonto()).setScale(2, RoundingMode.HALF_UP));
 
                     if (x.getVencimiento() != null) {
 
@@ -477,7 +477,7 @@ public class ComprobanteServicio {
 
             if (condicionOperacion.getMontoEntregaIni() != null) {
 
-                gPagCred.setdMonEnt(new BigDecimal(condicionOperacion.getMontoEntregaIni()));
+                gPagCred.setdMonEnt(new BigDecimal(condicionOperacion.getMontoEntregaIni()).setScale(2, RoundingMode.HALF_UP));
 
             }
 
@@ -657,9 +657,15 @@ public class ComprobanteServicio {
         gCamNRE.setiMotEmiNR(TiMotivTras.getByVal(remision.getMotivoEmsion().shortValue()));
         gCamNRE.setiRespEmiNR(TiRespEmiNR.getByVal(remision.getResponsableEmision().shortValue()));
         gCamNRE.setdKmR(remision.getKilometrosRecorrido());
-        gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
+        
+        if (remision.getFechaEmiFactura() != null){
+        
+             gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
+            
+        }
+       
 
         return gCamNRE;
 
@@ -875,7 +881,7 @@ public class ComprobanteServicio {
             if (TipoDE.getVal() != TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()){
             
                 TgValorItem gValorItem = new TgValorItem();
-                gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()));
+                gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()).setScale(2, RoundingMode.HALF_UP));
                 TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
                 gValorItem.setgValorRestaItem(gValorRestaItem);
                 gCamItem.setgValorItem(gValorItem);

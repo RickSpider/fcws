@@ -38,9 +38,9 @@ public class LoteComponent {
     
     //@Scheduled(fixedRate = 30000)
    // @Scheduled(fixedRate = 7200000) //2horas
-    @Scheduled(cron="0 10 8,10,12,14,16,18 * * ?")
-   //   @Scheduled(cron="0 56 20,21,22,23 * * ?")
-    public void envio() throws SifenException, ParserConfigurationException, SAXException, IOException{
+    //@Scheduled(cron="0 10 8,10,12,14,16,18 * * ?")
+    //  @Scheduled(cron="0 35 15 * * ?")
+   /* public void envio() throws SifenException, ParserConfigurationException, SAXException, IOException{
         
         log.info("iniciando tarea programada");
         
@@ -48,7 +48,7 @@ public class LoteComponent {
         
         css.enviarLoteContribuyentes(lc);
         
-    }
+    }*/
  
   /*  @Scheduled(fixedRate = 30000)
     public void consultar(){

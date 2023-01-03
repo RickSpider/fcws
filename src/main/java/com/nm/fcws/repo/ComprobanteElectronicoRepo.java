@@ -21,7 +21,7 @@ public interface ComprobanteElectronicoRepo extends CrudRepository<ComprobanteEl
     
     //List<ComprobanteElectronico> findByLoteAndEnviadoLoteAndContribuyente (boolean lote, boolean enviadoLote, Contribuyente contribuyente);
     
-    List<ComprobanteElectronico> findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndLoteIsNull (boolean envioPorLote, Contribuyente contribuyente, TipoComprobanteElectronico tipoComprobateElectronico);
+    List<ComprobanteElectronico> findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndEnviadoLote (boolean envioPorLote, Contribuyente contribuyente, TipoComprobanteElectronico tipoComprobateElectronico, boolean enviadoLote);
     
     
 }

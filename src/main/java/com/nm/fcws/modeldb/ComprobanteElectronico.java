@@ -69,10 +69,10 @@ public class ComprobanteElectronico implements Serializable {
     @JoinColumn(name = "loteid")
     private Lote lote;
     
-   /* @Column(columnDefinition = "boolean default false", name="enviadolote")
+   @Column(columnDefinition = "boolean default false", name="enviadolote")
     private boolean enviadoLote = false;
     
-    @Column(name="fechaenviadolote")
+   /* @Column(name="fechaenviadolote")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaEnviadoLote;
     
@@ -221,5 +221,15 @@ public class ComprobanteElectronico implements Serializable {
     public void setEnvioPorLote(boolean envioPorLote) {
         this.envioPorLote = envioPorLote;
     }
+
+    public boolean isEnviadoLote() {
+        return enviadoLote;
+    }
+
+    public void setEnviadoLote(boolean enviadoLote) {
+        this.enviadoLote = enviadoLote;
+    }
+    
+    
 
 }
