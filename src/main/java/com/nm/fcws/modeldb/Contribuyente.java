@@ -7,6 +7,7 @@ package com.nm.fcws.modeldb;
 
 import com.nm.fcws.interfaces.iLoginPost;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,6 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -97,6 +99,9 @@ public class Contribuyente implements Serializable {
     
     private String cscid;
     private String csc;
+       
+    @OneToMany(mappedBy="contribuyente")
+    private List<ContribuyenteContacto> contactos;
     
     /**
      * 
@@ -296,6 +301,14 @@ public class Contribuyente implements Serializable {
 
     public void setSoloLote(boolean soloLote) {
         this.soloLote = soloLote;
+    }
+
+    public List<ContribuyenteContacto> getContactos() {
+        return contactos;
+    }
+
+    public void setContactos(List<ContribuyenteContacto> contactos) {
+        this.contactos = contactos;
     }
     
     

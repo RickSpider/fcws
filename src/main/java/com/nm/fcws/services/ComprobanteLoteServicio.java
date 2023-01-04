@@ -6,6 +6,7 @@ package com.nm.fcws.services;
 
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
+import com.nm.fcws.modeldb.ContribuyenteContacto;
 import com.nm.fcws.modeldb.Lote;
 import com.nm.fcws.modeldb.TipoComprobanteElectronico;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
@@ -60,6 +61,9 @@ public class ComprobanteLoteServicio {
 
     @Autowired
     private LoteRepo lr;
+    
+    @Autowired
+    private EmailServicio emailServicio;
 
     private List<DocumentoElectronico> generarLote(Contribuyente contribuyente, TipoComprobanteElectronico tce) throws SifenException {
 
@@ -265,6 +269,8 @@ public class ComprobanteLoteServicio {
        // log.info(((Element) n).getElementsByTagName("ns2:dCodResLot").item(0).getTextContent());
 
         String codResLot = ((Element) n).getElementsByTagName("ns2:dCodResLot").item(0).getTextContent();
+        
+        StringBuffer mensajeEmail = new StringBuffer();
 
         if (codResLot.compareTo("0362") == 0) {
 
@@ -280,14 +286,44 @@ public class ComprobanteLoteServicio {
                 ce.setRespuesta( ((Element) n).getElementsByTagName("ns2:dCodRes").item(0).getTextContent() + " - " +
                         ((Element) n).getElementsByTagName("ns2:dMsgRes").item(0).getTextContent());
                 ce.setEstado(((Element) n).getElementsByTagName("ns2:dEstRes").item(0).getTextContent() );
-                
                 cer.save(ce);
+                
+                if (ce.getEstado().compareTo("Rechazado") == 0){
+                
+                    mensajeEmail.append("El comprobante "+ce.getCdc()+" fue Rechazado. "+ce.getRespuesta());
+                    
+                }
+                
+                
 
                // log.info(((Element) n).getElementsByTagName("ns2:id").item(0).getTextContent());
                // log.info(((Element) n).getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
                // log.info(((Element) n).getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
                // log.info(((Element) n).getElementsByTagName("ns2:dMsgRes").item(0).getTextContent());
 
+            }
+            
+            if (mensajeEmail.length() > 0){
+                
+                int emailSize = lote.getContribuyente().getContactos().size();
+                
+                if (emailSize > 0){
+                
+                    String[] destinos = new String[emailSize]; 
+                    int i = 0;
+  
+                    for (ContribuyenteContacto x : lote.getContribuyente().getContactos()){
+                    
+                        destinos[i]= x.getMail();
+                        i++;
+                    
+                    }
+                    
+                    emailServicio.send("fe@vidrioluz.com.py", destinos , "Alerta", mensajeEmail.toString());
+                    
+                }
+                
+                
             }
             
            

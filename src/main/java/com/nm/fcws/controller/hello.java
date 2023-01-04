@@ -125,7 +125,9 @@ public class hello {
     @GetMapping(value = "/testMail", produces = "application/json")
     public void testmail() throws ParserConfigurationException, SAXException, IOException {
     
-        emailServicio.send("fe@vidrioluz.com.py", "ricardo.rgi1989@gmail.com" , "Alerta", "prueba de alerta");
+        String [] s = {"ricardo.rgi1989@gmail.com"};
+        
+        emailServicio.send("fe@vidrioluz.com.py", s , "Alerta", "prueba de alerta");
         
     }
 
