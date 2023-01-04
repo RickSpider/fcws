@@ -5,7 +5,9 @@
  */
 package com.nm.fcws.repo;
 
+import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.modeldb.Lote;
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -13,5 +15,10 @@ import org.springframework.data.repository.CrudRepository;
  * @author blackspider
  */
 public interface LoteRepo extends CrudRepository<Lote, Long>{
+    
+    public Lote findByNro(String nro);
+    
+   
+    public List<Lote> findByEstadoNotContainingOrEstadoIsNull (String estado);
     
 }

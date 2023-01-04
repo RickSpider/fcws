@@ -28,67 +28,94 @@ import org.xml.sax.SAXException;
  *
  * @author BlackSpider
  */
-
 @RestController
 public class hello {
-    
+
     private static Logger log = LoggerFactory.getLogger(hello.class);
-    
+
     @Autowired
     private ComprobanteElectronicoRepo cer;
-    
-    @GetMapping(value = "/hello",produces ="application/json")
-    public String sayHello(){
-        
+
+    @GetMapping(value = "/hello", produces = "application/json")
+    public String sayHello() {
+
         return "Web Service para Facturacion Electronica Sifen/n ";
-        
-    }
-    
-    @GetMapping(value = "/comprobante")
-    public ComprobanteElectronico getComprobanteByCdc(){
-    
-        ComprobanteElectronico ce =  cer.findByCdc("01800025245001001000005022022120518663267863");
-        
-        ce.setEstado("El estado");
-        
-        return ce;
-        
-    }
-    
-    @GetMapping(value = "/help",produces ="application/json")
-    public void help() throws ParserConfigurationException, SAXException, IOException{
-        
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-"<env:Envelope xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"><env:Header/><env:Body><ns2:rRetEnviDe xmlns:ns2=\"http://ekuatia.set.gov.py/sifen/xsd\"><ns2:rProtDe><ns2:Id>01800025245001001000001722022120110448625146</ns2:Id><ns2:dFecProc>2022-12-01T15:17:19-03:00</ns2:dFecProc><ns2:dDigVal>aVplVGtNTEpEblNEcHFmd0Y1ZW9FaVRGS3kyOHE0Ni9hakZ4M1ByTXN5RT0=</ns2:dDigVal><ns2:dEstRes>Aprobado</ns2:dEstRes><ns2:dProtAut>34806044</ns2:dProtAut><ns2:gResProc><ns2:dCodRes>0260</ns2:dCodRes><ns2:dMsgRes>Autorizaci&#243;n del DE satisfactoria</ns2:dMsgRes></ns2:gResProc></ns2:rProtDe></ns2:rRetEnviDe></env:Body></env:Envelope>";
-        
-       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-       DocumentBuilder db = dbf.newDocumentBuilder();
-       InputSource is = new InputSource();
-       is.setCharacterStream(new StringReader(xml));
-       Document d = db.parse(is);
-      
-       d.getDocumentElement().normalize();
-       NodeList nl = d.getElementsByTagName("ns2:rProtDe");
-       
-       log.info(nl.getLength()+"");
-       
-       for (int i =  0 ; i<nl.getLength(); i++){
-           
-           Node n = nl.item(i);
-           log.info(n.getChildNodes().item(0).getNodeName());
-           
-           if (n.getNodeType() == Node.ELEMENT_NODE){
-           
-           Element e = (Element) n;
-           
-           log.info(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
-           log.info(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
-           log.info(e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
-           }
-           
-       
-       }
 
     }
-    
+
+    @GetMapping(value = "/comprobante")
+    public ComprobanteElectronico getComprobanteByCdc() {
+
+        ComprobanteElectronico ce = cer.findByCdc("01800025245001001000005022022120518663267863");
+
+        ce.setEstado("El estado");
+
+        return ce;
+
+    }
+
+    @GetMapping(value = "/help", produces = "application/json")
+    public void help() throws ParserConfigurationException, SAXException, IOException {
+
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<env:Envelope xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\">\n"
+                + "    <env:Header/>\n"
+                + "    <env:Body>\n"
+                + "        <ns2:rResEnviConsLoteDe xmlns:ns2=\"http://ekuatia.set.gov.py/sifen/xsd\">\n"
+                + "            <ns2:dFecProc>2023-01-03T20: 07: 35-03: 00</ns2:dFecProc>\n"
+                + "            <ns2:dCodResLot>0362</ns2:dCodResLot>\n"
+                + "            <ns2:dMsgResLot>Procesamiento de lote {\n"
+                + "                1163802704642288\n"
+                + "                } concluido</ns2:dMsgResLot>\n"
+                + "            <ns2:gResProcLote>\n"
+                + "                <ns2:id>07800025245001001000000522023010312391959926</ns2:id>\n"
+                + "                <ns2:dEstRes>Rechazado</ns2:dEstRes>\n"
+                + "                <ns2:gResProc>\n"
+                + "                    <ns2:dCodRes>1108</ns2:dCodRes>\n"
+                + "                    <ns2:dMsgRes>TEST - c Fecha de inicio de vigencia del timbrado incorrecta</ns2:dMsgRes>\n"
+                + "                </ns2:gResProc>\n"
+                + "            </ns2:gResProcLote>\n"
+                + "            <ns2:gResProcLote>\n"
+                + "                <ns2:id>07800025245001001000000622023010312518092547</ns2:id>\n"
+                + "                <ns2:dEstRes>Rechazado</ns2:dEstRes>\n"
+                + "                <ns2:gResProc>\n"
+                + "                    <ns2:dCodRes>1107</ns2:dCodRes>\n"
+                + "                    <ns2:dMsgRes>TEST - Fecha de inicio de vigencia del timbrado incorrecta</ns2:dMsgRes>\n"
+                + "                </ns2:gResProc>\n"
+                + "            </ns2:gResProcLote>\n"
+                + "        </ns2:rResEnviConsLoteDe>\n"
+                + "    </env:Body>\n"
+                + "</env:Envelope>";
+        
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        InputSource is = new InputSource();
+        is.setCharacterStream(new StringReader(xml));
+        Document d = db.parse(is);
+
+        d.getDocumentElement().normalize();
+        NodeList nl = d.getElementsByTagName("ns2:rResEnviConsLoteDe");
+
+        log.info(nl.getLength() + "*****");
+
+        Node n = nl.item(0);
+        log.info(((Element) n).getElementsByTagName("ns2:dCodResLot").item(0).getTextContent());
+        String codResLot = ((Element) n).getElementsByTagName("ns2:dMsgResLot").item(0).getTextContent();
+       
+        nl = d.getElementsByTagName("ns2:gResProcLote");
+        
+        for (int i= 0; i<nl.getLength() ; i++){
+            
+            n = nl.item(i);
+            
+            log.info(((Element) n).getElementsByTagName("ns2:id").item(0).getTextContent());
+            log.info(((Element) n).getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+            log.info(((Element) n).getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
+            log.info(((Element) n).getElementsByTagName("ns2:dMsgRes").item(0).getTextContent());
+            
+        }
+
+       
+    }
+
 }

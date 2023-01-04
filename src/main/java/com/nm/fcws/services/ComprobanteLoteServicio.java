@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class ComprobanteLoteServicio {
 
     @Autowired
     private TipoComprobanteElectronicoRepo tcer;
-    
+
     @Autowired
     private LoteRepo lr;
 
@@ -74,30 +75,27 @@ public class ComprobanteLoteServicio {
 
         return lde;
     }
-    
+
     @Async
-    public void enviarLotes(Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException{
-    
+    public void enviarLotes(Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
         List<TipoComprobanteElectronico> ltce = (List<TipoComprobanteElectronico>) tcer.findAll();
-        
-        for (TipoComprobanteElectronico x : ltce){
-        
-            List<DocumentoElectronico> lde = this.generarLote(contribuyente,x);
-            
-            if (lde.size() > 0){
+
+        for (TipoComprobanteElectronico x : ltce) {
+
+            List<DocumentoElectronico> lde = this.generarLote(contribuyente, x);
+
+            if (lde.size() > 0) {
                 this.enviarLote(lde, contribuyente);
             }
-            
-           
-            
+
         }
-        
+
     }
 
     @Async
     public void enviarLoteContribuyentes(List<Contribuyente> lcontribuyentes) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
-        
         for (Contribuyente x : lcontribuyentes) {
 
             this.enviarLotes(x);
@@ -105,10 +103,7 @@ public class ComprobanteLoteServicio {
         }
 
     }
-    
-    
 
- 
     private void enviarLote(List<DocumentoElectronico> lde, Contribuyente contribuyente)
             throws SifenException, ParserConfigurationException, SAXException, IOException {
 
@@ -132,7 +127,7 @@ public class ComprobanteLoteServicio {
         String respuesta = rrlde.getRespuestaBruta();
         log.info(respuesta);
 
-        this.procesarRespuesta(respuesta, lde, contribuyente);
+        this.procesarRespuestaEnvioLote(respuesta, lde, contribuyente);
 
     }
 
@@ -164,15 +159,14 @@ public class ComprobanteLoteServicio {
 
     }
 
-    private void procesarRespuesta(String respuesta, List<DocumentoElectronico> lde, Contribuyente contribuyente) throws ParserConfigurationException, SAXException, IOException {
+    private void procesarRespuestaEnvioLote(String respuesta, List<DocumentoElectronico> lde, Contribuyente contribuyente) throws ParserConfigurationException, SAXException, IOException {
 
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(respuesta));
-        //log.info(respuesta);
+
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         d.getDocumentElement().normalize();
         NodeList nl = d.getElementsByTagName("ns2:rResEnviLoteDe");
-        //String loteNro = "-1";
 
         Lote lote = null;
 
@@ -194,7 +188,7 @@ public class ComprobanteLoteServicio {
 
                     lote = lr.save(lote);
 
-                } 
+                }
 
             }
 
@@ -206,30 +200,113 @@ public class ComprobanteLoteServicio {
             //ce.setEnviadoLote(true);
             //ce.setFechaEnviadoLote(new Date());
             ce.setEnviado(true);
-            ce.setRespuesta(respuesta);
+            //ce.setRespuesta(respuesta);
             ce.setEnviadoLote(true);
-            if (!Objects.isNull(lote)){
-                 ce.setLote(lote);
-            }else{
+            if (!Objects.isNull(lote)) {
+                ce.setLote(lote);
+            } else {
                 log.info("Error al enviar el lote.");
             }
-            
-           
-            
 
-            //ce.setLoteNro(loteNro);
             cer.save(ce);
 
         }
     }
-
-    public String consultarLote(Lote lote) throws SifenException{
     
-        SifenConfig config = css.getSifenConfig(lote.getContribuyente());
+    public String consultarLote (Lote lote) throws SifenException, ParserConfigurationException, SAXException, IOException{
+    
+        return this.consultarLote(lote.getNro(), lote.getContribuyente());
         
-        RespuestaConsultaLoteDE rcl = Sifen.consultaLoteDE(lote.getNro(), config);
-       // System.out.println(rcl.getRespuestaBruta());
+    }
+    
+    @Async
+    public void ConsultarLotes() throws SifenException, ParserConfigurationException, SAXException, IOException{
+    
+        List <Lote> lotes = lr.findByEstadoNotContainingOrEstadoIsNull("Concluido");
         
+        log.info("Cantidad de lotes a consultar: "+lotes.size());
+        
+        for (Lote x : lotes ){
+        
+            this.consultarLote(x.getNro(), x.getContribuyente());
+            
+        }
+        
+    }
+
+    @Async
+    public String consultarLote(String nro, Contribuyente contribuyente) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        SifenConfig config = css.getSifenConfig(contribuyente);
+
+        RespuestaConsultaLoteDE rcl = Sifen.consultaLoteDE(nro, config);
+        // System.out.println(rcl.getRespuestaBruta());
+
+        Lote lote = lr.findByNro(nro);
+        lote.setRespuestaconsulta(rcl.getRespuestaBruta());
+
+        procesarConsultaLote(lote);
+
         return rcl.getRespuestaBruta();
     }
+
+    private void procesarConsultaLote(Lote lote) throws ParserConfigurationException, SAXException, IOException {
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        InputSource is = new InputSource();
+        is.setCharacterStream(new StringReader(lote.getRespuestaconsulta()));
+        Document d = db.parse(is);
+
+        d.getDocumentElement().normalize();
+        NodeList nl = d.getElementsByTagName("ns2:rResEnviConsLoteDe");
+
+        Node n = nl.item(0);
+       // log.info(((Element) n).getElementsByTagName("ns2:dCodResLot").item(0).getTextContent());
+
+        String codResLot = ((Element) n).getElementsByTagName("ns2:dCodResLot").item(0).getTextContent();
+
+        if (codResLot.compareTo("0362") == 0) {
+
+            lote.setEstado("Concluido");
+
+            nl = d.getElementsByTagName("ns2:gResProcLote");
+
+            for (int i = 0; i < nl.getLength(); i++) {
+
+                n = nl.item(i);
+                
+                ComprobanteElectronico ce = cer.findByCdc(((Element) n).getElementsByTagName("ns2:id").item(0).getTextContent());
+                ce.setRespuesta( ((Element) n).getElementsByTagName("ns2:dCodRes").item(0).getTextContent() + " - " +
+                        ((Element) n).getElementsByTagName("ns2:dMsgRes").item(0).getTextContent());
+                ce.setEstado(((Element) n).getElementsByTagName("ns2:dEstRes").item(0).getTextContent() );
+                
+                cer.save(ce);
+
+               // log.info(((Element) n).getElementsByTagName("ns2:id").item(0).getTextContent());
+               // log.info(((Element) n).getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+               // log.info(((Element) n).getElementsByTagName("ns2:dCodRes").item(0).getTextContent());
+               // log.info(((Element) n).getElementsByTagName("ns2:dMsgRes").item(0).getTextContent());
+
+            }
+            
+           
+        }
+
+        if (codResLot.compareTo("361") == 0) {
+
+            lote.setEstado("Procesamiento");
+
+        }
+
+        if (codResLot.compareTo("0363") == 0) {
+
+            lote.setEstado("Lotes con tipos distintos de DE");
+
+        }
+        
+         lr.save(lote);
+
+    }
+
 }
