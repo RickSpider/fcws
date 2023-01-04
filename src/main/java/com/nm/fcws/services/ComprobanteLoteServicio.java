@@ -290,7 +290,8 @@ public class ComprobanteLoteServicio {
                 
                 if (ce.getEstado().compareTo("Rechazado") == 0){
                 
-                    mensajeEmail.append("El comprobante "+ce.getCdc()+" fue Rechazado. "+ce.getRespuesta());
+                    mensajeEmail.append("El comprobante "+ce.getTipoComprobanteElectronico().getTipoComprobanteElectronico()+
+                            " NRO "+ce.getNumero()+" CDC "+ce.getCdc()+" fue Rechazado. "+ce.getRespuesta());
                     
                 }
                 

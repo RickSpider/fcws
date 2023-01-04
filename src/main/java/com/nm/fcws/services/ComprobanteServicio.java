@@ -657,14 +657,11 @@ public class ComprobanteServicio {
         gCamNRE.setiMotEmiNR(TiMotivTras.getByVal(remision.getMotivoEmsion().shortValue()));
         gCamNRE.setiRespEmiNR(TiRespEmiNR.getByVal(remision.getResponsableEmision().shortValue()));
         gCamNRE.setdKmR(remision.getKilometrosRecorrido());
-        
-        if (remision.getFechaEmiFactura() != null){
-        
-             gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
+         gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
             
-        }
+        
        
 
         return gCamNRE;
