@@ -7,6 +7,7 @@ package com.nm.fcws.controller;
 
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
+import com.nm.fcws.services.EmailServicio;
 import java.io.IOException;
 import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;
@@ -116,6 +117,16 @@ public class hello {
         }
 
        
+    }
+    
+    @Autowired
+    private EmailServicio emailServicio;
+    
+    @GetMapping(value = "/testMail", produces = "application/json")
+    public void testmail() throws ParserConfigurationException, SAXException, IOException {
+    
+        emailServicio.send("fe@vidrioluz.com.py", "ricardo.rgi1989@gmail.com" , "Alerta", "prueba de alerta");
+        
     }
 
 }
