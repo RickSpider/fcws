@@ -306,10 +306,16 @@ public class ComprobanteLoteServicio {
 
             }
             
+            int emailSize =0;
+            
             if (mensajeEmail.length() > 0){
                 
-                int emailSize = lote.getContribuyente().getContactos().size();
+                if (!lote.getContribuyente().getContactos().isEmpty()){
                 
+                    emailSize = lote.getContribuyente().getContactos().size();
+                    
+                }
+        
                 if (emailSize > 0){
                 
                     String[] destinos = new String[emailSize]; 
