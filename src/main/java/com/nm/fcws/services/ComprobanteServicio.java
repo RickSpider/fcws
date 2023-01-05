@@ -23,10 +23,12 @@ import com.nm.fcws.modeldb.ActividadEconomica;
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.modeldb.Distrito;
+import com.nm.fcws.modeldb.Localidad;
 import com.nm.fcws.modeldb.Ruc;
 import com.nm.fcws.modeldb.TipoComprobanteElectronico;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
 import com.nm.fcws.repo.DistritoRepo;
+import com.nm.fcws.repo.LocalidadRepo;
 import com.nm.fcws.repo.RucRepo;
 import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.SifenConfig;
@@ -129,7 +131,10 @@ public class ComprobanteServicio {
 
     @Autowired
     private DistritoRepo distritoRepo;
-    
+
+    @Autowired
+    private LocalidadRepo localidadRepo;
+
     @Autowired
     private ConexionSifenServicio css;
 
@@ -165,7 +170,6 @@ public class ComprobanteServicio {
 
         return config;
     }*/
-
     public DocumentoElectronico procesar(Comprobante comprobante, Contribuyente contribuyente, TTiDE tipoDE) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         DocumentoElectronico de = new DocumentoElectronico();
@@ -248,7 +252,7 @@ public class ComprobanteServicio {
 
         }
 
-        gDtipDE.setgCamItemList(this.procesarDetalle(comprobante.getDetalles(),tipoDE));
+        gDtipDE.setgCamItemList(this.procesarDetalle(comprobante.getDetalles(), tipoDE));
 
         de.setgDtipDE(gDtipDE);
 
@@ -264,28 +268,27 @@ public class ComprobanteServicio {
         ce.setNumero(comprobante.getTimbrado().getEstablecimiento() + "-" + comprobante.getTimbrado().getPuntoExpedicion() + "-" + comprobante.getTimbrado().getDocumentoNro());
         ce.setXml(de.generarXml(config));
         ce.setCdc(de.obtenerCDC());
-        
+
         ce.setTipoComprobanteElectronico(new TipoComprobanteElectronico(Long.valueOf(tipoDE.getVal())));
-        
+
         if (tipoDE.getVal() == TTiDE.FACTURA_ELECTRONICA.getVal()
                 || tipoDE.getVal() == TTiDE.AUTOFACTURA_ELECTRONICA.getVal()
                 || tipoDE.getVal() == TTiDE.NOTA_DE_CREDITO_ELECTRONICA.getVal()
                 || tipoDE.getVal() == TTiDE.NOTA_DE_DEBITO_ELECTRONICA.getVal()) {
-            
+
             ce.setTotal(comprobante.getTotalComprobante());
-            
-        }else{
+
+        } else {
             ce.setTotal(0);
         }
-        
-        if (contribuyente.isSoloLote()){
-        
-            ce.setEnvioPorLote(true);
-            
-        }
-        
-        // log.info(de.getEnlaceQR());
 
+        if (contribuyente.isSoloLote()) {
+
+            ce.setEnvioPorLote(true);
+
+        }
+
+        // log.info(de.getEnlaceQR());
         this.comprobanteElectronicoRepo.save(ce);
 
         return de;
@@ -633,6 +636,7 @@ public class ComprobanteServicio {
         }
 
         Distrito dis = this.distritoRepo.findByCodigoSifen(receptor.getDistrito());
+        Localidad ciu = this.localidadRepo.findByCodigoSifen(receptor.getCiudad());
 
         if (!Objects.isNull(receptor.getDistrito())) {
 
@@ -641,8 +645,8 @@ public class ComprobanteServicio {
         }
 
         if (!Objects.isNull(receptor.getCiudad())) {
-            gDatRec.setcCiuRec(dis.getCodigoSifen().shortValue());
-            gDatRec.setdDesCiuRec(dis.getDistrito());
+            gDatRec.setcCiuRec(ciu.getCodigoSifen().shortValue());
+            gDatRec.setdDesCiuRec(ciu.getLocalidad());
         }
 
         return gDatRec;
@@ -657,12 +661,9 @@ public class ComprobanteServicio {
         gCamNRE.setiMotEmiNR(TiMotivTras.getByVal(remision.getMotivoEmsion().shortValue()));
         gCamNRE.setiRespEmiNR(TiRespEmiNR.getByVal(remision.getResponsableEmision().shortValue()));
         gCamNRE.setdKmR(remision.getKilometrosRecorrido());
-         gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
+        gCamNRE.setdFecEm(remision.getFechaEmiFactura().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate());
-            
-        
-       
 
         return gCamNRE;
 
@@ -753,10 +754,10 @@ public class ComprobanteServicio {
         gCamSal.setdNumCasSal(mercaderiaMov.getCasaNro().shortValue());
         gCamSal.setcDepSal(TDepartamento.getByVal(mercaderiaMov.getDepartamento().shortValue()));
 
-        Distrito ciudad = distritoRepo.findByCodigoSifen(mercaderiaMov.getCiudad());
+        Localidad ciudad = localidadRepo.findByCodigoSifen(mercaderiaMov.getCiudad());
 
         gCamSal.setcCiuSal(ciudad.getCodigoSifen().shortValue());
-        gCamSal.setdDesCiuSal(ciudad.getDistrito());
+        gCamSal.setdDesCiuSal(ciudad.getLocalidad());
 
         return gCamSal;
 
@@ -774,10 +775,16 @@ public class ComprobanteServicio {
             gCamEnt.setdNumCasEnt(x.getCasaNro().shortValue());
             gCamEnt.setcDepEnt(TDepartamento.getByVal(x.getDepartamento().shortValue()));
 
-            Distrito ciudad = distritoRepo.findByCodigoSifen(x.getCiudad());
+            if (!Objects.isNull(x.getDistrito())) {
+                Distrito distrito = distritoRepo.findByCodigoSifen(x.getDistrito());
+                gCamEnt.setcDisEnt(distrito.getCodigoSifen().shortValue());
+                gCamEnt.setdDesDisEnt(distrito.getDistrito());
 
+            }
+
+            Localidad ciudad = localidadRepo.findByCodigoSifen(x.getCiudad());
             gCamEnt.setcCiuEnt(ciudad.getCodigoSifen().shortValue());
-            gCamEnt.setdDesCiuEnt(ciudad.getDistrito());
+            gCamEnt.setdDesCiuEnt(ciudad.getLocalidad());
 
             lgCamEnt.add(gCamEnt);
 
@@ -872,11 +879,11 @@ public class ComprobanteServicio {
             }
 
             //discutir va a pasar el cliente proveer la tabla del sifen
-           // gCamItem.setdCantProSer(x.getCantidad());
-           gCamItem.setdCantProSer(BigDecimal.valueOf(x.getCantidad()).setScale(2, RoundingMode.HALF_UP));
-           
-            if (TipoDE.getVal() != TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()){
-            
+            // gCamItem.setdCantProSer(x.getCantidad());
+            gCamItem.setdCantProSer(BigDecimal.valueOf(x.getCantidad()).setScale(2, RoundingMode.HALF_UP));
+
+            if (TipoDE.getVal() != TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()) {
+
                 TgValorItem gValorItem = new TgValorItem();
                 gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()).setScale(2, RoundingMode.HALF_UP));
                 TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
@@ -888,11 +895,9 @@ public class ComprobanteServicio {
                 gCamIVA.setdPropIVA(new BigDecimal(x.getProporcionIVA()));
                 gCamIVA.setdTasaIVA(new BigDecimal(x.getTasaIVA()));
                 gCamItem.setgCamIVA(gCamIVA);
-                
+
             }
-            
-            
-            
+
             gCamItemList.add(gCamItem);
 
         }
@@ -947,5 +952,5 @@ public class ComprobanteServicio {
         this.comprobanteElectronicoRepo.save(ce);
 
     }
-    
+
 }
