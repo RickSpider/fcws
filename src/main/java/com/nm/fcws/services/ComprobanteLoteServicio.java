@@ -47,7 +47,7 @@ public class ComprobanteLoteServicio {
 
     private static Logger log = LoggerFactory.getLogger(ComprobanteLoteServicio.class);
 
-    private final int listaMaxima = 70;
+    private final int listaMaxima = 50;
 
     @Autowired
     private ComprobanteElectronicoRepo cer;
