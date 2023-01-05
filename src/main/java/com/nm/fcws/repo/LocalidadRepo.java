@@ -14,4 +14,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface LocalidadRepo extends CrudRepository<Localidad, Long> {
     
+    public Localidad findByCodigoSifen(Long codigoSifen);
+    
 }

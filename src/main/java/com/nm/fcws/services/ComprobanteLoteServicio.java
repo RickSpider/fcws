@@ -21,7 +21,6 @@ import com.roshka.sifen.core.exceptions.SifenException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import javax.xml.parsers.DocumentBuilder;
@@ -310,7 +309,9 @@ public class ComprobanteLoteServicio {
             
             if (mensajeEmail.length() > 0){
                 
-                if (!lote.getContribuyente().getContactos().isEmpty()){
+                List<ContribuyenteContacto> lcc = lote.getContribuyente().getContactos();
+                
+                if (!lcc.isEmpty()||!Objects.isNull(lcc)){
                 
                     emailSize = lote.getContribuyente().getContactos().size();
                     

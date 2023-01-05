@@ -100,7 +100,7 @@ public class Contribuyente implements Serializable {
     private String cscid;
     private String csc;
        
-    @OneToMany(mappedBy="contribuyente")
+    @OneToMany(mappedBy="contribuyente", fetch = FetchType.EAGER)
     private List<ContribuyenteContacto> contactos;
     
     /**

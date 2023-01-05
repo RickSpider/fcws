@@ -31,7 +31,7 @@ public class LoteComponent {
     
     private static Logger log = LoggerFactory.getLogger(LoteComponent.class);
     @Autowired
-    private ComprobanteLoteServicio css;
+    private ComprobanteLoteServicio cls;
     
     @Autowired
     private ContribuyenteRepo cr;
@@ -39,14 +39,13 @@ public class LoteComponent {
     //@Scheduled(fixedRate = 30000)
    // @Scheduled(fixedRate = 7200000) //2horas
     @Scheduled(cron="0 10 8,10,12,14,16,18 * * ?")
-    //  @Scheduled(cron="0 35 15 * * ?")
     public void envio() throws SifenException, ParserConfigurationException, SAXException, IOException{
         
-        log.info("iniciando tarea programada");
+        log.info("Iniciando envio atuomatico de lotes");
         
         List <Contribuyente> lc = (List <Contribuyente>) cr.findBySoloLote(true);
         
-        css.enviarLoteContribuyentes(lc);
+        cls.enviarLoteContribuyentes(lc);
         
     }
  
@@ -56,7 +55,7 @@ public class LoteComponent {
         log.info("Ejecutando Consulta de Lotes");
         //System.out.println("Iniciar consulta we");
         
-        css.ConsultarLotes();
+        cls.ConsultarLotes();
     }
     
     
