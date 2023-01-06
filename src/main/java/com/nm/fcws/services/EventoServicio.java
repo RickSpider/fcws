@@ -7,6 +7,7 @@ package com.nm.fcws.services;
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
+import com.nm.fcws.modeldb.ContribuyenteContacto;
 import com.nm.fcws.modeldb.Evento;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
 import com.nm.fcws.repo.EventoRepo;
@@ -23,6 +24,7 @@ import java.io.StringReader;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,139 +47,145 @@ import org.xml.sax.SAXException;
  */
 @Service
 public class EventoServicio {
-    
+
     private static Logger log = LoggerFactory.getLogger(EventoServicio.class);
-    
+
     @Autowired
     private ConexionSifenServicio css;
-    
+
     @Autowired
     private ComprobanteElectronicoRepo cer;
-    
+
     @Autowired
     private EventoRepo er;
-    
+
     @Autowired
     private TipoComprobanteElectronicoRepo tcer;
+    
+    @Autowired
+    private EmailServicio emailServicio;
 
-    public EventosDE procesarCancelacion(Comprobante comprobante, Contribuyente contribuyente, String id) throws SifenException{
-        
+    /*public EventosDE procesarCancelacion(Comprobante comprobante, Contribuyente contribuyente, String id) throws SifenException {
+
         EventosDE ede = new EventosDE();
-        
+
         TrGesEve rGesEve = new TrGesEve();
 
         rGesEve.setId(id);
-        
-        
+
         rGesEve.setdFecFirma(comprobante.getFecha().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime());
-        
+
         TgGroupTiEvt gGroupTiEvt = new TgGroupTiEvt();
-        
+
         TrGeVeCan rGeVeCan = new TrGeVeCan();
         rGeVeCan.setId(comprobante.getCdc());
         rGeVeCan.setmOtEve("Cancelacion de CDC");
-         
+
         gGroupTiEvt.setrGeVeCan(rGeVeCan);
 
-        
         rGesEve.setgGroupTiEvt(gGroupTiEvt);
         //List <TrGesEve> lrGesEve =  new ArrayList<TrGesEve>();
         //lrGesEve.add(rGesEve);
-        
-        ede.setrGesEveList(Collections.singletonList(rGesEve));
-        
-        
-        return ede;
-    }
-    
-    public void guardarEvento(Comprobante comprobante, Contribuyente contribuyente, String id){
-    
-       Evento e = new Evento();
-       e.setCdc(comprobante.getCdc());
-       e.setFecha(comprobante.getFecha());
-       e.setContribuyente(contribuyente);
-       e.setTipoComprobanteElectronico(tcer.findById(Long.parseLong(id)).get());
-       if(comprobante.getMotivoEvento() == null){
-           e.setMotivo(comprobante.getMotivoEvento());
-       }
-       
-       er.save(e);
-       
-    }
-    
-    private EventosDE procesarCancelacion(Evento e){
-        
-        ComprobanteElectronico ce = cer.findByCdc(e.getCdc());
-    
-        EventosDE ede = new EventosDE();
-        
-        TrGesEve rGesEve = new TrGesEve();
 
-        rGesEve.setId(ce.getTipoComprobanteElectronico().getTipocomprobanteelectronicoid().toString());
-        
-        
-        rGesEve.setdFecFirma(e.getFecha().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime());
-        
-        TgGroupTiEvt gGroupTiEvt = new TgGroupTiEvt();
-        
-        TrGeVeCan rGeVeCan = new TrGeVeCan();
-        rGeVeCan.setId(e.getCdc());
-        rGeVeCan.setmOtEve("Cancelacion de CDC");
-        if (e.getMotivo().length() > 0){
-            rGeVeCan.setmOtEve(e.getMotivo());
+        ede.setrGesEveList(Collections.singletonList(rGesEve));
+
+        return ede;
+    }*/
+
+    public void guardarEventoCancelacion(Comprobante comprobante, Contribuyente contribuyente, String id) {
+
+        Evento e = new Evento();
+        e.setCdc(comprobante.getCdc());
+        e.setFecha(comprobante.getFecha());
+        e.setContribuyente(contribuyente);
+        e.setTipoComprobanteElectronico(tcer.findById(Long.parseLong(id)).get());
+        if (comprobante.getMotivoEvento() == null) {
+            e.setMotivo(comprobante.getMotivoEvento());
         }
         
-         
-        gGroupTiEvt.setrGeVeCan(rGeVeCan);
+        er.save(e);
 
-        
-        rGesEve.setgGroupTiEvt(gGroupTiEvt);
-        //List <TrGesEve> lrGesEve =  new ArrayList<TrGesEve>();
-        //lrGesEve.add(rGesEve);
-        
-        ede.setrGesEveList(Collections.singletonList(rGesEve));
-        
-        return ede;
-        
     }
-    
-    
+
+    private void procesarCancelacion(Evento e) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        ComprobanteElectronico ce = cer.findByCdcAndEstado(e.getCdc(), "Aprobado");
+
+        if (ce != null) {
+            
+           
+            
+            EventosDE ede = new EventosDE();
+
+            TrGesEve rGesEve = new TrGesEve();
+
+            rGesEve.setId(ce.getTipoComprobanteElectronico().getTipocomprobanteelectronicoid().toString());
+
+            rGesEve.setdFecFirma(new Date().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime());
+
+            TgGroupTiEvt gGroupTiEvt = new TgGroupTiEvt();
+
+            TrGeVeCan rGeVeCan = new TrGeVeCan();
+            rGeVeCan.setId(e.getCdc());
+            rGeVeCan.setmOtEve("Cancelacion de CDC");
+            if (e.getMotivo() != null && e.getMotivo().length() > 0) {
+                rGeVeCan.setmOtEve(e.getMotivo());
+            }
+
+            gGroupTiEvt.setrGeVeCan(rGeVeCan);
+
+            rGesEve.setgGroupTiEvt(gGroupTiEvt);
+            //List <TrGesEve> lrGesEve =  new ArrayList<TrGesEve>();
+            //lrGesEve.add(rGesEve);
+
+            ede.setrGesEveList(Collections.singletonList(rGesEve));
+
+           
+            this.enviarEvento(ede, e, ce);
+
+        }
+
+    }
+
     @Async
-    public void enviarEventos() throws SifenException, ParserConfigurationException, SAXException, IOException{
-    
+    public void enviarEventos() throws SifenException, ParserConfigurationException, SAXException, IOException {
+        
+        log.info("Iniciando envio de enventos");
+
         List<Evento> levento = er.findByEnviado(false);
-        
-        for (Evento x : levento){
-        
-            this.enviarEvento(this.procesarCancelacion(x), x);
-        
+
+        for (Evento x : levento) {
+
+           this.procesarCancelacion(x);
+
         }
-        
+
     }
-    
-    public void enviarEvento(EventosDE ede, Evento evento) throws SifenException, ParserConfigurationException, SAXException, IOException{
-        
-        RespuestaRecepcionEvento rre =  Sifen.recepcionEvento(ede, css.getSifenConfig(evento.getContribuyente()));
+
+    public void enviarEvento(EventosDE ede, Evento evento, ComprobanteElectronico ce) throws SifenException, ParserConfigurationException, SAXException, IOException {
+
+        RespuestaRecepcionEvento rre = Sifen.recepcionEvento(ede, css.getSifenConfig(evento.getContribuyente()));
         log.info(rre.getRespuestaBruta());
-        
-        String respuesta= rre.getRespuestaBruta();
-        
+
+        String respuesta = rre.getRespuestaBruta();
+
         evento.setRespuesta(respuesta);
-        
-        ComprobanteElectronico ce = cer.findByCdc(evento.getCdc());
-        ce.setEvento(evento);
-        
+
+        //ComprobanteElectronico ce = cer.findByCdc(evento.getCdc());
+        //ce.setEvento(evento);
+
         //ce.setEventoRespuesta(respuesta);
-        
         InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(respuesta));
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
         d.getDocumentElement().normalize();
         NodeList nl = d.getElementsByTagName("ns2:gResProcEVe");
+        
+        StringBuffer mensajeEmail = new StringBuffer();
 
         for (int i = 0; i < nl.getLength(); i++) {
 
@@ -189,18 +197,37 @@ public class EventoServicio {
 
                 // ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
                 evento.setEstado(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+                evento.setMensaje(e.getElementsByTagName("ns2:dMsgRes").item(0).getTextContent());
                 
+                if (evento.getEstado().compareTo("Rechazado") == 0){
+                
+                  mensajeEmail.append("La Cancelacion del Comprobante "+ce.getTipoComprobanteElectronico().getTipoComprobanteElectronico()+" fue Rechazado. "+
+                            "\nNRO "+ce.getNumero()+
+                            "\nCDC "+ce.getCdc()+
+                            "\nMensaje "+evento.getMensaje()+"\n\n");
+                    
+                }
+                if (e.getElementsByTagName("ns2:dCodRes").item(0).getTextContent().compareTo("0600") == 0) {
+
+                     ce.setEvento(evento);
+                     cer.save(ce);
+            
+
+                }
 
             }
 
         }
-        
+
         evento.setEnviado(true);
         this.er.save(evento);
-        this.cer.save(ce);
+        
+        this.emailServicio.enviar(evento.getContribuyente(), mensajeEmail.toString());
+        
+       // this.cer.save(ce);
 
     }
-    
+
     /*@Async
     public void enviarEvento(EventosDE ede, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException{
         
@@ -246,5 +273,4 @@ public class EventoServicio {
         this.cer.save(ce);
 
     }*/
-    
 }

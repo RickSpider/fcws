@@ -96,7 +96,7 @@ public class ComprobanteElectronico implements Serializable {
     private String eventoRespuesta;*/
     
     @ManyToOne
-    @JoinColumn(name = "contribuyenteid")
+    @JoinColumn(name = "enventoid")
     private Evento evento;
     
 

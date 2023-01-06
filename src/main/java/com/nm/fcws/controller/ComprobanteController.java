@@ -17,7 +17,6 @@ import com.nm.fcws.services.ComprobanteServicio;
 import com.nm.fcws.services.ContribuyenteServicio;
 import com.nm.fcws.services.EventoServicio;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
-import com.roshka.sifen.core.beans.EventosDE;
 import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.types.TTiDE;
 import java.io.IOException;
@@ -122,7 +121,7 @@ public class ComprobanteController {
             return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
 
-         eventoServicio.guardarEvento(comprobante, oContribuyente.get(), "1");
+         eventoServicio.guardarEventoCancelacion(comprobante, oContribuyente.get(), "1");
         
        // EventosDE ede = eventoServicio.procesarCancelacion(comprobante, oContribuyente.get(), "1");
         
@@ -147,7 +146,7 @@ public class ComprobanteController {
         
         //eventoServicio.enviarEvento(ede, oContribuyente.get(), comprobante.getCdc());
         
-         eventoServicio.guardarEvento(comprobante, oContribuyente.get(), "5");
+         eventoServicio.guardarEventoCancelacion(comprobante, oContribuyente.get(), "5");
 
         return new ResponseEntity("Cancelacion de Nota de Credito recibida",HttpStatus.CREATED);
     }
@@ -163,7 +162,7 @@ public class ComprobanteController {
             return new ResponseEntity("Los datos para la identificacion del contribuyente no son correctos", HttpStatus.FORBIDDEN);
         }
 
-        eventoServicio.guardarEvento(comprobante, oContribuyente.get(), "7");
+        eventoServicio.guardarEventoCancelacion(comprobante, oContribuyente.get(), "7");
         
         //EventosDE ede = eventoServicio.procesarCancelacion(comprobante, oContribuyente.get(), "7");
         

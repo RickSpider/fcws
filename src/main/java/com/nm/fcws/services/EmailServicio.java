@@ -4,6 +4,10 @@
  */
 package com.nm.fcws.services;
 
+import com.nm.fcws.modeldb.Contribuyente;
+import com.nm.fcws.modeldb.ContribuyenteContacto;
+import java.util.List;
+import java.util.Objects;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +15,6 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,7 +23,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EmailServicio {
-    
+
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -38,8 +41,8 @@ public class EmailServicio {
     }
 
     public void sendWithAttach(String from, String to, String subject,
-                               String text, String attachName,
-                               InputStreamSource inputStream) throws MessagingException {
+            String text, String attachName,
+            InputStreamSource inputStream) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setFrom(from);
@@ -50,5 +53,40 @@ public class EmailServicio {
         javaMailSender.send(message);
     }
 
-    
+    public void enviar(Contribuyente c, String mensaje) {
+
+        int emailSize = 0;
+
+        if (mensaje.length() > 0) {
+
+            List<ContribuyenteContacto> lcc = c.getContactos();
+
+            if (!lcc.isEmpty() || !Objects.isNull(lcc)) {
+
+                emailSize = c.getContactos().size();
+
+            }
+
+            if (emailSize > 0) {
+
+                String[] destinos = new String[emailSize];
+                int i = 0;
+
+                for (ContribuyenteContacto x : c.getContactos()) {
+
+                    destinos[i] = x.getMail();
+                    i++;
+
+                }
+
+                this.send("fe@vidrioluz.com.py", destinos, "Alerta", mensaje);
+
+            }
+
+        }
+
+    }
+
 }
+
+

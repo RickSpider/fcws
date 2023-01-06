@@ -31,7 +31,7 @@ public class Evento {
     
     private String cdc;
     
-     @Column(columnDefinition="text")
+    @Column(columnDefinition="text")
     private String motivo = "";
     
     @Column(columnDefinition = "boolean default false")
@@ -39,8 +39,11 @@ public class Evento {
     
     private String estado;
     
-     @Column(columnDefinition="text")
+    @Column(columnDefinition="text")
     private String respuesta;
+    
+    @Column(columnDefinition="text")
+    private String mensaje;
     
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -124,6 +127,14 @@ public class Evento {
 
     public void setTipoComprobanteElectronico(TipoComprobanteElectronico tipoComprobanteElectronico) {
         this.tipoComprobanteElectronico = tipoComprobanteElectronico;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
     }
     
     

@@ -17,11 +17,12 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ComprobanteElectronicoRepo extends CrudRepository<ComprobanteElectronico, Long>{
     
-    ComprobanteElectronico findByCdc(String cdc);
+    public ComprobanteElectronico findByCdc(String cdc);
     
     //List<ComprobanteElectronico> findByLoteAndEnviadoLoteAndContribuyente (boolean lote, boolean enviadoLote, Contribuyente contribuyente);
     
-    List<ComprobanteElectronico> findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndEnviadoLote (boolean envioPorLote, Contribuyente contribuyente, TipoComprobanteElectronico tipoComprobateElectronico, boolean enviadoLote);
+    public List<ComprobanteElectronico> findByEnvioPorLoteAndContribuyenteAndTipoComprobanteElectronicoAndEnviadoLote (boolean envioPorLote, Contribuyente contribuyente, TipoComprobanteElectronico tipoComprobateElectronico, boolean enviadoLote);
     
+    public ComprobanteElectronico findByCdcAndEstado(String cdc, String estado);
     
 }
