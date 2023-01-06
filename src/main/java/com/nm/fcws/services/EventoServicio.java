@@ -7,7 +7,10 @@ package com.nm.fcws.services;
 import com.nm.fcws.model.Comprobante;
 import com.nm.fcws.modeldb.ComprobanteElectronico;
 import com.nm.fcws.modeldb.Contribuyente;
+import com.nm.fcws.modeldb.Evento;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
+import com.nm.fcws.repo.EventoRepo;
+import com.nm.fcws.repo.TipoComprobanteElectronicoRepo;
 import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.beans.EventosDE;
 import com.roshka.sifen.core.beans.response.RespuestaRecepcionEvento;
@@ -50,11 +53,16 @@ public class EventoServicio {
     
     @Autowired
     private ComprobanteElectronicoRepo cer;
+    
+    @Autowired
+    private EventoRepo er;
+    
+    @Autowired
+    private TipoComprobanteElectronicoRepo tcer;
 
     public EventosDE procesarCancelacion(Comprobante comprobante, Contribuyente contribuyente, String id) throws SifenException{
         
         EventosDE ede = new EventosDE();
-
         
         TrGesEve rGesEve = new TrGesEve();
 
@@ -84,7 +92,116 @@ public class EventoServicio {
         return ede;
     }
     
+    public void guardarEvento(Comprobante comprobante, Contribuyente contribuyente, String id){
+    
+       Evento e = new Evento();
+       e.setCdc(comprobante.getCdc());
+       e.setFecha(comprobante.getFecha());
+       e.setContribuyente(contribuyente);
+       e.setTipoComprobanteElectronico(tcer.findById(Long.parseLong(id)).get());
+       if(comprobante.getMotivoEvento() == null){
+           e.setMotivo(comprobante.getMotivoEvento());
+       }
+       
+       er.save(e);
+       
+    }
+    
+    private EventosDE procesarCancelacion(Evento e){
+        
+        ComprobanteElectronico ce = cer.findByCdc(e.getCdc());
+    
+        EventosDE ede = new EventosDE();
+        
+        TrGesEve rGesEve = new TrGesEve();
+
+        rGesEve.setId(ce.getTipoComprobanteElectronico().getTipocomprobanteelectronicoid().toString());
+        
+        
+        rGesEve.setdFecFirma(e.getFecha().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime());
+        
+        TgGroupTiEvt gGroupTiEvt = new TgGroupTiEvt();
+        
+        TrGeVeCan rGeVeCan = new TrGeVeCan();
+        rGeVeCan.setId(e.getCdc());
+        rGeVeCan.setmOtEve("Cancelacion de CDC");
+        if (e.getMotivo().length() > 0){
+            rGeVeCan.setmOtEve(e.getMotivo());
+        }
+        
+         
+        gGroupTiEvt.setrGeVeCan(rGeVeCan);
+
+        
+        rGesEve.setgGroupTiEvt(gGroupTiEvt);
+        //List <TrGesEve> lrGesEve =  new ArrayList<TrGesEve>();
+        //lrGesEve.add(rGesEve);
+        
+        ede.setrGesEveList(Collections.singletonList(rGesEve));
+        
+        return ede;
+        
+    }
+    
+    
     @Async
+    public void enviarEventos() throws SifenException, ParserConfigurationException, SAXException, IOException{
+    
+        List<Evento> levento = er.findByEnviado(false);
+        
+        for (Evento x : levento){
+        
+            this.enviarEvento(this.procesarCancelacion(x), x);
+        
+        }
+        
+    }
+    
+    public void enviarEvento(EventosDE ede, Evento evento) throws SifenException, ParserConfigurationException, SAXException, IOException{
+        
+        RespuestaRecepcionEvento rre =  Sifen.recepcionEvento(ede, css.getSifenConfig(evento.getContribuyente()));
+        log.info(rre.getRespuestaBruta());
+        
+        String respuesta= rre.getRespuestaBruta();
+        
+        evento.setRespuesta(respuesta);
+        
+        ComprobanteElectronico ce = cer.findByCdc(evento.getCdc());
+        ce.setEvento(evento);
+        
+        //ce.setEventoRespuesta(respuesta);
+        
+        InputSource is = new InputSource();
+        is.setCharacterStream(new StringReader(respuesta));
+        Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+        d.getDocumentElement().normalize();
+        NodeList nl = d.getElementsByTagName("ns2:gResProcEVe");
+
+        for (int i = 0; i < nl.getLength(); i++) {
+
+            Node n = nl.item(i);
+
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+
+                Element e = (Element) n;
+
+                // ce.setCdc(e.getElementsByTagName("ns2:Id").item(0).getTextContent());
+                evento.setEstado(e.getElementsByTagName("ns2:dEstRes").item(0).getTextContent());
+                
+
+            }
+
+        }
+        
+        evento.setEnviado(true);
+        this.er.save(evento);
+        this.cer.save(ce);
+
+    }
+    
+    /*@Async
     public void enviarEvento(EventosDE ede, Contribuyente contribuyente, String cdc) throws SifenException, ParserConfigurationException, SAXException, IOException{
         
         RespuestaRecepcionEvento rre =  Sifen.recepcionEvento(ede, css.getSifenConfig(contribuyente));
@@ -128,8 +245,6 @@ public class EventoServicio {
 
         this.cer.save(ce);
 
-    }
-
-
+    }*/
     
 }

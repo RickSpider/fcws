@@ -79,19 +79,25 @@ public class ComprobanteElectronico implements Serializable {
     @Column(name="lotenro")
     private String loteNro; */
     
-    //Seccion evento
+  
     @ManyToOne
     @JoinColumn(name = "tipocomprobanteelectronicoid")
-    private TipoComprobanteElectronico tipoComprobanteElectronico;
+   private TipoComprobanteElectronico tipoComprobanteElectronico;
     
-    @Column(columnDefinition = "boolean default false")
+    //Seccion evento
+    
+    /*@Column(columnDefinition = "boolean default false")
     private boolean evento = false;
     
     @Column(name="eventoestado")
     private String eventoEstado;
     
     @Column(name="eventorespuesta", columnDefinition="text")
-    private String eventoRespuesta;
+    private String eventoRespuesta;*/
+    
+    @ManyToOne
+    @JoinColumn(name = "contribuyenteid")
+    private Evento evento;
     
 
     public Long getId() {
@@ -182,30 +188,6 @@ public class ComprobanteElectronico implements Serializable {
         this.tipoComprobanteElectronico = tipoComprobanteElectronico;
     }
 
-    public boolean isEvento() {
-        return evento;
-    }
-
-    public void setEvento(boolean evento) {
-        this.evento = evento;
-    }
-
-    public String getEventoEstado() {
-        return eventoEstado;
-    }
-
-    public void setEventoEstado(String eventoEstado) {
-        this.eventoEstado = eventoEstado;
-    }
-
-    public String getEventoRespuesta() {
-        return eventoRespuesta;
-    }
-
-    public void setEventoRespuesta(String eventoRespuesta) {
-        this.eventoRespuesta = eventoRespuesta;
-    }
-
     public Lote getLote() {
         return lote;
     }
@@ -228,6 +210,14 @@ public class ComprobanteElectronico implements Serializable {
 
     public void setEnviadoLote(boolean enviadoLote) {
         this.enviadoLote = enviadoLote;
+    }
+
+    public Evento getEvento() {
+        return evento;
+    }
+
+    public void setEvento(Evento evento) {
+        this.evento = evento;
     }
     
     
