@@ -25,4 +25,6 @@ public interface ComprobanteElectronicoRepo extends CrudRepository<ComprobanteEl
     
     public ComprobanteElectronico findByCdcAndEstado(String cdc, String estado);
     
+    public List<ComprobanteElectronico> findByContribuyenteAndEstadoNotContaining (Contribuyente contribuyente, String estado);
+    
 }

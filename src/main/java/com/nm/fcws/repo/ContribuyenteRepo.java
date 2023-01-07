@@ -15,6 +15,7 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ContribuyenteRepo extends CrudRepository <Contribuyente, Long>{ 
     
-    public List<Contribuyente> findBySoloLote(boolean soloLote);
+    public List<Contribuyente> findBySoloLoteAndHabilitado(boolean soloLote, boolean habilitado);
+    public List<Contribuyente> findByHabilitado(boolean habilitado);
     
 }

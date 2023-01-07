@@ -5,6 +5,7 @@
  */
 package com.nm.fcws.repo;
 
+import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.modeldb.Evento;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
@@ -16,5 +17,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface EventoRepo extends CrudRepository<Evento, Long> {
     
     public List<Evento> findByEnviado (boolean enviado);
+    
+    public List<Evento> findByContribuyenteAndEstadoNotContaining (Contribuyente contribuyente, String estado);
     
 }

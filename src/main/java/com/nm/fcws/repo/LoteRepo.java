@@ -20,5 +20,6 @@ public interface LoteRepo extends CrudRepository<Lote, Long>{
     
    
     public List<Lote> findByEstadoNotContainingOrEstadoIsNull (String estado);
+    public List<Lote> findByContribuyenteAndEstadoNotContaining (Contribuyente contribuyente,String estado);
     
 }
