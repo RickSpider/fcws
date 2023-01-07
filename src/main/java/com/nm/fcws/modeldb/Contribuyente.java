@@ -103,6 +103,9 @@ public class Contribuyente implements Serializable {
     @OneToMany(mappedBy="contribuyente", fetch = FetchType.EAGER)
     private List<ContribuyenteContacto> contactos;
     
+    @Column(columnDefinition = "boolean default true", name="habilitado")
+    private boolean habilitado;
+    
     /**
      * 
      * PROD = produccion
@@ -309,6 +312,14 @@ public class Contribuyente implements Serializable {
 
     public void setContactos(List<ContribuyenteContacto> contactos) {
         this.contactos = contactos;
+    }
+
+    public boolean isHabilitado() {
+        return habilitado;
+    }
+
+    public void setHabilitado(boolean habilitado) {
+        this.habilitado = habilitado;
     }
     
     

@@ -10,6 +10,7 @@ import com.nm.fcws.modeldb.ContribuyenteContacto;
 import com.nm.fcws.modeldb.Lote;
 import com.nm.fcws.modeldb.TipoComprobanteElectronico;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
+import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.LoteRepo;
 import com.nm.fcws.repo.TipoComprobanteElectronicoRepo;
 import com.roshka.sifen.Sifen;
@@ -51,6 +52,9 @@ public class ComprobanteLoteServicio {
 
     @Autowired
     private ComprobanteElectronicoRepo cer;
+    
+    @Autowired
+    private ContribuyenteRepo cr;
 
     @Autowired
     
@@ -306,7 +310,9 @@ public class ComprobanteLoteServicio {
 
             }
             
-            int emailSize =0;
+            this.emailServicio.enviar(lote.getContribuyente(), mensajeEmail.toString());
+            
+            /*int emailSize =0;
             
             if (mensajeEmail.length() > 0){
                 
@@ -335,7 +341,7 @@ public class ComprobanteLoteServicio {
                 }
                 
                 
-            }
+            }*/
             
            
         }
@@ -355,5 +361,43 @@ public class ComprobanteLoteServicio {
          lr.save(lote);
 
     }
+    
+    @Async
+    public void alertaLote() {
+        
+        log.info("Enviando Alertas acumuladas.");
+
+        List<Contribuyente> lcontribuyentes = this.cr.findByHabilitado(true);
+
+        for (Contribuyente x : lcontribuyentes) {
+
+            StringBuffer mensajeEmail = new StringBuffer();
+            List<Lote> lce = this.lr.findByContribuyenteAndEstadoNotContaining(x,"Concluido");
+
+            for (Lote ce : lce) {
+
+                mensajeEmail.append("El comprobante Lote"); 
+
+                if (ce.getEstado() != null) {
+                    mensajeEmail.append(" tiene estado " + ce.getEstado());
+                } else {
+                    mensajeEmail.append(" NO tiene estado");
+                }
+
+                if (ce.getEstado() != null) {
+                    mensajeEmail.append("\nMensaje " + ce.getRespuestaEnvio());
+                }
+                mensajeEmail.append("\nCDC " + ce.getNro() + "\n\n");
+
+            }
+
+            this.emailServicio.enviar(x, mensajeEmail.toString());
+
+        }
+
+    }
+    
+    
+    
 
 }

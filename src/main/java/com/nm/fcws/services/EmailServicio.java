@@ -11,6 +11,7 @@ import java.util.Objects;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,6 +27,9 @@ public class EmailServicio {
 
     @Autowired
     private JavaMailSender javaMailSender;
+    
+    @Autowired 
+    private Environment env;
 
     public EmailServicio(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
@@ -79,7 +83,7 @@ public class EmailServicio {
 
                 }
 
-                this.send("fe@vidrioluz.com.py", destinos, "Alerta", mensaje);
+                this.send(env.getProperty("spring.mail.username"), destinos, "Alerta", mensaje);
 
             }
 

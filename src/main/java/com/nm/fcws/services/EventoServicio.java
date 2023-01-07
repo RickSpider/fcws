@@ -10,6 +10,7 @@ import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.modeldb.ContribuyenteContacto;
 import com.nm.fcws.modeldb.Evento;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
+import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.EventoRepo;
 import com.nm.fcws.repo.TipoComprobanteElectronicoRepo;
 import com.roshka.sifen.Sifen;
@@ -55,6 +56,9 @@ public class EventoServicio {
 
     @Autowired
     private ComprobanteElectronicoRepo cer;
+    
+    @Autowired
+    private ContribuyenteRepo cr;
 
     @Autowired
     private EventoRepo er;
@@ -273,4 +277,39 @@ public class EventoServicio {
         this.cer.save(ce);
 
     }*/
+    
+       @Async
+    public void alertaEvento() {
+        
+        log.info("Enviando Alertas acumuladas.");
+
+        List<Contribuyente> lcontribuyentes = this.cr.findByHabilitado(true);
+
+        for (Contribuyente x : lcontribuyentes) {
+
+            StringBuffer mensajeEmail = new StringBuffer();
+            List<Evento> lce = this.er.findByContribuyenteAndEstadoNotContaining(x,"Aprobado");
+
+            for (Evento ce : lce) {
+
+                mensajeEmail.append("El Evento"); 
+
+                if (ce.getEstado() != null) {
+                    mensajeEmail.append(" tiene estado " + ce.getEstado());
+                } else {
+                    mensajeEmail.append(" NO tiene estado");
+                }
+
+                if (ce.getEstado() != null) {
+                    mensajeEmail.append("\nMensaje " + ce.getMensaje());
+                }
+                mensajeEmail.append("\nCDC " + ce.getCdc() + "\n\n");
+
+            }
+
+            this.emailServicio.enviar(x, mensajeEmail.toString());
+
+        }
+
+    }
 }

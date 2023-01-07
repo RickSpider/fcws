@@ -5,7 +5,6 @@
  */
 package com.nm.fcws.component;
 
-import com.nm.fcws.controller.ComprobanteController;
 import com.nm.fcws.modeldb.Contribuyente;
 import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.services.ComprobanteLoteServicio;
@@ -16,8 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
@@ -38,18 +35,18 @@ public class LoteComponent {
     
     //@Scheduled(fixedRate = 30000)
    // @Scheduled(fixedRate = 7200000) //2horas
-    @Scheduled(cron="0 10 8,10,12,14,16,18 * * ?")
+    @Scheduled(cron="0 10 */2 * * ?")
     public void envio() throws SifenException, ParserConfigurationException, SAXException, IOException{
         
         log.info("Iniciando envio atuomatico de lotes");
         
-        List <Contribuyente> lc = (List <Contribuyente>) cr.findBySoloLote(true);
+        List <Contribuyente> lc = (List <Contribuyente>) cr.findBySoloLoteAndHabilitado(true, true);
         
         cls.enviarLoteContribuyentes(lc);
         
     }
  
-    @Scheduled(cron="0 10 9,11,13,15,17,19 * * ?")
+    @Scheduled(cron="0 10 1-23/2 * * ?")
     public void consultar() throws SifenException, ParserConfigurationException, SAXException, IOException{
     
         log.info("Ejecutando Consulta de Lotes");

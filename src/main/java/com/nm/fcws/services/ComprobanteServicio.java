@@ -27,13 +27,13 @@ import com.nm.fcws.modeldb.Localidad;
 import com.nm.fcws.modeldb.Ruc;
 import com.nm.fcws.modeldb.TipoComprobanteElectronico;
 import com.nm.fcws.repo.ComprobanteElectronicoRepo;
+import com.nm.fcws.repo.ContribuyenteRepo;
 import com.nm.fcws.repo.DistritoRepo;
 import com.nm.fcws.repo.LocalidadRepo;
 import com.nm.fcws.repo.RucRepo;
 import com.roshka.sifen.Sifen;
 import com.roshka.sifen.core.SifenConfig;
 import com.roshka.sifen.core.beans.DocumentoElectronico;
-import com.roshka.sifen.core.beans.EventosDE;
 import com.roshka.sifen.core.beans.response.RespuestaRecepcionDE;
 import com.roshka.sifen.core.exceptions.SifenException;
 import com.roshka.sifen.core.fields.request.de.TdDatGralOpe;
@@ -127,6 +127,9 @@ public class ComprobanteServicio {
     private ComprobanteElectronicoRepo comprobanteElectronicoRepo;
 
     @Autowired
+    private ContribuyenteRepo contribuyenteRepo;
+
+    @Autowired
     private RucRepo rucRepo;
 
     @Autowired
@@ -137,6 +140,9 @@ public class ComprobanteServicio {
 
     @Autowired
     private ConexionSifenServicio css;
+
+    @Autowired
+    private EmailServicio emailServicio;
 
     /*private SifenConfig getSifenConfig(Contribuyente contribuyente) {
 
@@ -950,6 +956,43 @@ public class ComprobanteServicio {
         }
 
         this.comprobanteElectronicoRepo.save(ce);
+
+    }
+
+    @Async
+    public void alertaComprobante() {
+        
+        log.info("Enviando Alertas acumuladas.");
+
+        List<Contribuyente> lcontribuyentes = this.contribuyenteRepo.findByHabilitado(true);
+
+        for (Contribuyente x : lcontribuyentes) {
+
+            StringBuffer mensajeEmail = new StringBuffer();
+            List<ComprobanteElectronico> lce = this.comprobanteElectronicoRepo.findByContribuyenteAndEstadoNotContaining(x,"Aprobado");
+
+            for (ComprobanteElectronico ce : lce) {
+
+                mensajeEmail.append("El comprobante " + ce.getTipoComprobanteElectronico().getTipoComprobanteElectronico());
+
+                if (ce.getEstado() != null) {
+                    mensajeEmail.append(" tiene estado " + ce.getEstado());
+                } else {
+                    mensajeEmail.append(" NO tiene estado");
+                }
+
+                mensajeEmail.append("\nNRO " + ce.getNumero());
+
+                if (ce.getEstado() != null) {
+                    mensajeEmail.append("\nMensaje " + ce.getRespuesta());
+                }
+                mensajeEmail.append("\nCDC " + ce.getCdc() + "\n\n");
+
+            }
+
+            this.emailServicio.enviar(x, mensajeEmail.toString());
+
+        }
 
     }
 

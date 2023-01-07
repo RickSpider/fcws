@@ -13,9 +13,11 @@ import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
@@ -36,11 +38,13 @@ public class hello {
 
     @Autowired
     private ComprobanteElectronicoRepo cer;
+    
+    @Autowired Environment env;
 
     @GetMapping(value = "/hello", produces = "application/json")
     public String sayHello() {
 
-        return "Web Service para Facturacion Electronica Sifen/n ";
+        return "Web Service para Facturacion Electronica Sifen/n "+env.getProperty("spring.mail.username");
 
     }
 
