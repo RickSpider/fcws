@@ -144,38 +144,6 @@ public class ComprobanteServicio {
     @Autowired
     private EmailServicio emailServicio;
 
-    /*private SifenConfig getSifenConfig(Contribuyente contribuyente) {
-
-        SifenConfig config = null;
-
-        if (contribuyente.getAmbiente().compareTo("DEV") == 0) {
-
-            config = new SifenConfig(
-                    SifenConfig.TipoAmbiente.DEV,
-                    "0001",
-                    "ABCD0000000000000000000000000000",
-                    SifenConfig.TipoCertificadoCliente.PFX,
-                    contribuyente.getPathkey(),
-                    contribuyente.getPasskey()
-            );
-
-        }
-
-        if (contribuyente.getAmbiente().compareTo("PROD") == 0) {
-
-            config = new SifenConfig(
-                    SifenConfig.TipoAmbiente.PROD,
-                    contribuyente.getCscid(),
-                    contribuyente.getCsc(),
-                    SifenConfig.TipoCertificadoCliente.PFX,
-                    contribuyente.getPathkey(),
-                    contribuyente.getPasskey()
-            );
-
-        }
-
-        return config;
-    }*/
     public DocumentoElectronico procesar(Comprobante comprobante, Contribuyente contribuyente, TTiDE tipoDE) throws SifenException, ParserConfigurationException, SAXException, IOException {
 
         DocumentoElectronico de = new DocumentoElectronico();
@@ -417,7 +385,7 @@ public class ComprobanteServicio {
 
                 }
 
-                gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto()).setScale(2, RoundingMode.HALF_UP)); // si viene solo el monto es efectivo por defecto
+                gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto()).setScale(4, RoundingMode.HALF_UP)); // si viene solo el monto es efectivo por defecto
                 //en caso que se multiple se tiene que definier efectivo tarjeta etc
 
                 if (fp.getModeda() == null) {
@@ -466,7 +434,7 @@ public class ComprobanteServicio {
                         tgCuotas.setcMoneCuo(CMondT.getByName(x.getMoneda()));
                     }
 
-                    tgCuotas.setdMonCuota(new BigDecimal(x.getMonto()).setScale(2, RoundingMode.HALF_UP));
+                    tgCuotas.setdMonCuota(new BigDecimal(x.getMonto()).setScale(4, RoundingMode.HALF_UP));
 
                     if (x.getVencimiento() != null) {
 
@@ -486,7 +454,7 @@ public class ComprobanteServicio {
 
             if (condicionOperacion.getMontoEntregaIni() != null) {
 
-                gPagCred.setdMonEnt(new BigDecimal(condicionOperacion.getMontoEntregaIni()).setScale(2, RoundingMode.HALF_UP));
+                gPagCred.setdMonEnt(new BigDecimal(condicionOperacion.getMontoEntregaIni()).setScale(4, RoundingMode.HALF_UP));
 
             }
 
@@ -886,12 +854,12 @@ public class ComprobanteServicio {
 
             //discutir va a pasar el cliente proveer la tabla del sifen
             // gCamItem.setdCantProSer(x.getCantidad());
-            gCamItem.setdCantProSer(BigDecimal.valueOf(x.getCantidad()).setScale(2, RoundingMode.HALF_UP));
+            gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()).setScale(4, RoundingMode.HALF_UP));
 
             if (TipoDE.getVal() != TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()) {
 
                 TgValorItem gValorItem = new TgValorItem();
-                gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()).setScale(2, RoundingMode.HALF_UP));
+                gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()).setScale(8, RoundingMode.HALF_UP));
                 TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
                 gValorItem.setgValorRestaItem(gValorRestaItem);
                 gCamItem.setgValorItem(gValorItem);
