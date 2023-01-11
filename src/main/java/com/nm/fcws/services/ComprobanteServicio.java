@@ -385,7 +385,8 @@ public class ComprobanteServicio {
 
                 }
 
-                gPaConEIni.setdMonTiPag(new BigDecimal(fp.getMonto()).setScale(4, RoundingMode.HALF_UP)); // si viene solo el monto es efectivo por defecto
+               // gPaConEIni.setdMonTiPag(BigDecimal.valueOf(fp.getMonto()).setScale(4, RoundingMode.HALF_EVEN).add(BigDecimal.valueOf(0.0001))); // si viene solo el monto es efectivo por defecto
+                gPaConEIni.setdMonTiPag(this.ajustarNumero(fp.getMonto()));
                 //en caso que se multiple se tiene que definier efectivo tarjeta etc
 
                 if (fp.getModeda() == null) {
@@ -434,7 +435,8 @@ public class ComprobanteServicio {
                         tgCuotas.setcMoneCuo(CMondT.getByName(x.getMoneda()));
                     }
 
-                    tgCuotas.setdMonCuota(new BigDecimal(x.getMonto()).setScale(4, RoundingMode.HALF_UP));
+                    //tgCuotas.setdMonCuota(BigDecimal.valueOf(x.getMonto()).setScale(4, RoundingMode.HALF_EVEN).add(BigDecimal.valueOf(0.0001)));
+                    tgCuotas.setdMonCuota(this.ajustarNumero(x.getMonto()));
 
                     if (x.getVencimiento() != null) {
 
@@ -454,8 +456,8 @@ public class ComprobanteServicio {
 
             if (condicionOperacion.getMontoEntregaIni() != null) {
 
-                gPagCred.setdMonEnt(new BigDecimal(condicionOperacion.getMontoEntregaIni()).setScale(4, RoundingMode.HALF_UP));
-
+                //gPagCred.setdMonEnt(BigDecimal.valueOf(condicionOperacion.getMontoEntregaIni()).setScale(4, RoundingMode.HALF_EVEN).add(BigDecimal.valueOf(0.0001)));
+                gPagCred.setdMonEnt(this.ajustarNumero(condicionOperacion.getMontoEntregaIni()));
             }
 
             gCamCond.setgPagCred(gPagCred);
@@ -854,20 +856,22 @@ public class ComprobanteServicio {
 
             //discutir va a pasar el cliente proveer la tabla del sifen
             // gCamItem.setdCantProSer(x.getCantidad());
-            gCamItem.setdCantProSer(new BigDecimal(x.getCantidad()).setScale(4, RoundingMode.HALF_UP));
+           // gCamItem.setdCantProSer(BigDecimal.valueOf(x.getCantidad()).setScale(4, RoundingMode.HALF_EVEN).add(BigDecimal.valueOf(0.0001)));
+           gCamItem.setdCantProSer(this.ajustarNumero(x.getCantidad()));
 
             if (TipoDE.getVal() != TTiDE.NOTA_DE_REMISION_ELECTRONICA.getVal()) {
 
                 TgValorItem gValorItem = new TgValorItem();
-                gValorItem.setdPUniProSer(new BigDecimal(x.getPrecioUnitario()).setScale(8, RoundingMode.HALF_UP));
+                //gValorItem.setdPUniProSer(BigDecimal.valueOf(x.getPrecioUnitario()).setScale(8, RoundingMode.HALF_EVEN).add(BigDecimal.valueOf(0.00000001)));
+                gValorItem.setdPUniProSer(this.ajustarNumero(x.getPrecioUnitario()));
                 TgValorRestaItem gValorRestaItem = new TgValorRestaItem();
                 gValorItem.setgValorRestaItem(gValorRestaItem);
                 gCamItem.setgValorItem(gValorItem);
 
                 TgCamIVA gCamIVA = new TgCamIVA();
                 gCamIVA.setiAfecIVA(TiAfecIVA.getByVal(x.getAfectacionTributaria().shortValue()));
-                gCamIVA.setdPropIVA(new BigDecimal(x.getProporcionIVA()));
-                gCamIVA.setdTasaIVA(new BigDecimal(x.getTasaIVA()));
+                gCamIVA.setdPropIVA(BigDecimal.valueOf(x.getProporcionIVA()));
+                gCamIVA.setdTasaIVA(BigDecimal.valueOf(x.getTasaIVA()));
                 gCamItem.setgCamIVA(gCamIVA);
 
             }
@@ -963,5 +967,23 @@ public class ComprobanteServicio {
         }
 
     }
+    
 
+    private BigDecimal ajustarNumero(double d){
+    
+     //   System.out.println("Antes de cambiar "+d);
+        BigDecimal bd = BigDecimal.valueOf(d);
+      //  System.out.println("despues de cambiar "+bd);
+        if (bd.scale() > 2){
+        
+            bd = bd.setScale(2, RoundingMode.DOWN);
+         //   System.out.println("al escalar "+bd);
+            return bd;
+            
+        }
+        
+        return bd;
+        
+    }
+    
 }
