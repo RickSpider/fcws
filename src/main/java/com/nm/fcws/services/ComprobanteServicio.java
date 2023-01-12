@@ -971,13 +971,13 @@ public class ComprobanteServicio {
 
     private BigDecimal ajustarNumero(double d){
     
-     //   System.out.println("Antes de cambiar "+d);
+        System.out.println("Antes de cambiar "+d);
         BigDecimal bd = BigDecimal.valueOf(d);
-      //  System.out.println("despues de cambiar "+bd);
+        System.out.println("despues de cambiar "+bd);
         if (bd.scale() > 2){
         
             bd = bd.setScale(2, RoundingMode.DOWN);
-         //   System.out.println("al escalar "+bd);
+            System.out.println("al escalar "+bd);
             return bd;
             
         }
